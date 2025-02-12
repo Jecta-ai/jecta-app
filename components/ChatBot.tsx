@@ -27,7 +27,7 @@ interface SendDetails {
     tokenType: string;
     address: string;
     decimals: number;
-    denom?: string;
+    denom: string;
   };
   receiver: string;
   amount: number;
@@ -279,7 +279,7 @@ const Chatbot = () => {
 
   const confirmStake = async () => {
     try {
-      if (amount === undefined || injectiveAddress === undefined) {
+      if (amount === undefined || injectiveAddress === null) {
         return;
       }
 
@@ -584,74 +584,17 @@ const Chatbot = () => {
                 >
                   {msg.sender === "ai" && (
                     <img
-                      src={logo}
+                      src={logo.src}
                       alt="Logo"
                       className="w-8 h-8 rounded-md mr-2 border-white border-1"
                     />
                   )}
 
-                  {/* Token mapping */}
-                  {msg.balances?.map((token, index) => (
-                    <div
-                      key={`token-${token.address}-${index}`}
-                      className="flex items-center bg-gray-800 p-4 rounded-lg shadow-md border border-gray-700"
-                    >
-                      {/* Token Logo */}
-                      <img
-                        src={token.logo}
-                        alt={token.symbol}
-                        className="w-10 h-10 rounded-full mr-4"
-                      />
-
-                      {/* Symbol & Balance */}
-                      <div className="flex flex-col flex-1">
-                        <span className="text-white font-semibold text-lg">{token.symbol}</span>
-                        <span className="text-gray-400 text-sm">
-                          {Number(token.balance).toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </span>
-                      </div>
-
-                      {/* Contract Link */}
-                      <a
-                        href={`https://injscan.com/asset/${encodeURIComponent(token.address)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-400 hover:underline text-sm"
-                      >
-                        Contract ↗
-                      </a>
-                    </div>
-                  ))}
-
-                  {/* Validator mapping */}
-                  {msg.validators?.map((validator, index) => (
-                    <button
-                      type="button"
-                      key={`validator-${validator.address}-${index}`}
-                      onClick={() => {
-                        if (!validatorSelected) {
-                          handleValidatorSelection(index, validator.moniker, validator.address);
-                        } else {
-                          alert("Validator already selected !");
-                        }
-                      }}
-                      className="p-2 bg-gray-700 rounded-lg hover:bg-gray-600 flex flex-col items-center text-center"
-                    >
-                      <span className="block font-semibold">{validator.moniker}</span>
-                      <span className="text-sm text-gray-300">
-                        Commission: {validator.commission}
-                      </span>
-                    </button>
-                  ))}
-
                   {/* ✅ Handle Balance Messages */}
                   {msg.type === "balance" ? (
                     <div className="p-3 rounded-xl bg-zinc-800 text-white">
                       <div className="flex flex-col gap-3">
-                        {msg.balances.map(
+                        {msg.balances &&  msg.balances.map(
                           (
                             token: {
                               logo: string;
@@ -710,7 +653,7 @@ const Chatbot = () => {
 
                             {/* ✅ Grid Layout for Validators */}
                             <div className="grid grid-cols-4 gap-3">
-                              {msg.validators.map(
+                              {msg.validators && msg.validators.map(
                                 (
                                   validator: {
                                     moniker: string;
@@ -817,7 +760,11 @@ const Chatbot = () => {
                               </button>
                               <button
                                 type="button"
-                                onClick={() => confirmSwap(msg.contractInput)}
+                                onClick={() => {
+                                  if(msg.contractInput){
+                                    confirmSwap(msg.contractInput)
+                                  }
+                                }}
                                 className="mt-3 px-4 py-2 bg-white text-red-700 font-semibold rounded-lg hover:bg-gray-300"
                               >
                                 Confirm
@@ -849,7 +796,11 @@ const Chatbot = () => {
                               </button>
                               <button
                                 type="button"
-                                onClick={() => confirmSend(msg.send)}
+                                onClick={() => {
+                                  if(msg.send){
+                                    confirmSend(msg.send)
+                                  }
+                                }}
                                 className="mt-3 px-4 py-2 bg-white text-red-700 font-semibold rounded-lg hover:bg-gray-300"
                               >
                                 Confirm
