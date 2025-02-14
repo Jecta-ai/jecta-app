@@ -16,6 +16,9 @@ import ErrorMessageType from "./components/errorMessageType";
 import DefaultMessageType from "./components/defaultMessageType";
 import { fetchResponse } from "./services/userMessage";
 import { createChatMessage, msgBroadcastClient } from "./utils";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { SendHorizontal } from "lucide-react";
 
 const Chatbot = () => {
   const [chat, setChat] = useState<ChatMessage[]>([]);
@@ -341,9 +344,6 @@ const Chatbot = () => {
                   msg.type === "send_token") &&
                 i === chat.length - 2;
 
-              console.log(chat.length - 1);
-              console.log(i);
-
               return (
                 <div
                   key={`chat-message-${i}-${msg.sender}`}
@@ -457,19 +457,15 @@ const Chatbot = () => {
 
         {/* Chat Input */}
         <div className="px-6 pb-6 flex items-center gap-3">
-          <form action={sendMessage}>
-            <input
-              name="userMessage"
-              className="w-full p-3 border border-zinc-600 rounded-lg bg-zinc-800 text-white"
-              placeholder="Ask to JECTA..."
-            />
-            <button
+          <form className="w-full flex items-center gap-3" action={sendMessage}>
+            <Input className="w-full" name="userMessage" placeholder="Ask to JECTA..." />
+            <Button
+              className="disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={disableSend()}
               type="submit"
-              className="p-3 bg-white text-black rounded-lg w-12 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              ➤
-            </button>
+              <SendHorizontal className="w-4 h-4" />
+            </Button>
           </form>
         </div>
       </main>
