@@ -1,13 +1,10 @@
 // app/components/Chatbot.tsx
 "use client";
 
-import { type Key, useEffect, useRef, useState } from "react";
-import { MsgBroadcaster, WalletStrategy } from "@injectivelabs/wallet-ts";
+import { useEffect, useRef, useState } from "react";
 import { MsgDelegate, MsgExecuteContractCompat, MsgSend } from "@injectivelabs/sdk-ts";
-import { Network } from "@injectivelabs/networks";
-import { ChainId } from "@injectivelabs/ts-types";
 import logo from "@/public/logo.png";
-import type { SendDetails, ChatMessage, ContractInput } from "./types";
+import type { SendDetails, ChatMessage } from "./types";
 import Menu from "./components/menu";
 import BalanceMessageType from "./components/balanceMessageType";
 import ValidatorsMessageType from "./components/validatorsMessageType";
@@ -17,16 +14,10 @@ import SwapMessageType from "./components/swapMessageType";
 import SendTokenMessageType from "./components/sendTokenMessageType";
 import ErrorMessageType from "./components/errorMessageType";
 import DefaultMessageType from "./components/defaultMessageType";
-export const walletStrategy = new WalletStrategy({
-  chainId: ChainId.Mainnet,
-});
-export const msgBroadcastClient = new MsgBroadcaster({
-  walletStrategy /* instantiated wallet strategy */,
-  network: Network.Mainnet,
-});
+import { fetchResponse } from "./services/userMessage";
+import { createChatMessage, msgBroadcastClient } from "./utils";
 
 const Chatbot = () => {
-  const [message, setMessage] = useState("");
   const [chat, setChat] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [executing, setExecuting] = useState(false);
@@ -118,126 +109,6 @@ const Chatbot = () => {
       ]);
       console.log(error);
       return;
-    }
-  };
-
-  const confirmSwap = async (contractInput: ContractInput) => {
-    try {
-      if (injectiveAddress === null) {
-        return;
-      }
-      setExecuting(true);
-      if (contractInput.executeMsg.send !== undefined) {
-        const msg = MsgExecuteContractCompat.fromJSON({
-          sender: injectiveAddress,
-          contractAddress: contractInput.address,
-          exec: {
-            msg: contractInput.executeMsg.send,
-            action: "send",
-          },
-        });
-
-        const res = await msgBroadcastClient.broadcast({
-          injectiveAddress: injectiveAddress,
-          msgs: msg,
-        });
-        setChat((prevChat) => [
-          ...prevChat,
-          {
-            sender: "ai",
-            text: `Swap success ! Here is your tx Hash : ${res.txHash}`,
-            type: "text",
-            intent: "general",
-            balances: null,
-            validators: null,
-            contractInput: null,
-            send: null,
-          },
-        ]);
-        console.log(res);
-      } else {
-        const msg = MsgExecuteContractCompat.fromJSON({
-          sender: injectiveAddress,
-          contractAddress: contractInput.address,
-          exec: {
-            msg: contractInput.executeMsg.execute_routes,
-            action: "execute_routes",
-          },
-          funds: contractInput.funds,
-        });
-
-        const res = await msgBroadcastClient.broadcast({
-          injectiveAddress: injectiveAddress,
-          msgs: msg,
-        });
-        setChat((prevChat) => [
-          ...prevChat,
-          {
-            sender: "ai",
-            text: `Swap success ! Here is your tx Hash : ${res.txHash}`,
-            type: "text",
-            intent: "general",
-            balances: null,
-            validators: null,
-            contractInput: null,
-            send: null,
-          },
-        ]);
-        console.log(res);
-      }
-      setExecuting(false);
-    } catch (error) {
-      if (error instanceof Error) {
-        setExecuting(false);
-        const errorMessage = error.message;
-
-        // Check if the error message indicates that the minimum receive amount condition failed.
-        if (errorMessage.includes("minimum receive amount")) {
-          setChat((prevChat) => [
-            ...prevChat,
-            {
-              sender: "ai",
-              text: `Swap failed, Error : 'The swap failed because your minimum receive amount is too high. ' +    
-            'Please adjust your slippage settings at your .env to proceed with the swap.'`,
-              type: "text",
-              intent: "general",
-              balances: null,
-              validators: null,
-              contractInput: null,
-              send: null,
-            },
-          ]);
-        } else {
-          setChat((prevChat) => [
-            ...prevChat,
-            {
-              sender: "ai",
-              text: `Swap failed, Error : ${errorMessage}`,
-              type: "text",
-              intent: "general",
-              balances: null,
-              validators: null,
-              contractInput: null,
-              send: null,
-            },
-          ]);
-        }
-      } else {
-        // Fallback for errors that are not instances of Error
-        setChat((prevChat) => [
-          ...prevChat,
-          {
-            sender: "ai",
-            text: `Swap failed, Error : ${error}`,
-            type: "text",
-            intent: "general",
-            balances: null,
-            validators: null,
-            contractInput: null,
-            send: null,
-          },
-        ]);
-      }
     }
   };
 
@@ -338,24 +209,6 @@ const Chatbot = () => {
     */
   };
 
-  useEffect(() => {
-    setValidatorSelected(false);
-    const storedAddress = localStorage.getItem("injectiveAddress");
-    if (storedAddress) {
-      setInjectiveAddress(storedAddress);
-      const msg: ChatMessage = {
-        sender: "system",
-        text: `User's Injective wallet address is: ${storedAddress}. If user asks you about his wallet address, you need to remember it.`,
-        type: "text",
-        balances: null,
-        validators: null,
-        contractInput: null,
-        send: null,
-      };
-      setChat((prevChat) => [...prevChat, msg]);
-    }
-  }, []); // Empty dependency array since we only want this to run once
-
   const handleExit = async () => {
     setValidatorSelected(false);
     setChat((prevChat) => {
@@ -378,6 +231,29 @@ const Chatbot = () => {
     setChat([...chat, exitToolMessage]);
   };
 
+  const updateExecuting = (executing: boolean) => {
+    setExecuting(executing);
+  };
+
+  const updateChat = (cb: (prevChat: ChatMessage[]) => ChatMessage[]) => {
+    setChat(cb);
+  };
+
+  useEffect(() => {
+    setValidatorSelected(false);
+    // TODO: Do not store the address in local storage, use the injected address instead
+    const storedAddress = localStorage.getItem("injectiveAddress");
+    if (storedAddress) {
+      setInjectiveAddress(storedAddress);
+      const msg = createChatMessage({
+        sender: "system",
+        message: `User's Injective wallet address is: ${storedAddress}. If user asks you about his wallet address, you need to remember it.`,
+        type: "text",
+      });
+      setChat((prevChat) => [...prevChat, msg]);
+    }
+  }, []); // Empty dependency array since we only want this to run once
+
   // ✅ Scroll to the bottom whenever chat updates
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -385,52 +261,50 @@ const Chatbot = () => {
     }
   }, [chat]); // Only depend on chat updates
 
-  const sendMessage = async () => {
-    if (!message.trim()) return;
+  const disableSend = () => {
+    const lastMessageType = chat.length > 0 ? chat[chat.length - 1].type : null;
 
-    const newUserMessage = {
+    return (
+      validatorSelected ||
+      lastMessageType === "swap" ||
+      lastMessageType === "send_token" ||
+      loading ||
+      executing ||
+      lastMessageType === "validators"
+    );
+  };
+
+  const sendMessage = async (formData: FormData) => {
+    const userMessage = formData.get("userMessage");
+    if (typeof userMessage !== "string" || !userMessage.trim()) {
+      return;
+    }
+
+    const newUserMessage = createChatMessage({
       sender: "user",
-      text: message,
+      message: userMessage,
       type: "text",
-      balances: null,
-      validators: null,
-      contractInput: null,
-      send: null,
-    };
+    });
     setChat([...chat, newUserMessage]);
-    setMessage("");
     setLoading(true);
 
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, chatHistory: chat, address: injectiveAddress }),
+    fetchResponse(userMessage, chat, injectiveAddress)
+      .then((data) => {
+        setChat((prevChat) => [...prevChat, ...data.messages]); // Update chat history
+      })
+      .catch(() => {
+        setChat((prevChat) => [
+          ...prevChat,
+          createChatMessage({
+            sender: "ai",
+            message: "Error processing request",
+            type: "error",
+          }),
+        ]);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-
-      if (!res.ok) throw new Error(`Server Error: ${res.status}`);
-
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-
-      setChat((prevChat) => [...prevChat, ...data.messages]); // Update chat history
-    } catch (error) {
-      console.error("Chat error:", error);
-      setChat((prevChat) => [
-        ...prevChat,
-        {
-          sender: "ai",
-          text: "Error processing request",
-          type: "error",
-          balances: null,
-          validators: null,
-          contractInput: null,
-          send: null,
-        },
-      ]);
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
@@ -477,7 +351,7 @@ const Chatbot = () => {
                 >
                   {msg.sender === "ai" && (
                     <Image
-                      src={logo.src}
+                      src={logo}
                       alt="Logo"
                       className="w-8 h-8 rounded-md mr-2 border-white border-1"
                       width={32}
@@ -485,7 +359,6 @@ const Chatbot = () => {
                     />
                   )}
 
-                  {/* ✅ Handle Balance Messages */}
                   {msg.type === "balance" ? (
                     msg.balances && <BalanceMessageType balances={msg.balances} />
                   ) : msg.type === "validators" ? (
@@ -531,11 +404,13 @@ const Chatbot = () => {
                       {isLastError ? (
                         msg.contractInput && (
                           <SwapMessageType
-                            text={msg.text}
                             executing={executing}
+                            text={msg.text}
                             handleExit={handleExit}
-                            confirmSwap={confirmSwap}
+                            updateExecuting={updateExecuting}
+                            updateChat={updateChat}
                             contractInput={msg.contractInput}
+                            injectiveAddress={injectiveAddress}
                           />
                         )
                       ) : (
@@ -582,36 +457,20 @@ const Chatbot = () => {
 
         {/* Chat Input */}
         <div className="px-6 pb-6 flex items-center gap-3">
-          <input
-            className="w-full p-3 border border-zinc-600 rounded-lg bg-zinc-800 text-white"
-            value={message}
-            onChange={(e) => {
-              const lastMessageType = chat.length > 0 ? chat[chat.length - 1].type : null;
-              console.log(lastMessageType);
-              console.log(loading);
-              if (
-                !(
-                  validatorSelected ||
-                  lastMessageType === "swap" ||
-                  lastMessageType === "send_token" ||
-                  loading ||
-                  executing ||
-                  lastMessageType === "validators"
-                )
-              ) {
-                setMessage(e.target.value);
-              }
-            }}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            placeholder="Ask to JECTA..."
-          />
-          <button
-            type="button"
-            className="p-3 bg-white text-black rounded-lg w-12 flex items-center justify-center"
-            onClick={sendMessage}
-          >
-            ➤
-          </button>
+          <form action={sendMessage}>
+            <input
+              name="userMessage"
+              className="w-full p-3 border border-zinc-600 rounded-lg bg-zinc-800 text-white"
+              placeholder="Ask to JECTA..."
+            />
+            <button
+              disabled={disableSend()}
+              type="submit"
+              className="p-3 bg-white text-black rounded-lg w-12 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ➤
+            </button>
+          </form>
         </div>
       </main>
     </div>

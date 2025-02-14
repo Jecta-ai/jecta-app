@@ -1,18 +1,124 @@
-import type { ContractInput } from "../types";
+import { MsgExecuteContractCompat } from "@injectivelabs/sdk-ts";
+import type { ChatMessage, ContractInput } from "../types";
+import { createChatMessage, msgBroadcastClient } from "../utils";
 
 const SwapMessageType = ({
   text,
   executing,
   handleExit,
-  confirmSwap,
   contractInput,
+  updateChat,
+  updateExecuting,
+  injectiveAddress,
 }: {
   text: string;
   executing: boolean;
   handleExit: () => void;
-  confirmSwap: (contractInput: ContractInput) => void;
   contractInput: ContractInput;
+  updateChat: (cb: (prevChat: ChatMessage[]) => ChatMessage[]) => void;
+  updateExecuting: (executing: boolean) => void;
+  injectiveAddress: string | null;
 }) => {
+  const confirmSwap = async (contractInput: ContractInput) => {
+    try {
+      if (injectiveAddress === null) {
+        return;
+      }
+      updateExecuting(true);
+      if (contractInput.executeMsg.send !== undefined) {
+        const msg = MsgExecuteContractCompat.fromJSON({
+          sender: injectiveAddress,
+          contractAddress: contractInput.address,
+          exec: {
+            msg: contractInput.executeMsg.send,
+            action: "send",
+          },
+        });
+
+        const res = await msgBroadcastClient.broadcast({
+          injectiveAddress: injectiveAddress,
+          msgs: msg,
+        });
+        updateChat((prevChat) => [
+          ...prevChat,
+          createChatMessage({
+            sender: "ai",
+            message: `Swap success ! Here is your tx Hash : ${res.txHash}`,
+            type: "text",
+            intent: "general",
+          }),
+        ]);
+        console.log(res);
+      } else {
+        const msg = MsgExecuteContractCompat.fromJSON({
+          sender: injectiveAddress,
+          contractAddress: contractInput.address,
+          exec: {
+            msg: contractInput.executeMsg.execute_routes,
+            action: "execute_routes",
+          },
+          funds: contractInput.funds,
+        });
+
+        const res = await msgBroadcastClient.broadcast({
+          injectiveAddress: injectiveAddress,
+          msgs: msg,
+        });
+        updateChat((prevChat) => [
+          ...prevChat,
+          createChatMessage({
+            sender: "ai",
+            message: `Swap success ! Here is your tx Hash : ${res.txHash}`,
+            type: "text",
+            intent: "general",
+          }),
+        ]);
+        console.log(res);
+      }
+      updateExecuting(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        updateExecuting(false);
+        const errorMessage = error.message;
+
+        // Check if the error message indicates that the minimum receive amount condition failed.
+        if (errorMessage.includes("minimum receive amount")) {
+          updateChat((prevChat) => [
+            ...prevChat,
+            createChatMessage({
+              sender: "ai",
+              message: `Swap failed, Error : 'The swap failed because your minimum receive amount is too high. ' +    
+            'Please adjust your slippage settings at your .env to proceed with the swap.'`,
+              type: "text",
+              intent: "general",
+            }),
+          ]);
+        } else {
+          updateChat((prevChat) => [
+            ...prevChat,
+            createChatMessage({
+              sender: "ai",
+              message: `Swap failed, Error : ${errorMessage}`,
+              type: "text",
+              intent: "general",
+            }),
+          ]);
+        }
+      } else {
+        // Fallback for errors that are not instances of Error
+        updateChat((prevChat) => [
+          ...prevChat,
+          createChatMessage({
+            sender: "ai",
+            message: `Swap failed, Error : ${error}`,
+            type: "text",
+            intent: "general",
+          }),
+        ]);
+      }
+    }
+  };
+
   return (
     <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%] ">
       <h3 className="text-lg font-semibold mb-2">Your Swap Details</h3>

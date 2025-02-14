@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { Token } from "../types";
 
 const BalanceMessageType = ({ balances }: { balances: Token[] }) => {
+  console.log("BalanceMessageType -> balances:", balances);
   return (
     <div className="p-3 rounded-xl bg-zinc-800 text-white">
       <div className="flex flex-col gap-3">
@@ -11,13 +12,7 @@ const BalanceMessageType = ({ balances }: { balances: Token[] }) => {
             className="flex items-center bg-gray-800 p-4 rounded-lg shadow-md border border-gray-700"
           >
             {/* Token Logo */}
-            <Image
-              src={token.logo}
-              alt={token.symbol}
-              className="w-10 h-10 rounded-full mr-4"
-              width={40}
-              height={40}
-            />
+            <img src={token.logo} alt={token.symbol} className="w-10 h-10 rounded-full mr-4" />
 
             {/* Symbol & Balance */}
             <div className="flex flex-col flex-1">
