@@ -8,7 +8,6 @@ const CONFIDENCE_THRESHOLD = process.env.CONFIDENCE_THRESHOLD;
 
 export async function intentClassification(userPrompt: string) {
     try {
-        
         const examplesText = Object.entries(intents).map(([intent, data]) =>
             `Intent: ${intent.toUpperCase()} \nDescription: ${data.description} \nKeywords: ${data.keywords.join(", ")}`
         ).join("\n\n");
