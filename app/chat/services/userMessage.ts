@@ -43,7 +43,7 @@ export const createChatIfNotExists = async (injectiveAddress: string, senderId: 
 
   const { data } = await res.json();
 
-  return { id: data.id, user1Id: data.user1_id, user2Id: data.user2_id };
+  return { id: data.id, aiId: data.ai_id, userId: data.user_id };
 };
 
 export const crateInjectiveIfNotExists = async (injectiveAddress: string) => {
@@ -56,7 +56,15 @@ export const crateInjectiveIfNotExists = async (injectiveAddress: string) => {
   return data;
 };
 
-export const createMessage = async (chatId: string, senderId: string, message: object) => {
+export const createMessage = async ({
+  chatId,
+  senderId,
+  message,
+}: {
+  chatId: string;
+  senderId: string;
+  message: object;
+}) => {
   const res = await fetch(`${baseUrl}/api/messages`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

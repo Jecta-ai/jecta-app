@@ -5,9 +5,9 @@ import { Network } from "@injectivelabs/networks";
 
 interface CreateChatMessageInput {
   sender: string;
-  message: string;
+  text?: string;
   type: string;
-  intent?: string;
+  intent?: string | null;
   balances?: Token[] | null;
   validators?: Validator[] | null;
   contractInput?: ContractInput | null;
@@ -16,17 +16,17 @@ interface CreateChatMessageInput {
 
 export const createChatMessage = ({
   sender,
-  message,
+  text = "No response from AI, try again.",
   type,
   balances = null,
   validators = null,
   contractInput = null,
   send = null,
-  intent,
+  intent = null,
 }: CreateChatMessageInput): ChatMessage => {
   return {
     sender,
-    text: message,
+    text,
     type,
     intent,
     balances,

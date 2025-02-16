@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { SendHorizontal } from "lucide-react";
 import { useChat } from "./providers/chatProvider";
 import { useValidator } from "./providers/validatorProvider";
+import { getChatHistory } from "./services/chatServices";
 
 const Chatbot = () => {
   const [loading, setLoading] = useState(false);
@@ -46,16 +47,20 @@ const Chatbot = () => {
       updatedChat[updatedChat.length - 1].type = "text";
       return updatedChat;
     });
-    const exitToolMessage = {
+    const exitToolMessage = createChatMessage({
       sender: "ai",
       text: "Tool closed successfully.",
       type: "text",
-      balances: null,
-      validators: null,
-      contractInput: null,
-      send: null,
-    };
+    });
     addMessage(exitToolMessage);
+  };
+
+  const loadChatHistory = async (chatId: string) => {
+    console.log("Loading chat history:", chatId);
+    const response = await getChatHistory(chatId);
+    console.log("response:", response);
+    const messages = response.map((chat: any) => chat.message);
+    setMessageHistory(messages);
   };
 
   const updateExecuting = (executing: boolean) => {
@@ -72,21 +77,19 @@ const Chatbot = () => {
     const storedAddress = localStorage.getItem("injectiveAddress");
     if (storedAddress) {
       setInjectiveAddress(storedAddress);
-      const msg = createChatMessage({
-        sender: "system",
-        message: `User's Injective wallet address is: ${storedAddress}. If user asks you about his wallet address, you need to remember it.`,
-        type: "text",
-      });
-      addMessage(msg);
+      // createChatMessage({
+      //   sender: "system",
+      //   message: `User's Injective wallet address is: ${storedAddress}. If user asks you about his wallet address, you need to remember it.`,
+      //   type: "text",
+      // });
     }
-  }, []); // Add addMessage to dependencies
+  }, []);
 
-  // ✅ Scroll to the bottom whenever chat updates
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [messageHistory]); // Depend on messageHistory changes since we need to scroll when it changes
+  }, [messageHistory]);
 
   const disableSend = () => {
     const lastMessageType =
@@ -110,7 +113,7 @@ const Chatbot = () => {
 
     const newUserMessage = createChatMessage({
       sender: "user",
-      message: userMessage,
+      text: userMessage,
       type: "text",
     });
 
@@ -122,13 +125,14 @@ const Chatbot = () => {
   const getAIResponse = async (userMessage: string) => {
     fetchResponse(userMessage, messageHistory, injectiveAddress)
       .then((data) => {
+        console.log(".then -> data:", data);
         addMessages(data.messages); // Update chat history
       })
       .catch(() => {
         addMessage(
           createChatMessage({
             sender: "ai",
-            message: "Error processing request",
+            text: "Error processing request",
             type: "error",
           })
         );
@@ -143,6 +147,7 @@ const Chatbot = () => {
       <Menu
         injectiveAddress={injectiveAddress}
         setInjectiveAddress={(address) => setInjectiveAddress(address)}
+        loadChatHistory={loadChatHistory}
       />
 
       {/* Chat Section */}

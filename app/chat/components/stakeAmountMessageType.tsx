@@ -3,6 +3,7 @@ import { useChat } from "../providers/chatProvider";
 import { MsgDelegate } from "@injectivelabs/sdk-ts";
 import { msgBroadcastClient } from "@/components/ChatBot";
 import { useState } from "react";
+import { createChatMessage } from "../utils";
 
 const StakeAmountMessageType = ({
   handleExit,
@@ -33,15 +34,13 @@ const StakeAmountMessageType = ({
         injectiveAddress: injectiveAddress,
         msgs: msg,
       });
-      addMessage({
-        sender: "ai",
-        text: `Stake success ! Here is your tx Hash : ${res.txHash}`,
-        type: "text",
-        balances: null,
-        validators: null,
-        contractInput: null,
-        send: null,
-      });
+      addMessage(
+        createChatMessage({
+          sender: "ai",
+          text: `Stake success ! Here is your tx Hash : ${res.txHash}`,
+          type: "text",
+        })
+      );
       setValidatorSelected(false);
     } catch (error) {
       console.log(error);

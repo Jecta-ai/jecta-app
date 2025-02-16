@@ -1,24 +1,35 @@
 import { supabase } from "@/lib/supabaseClient";
 
+// TODO: Add auth check
 export async function GET(req: Request) {
-  const { data, error } = await supabase
-    .from("chats")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const injectiveAddress = req.headers.get("injectiveAddress");
+  if (!injectiveAddress) {
+    return new Response(JSON.stringify({ error: "Missing injectiveAddress" }), { status: 400 });
+  }
+
+  const { data: userId, error: userIdError } = await supabase
+    .from("injectives")
+    .select("id")
+    .eq("wallet_address", injectiveAddress)
+    .single();
+
+  if (userIdError) {
+    return new Response(JSON.stringify({ error: userIdError.message }), { status: 500 });
+  }
+
+  const { data, error } = await supabase.from("chats").select("*").eq("user_id", userId?.id);
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 
-  return new Response(JSON.stringify(data), { status: 200 });
+  return new Response(JSON.stringify({ data }), { status: 200 });
 }
 
 export async function POST(req: Request) {
   try {
     const { injectiveAddress, senderId } = await req.json();
 
-    console.log("POST -> senderId:", senderId);
-    console.log("POST -> injectiveAddress:", injectiveAddress);
     if (!injectiveAddress || !senderId) {
       return new Response(JSON.stringify({ error: "Missing parameters" }), { status: 400 });
     }
@@ -36,11 +47,6 @@ export async function POST(req: Request) {
       .eq("wallet_address", senderId)
       .single();
 
-    console.log("POST -> user2Data:", user2Data);
-    console.log("POST -> user2Error:", user2Error);
-    console.log("POST -> user1Data:", user1Data);
-    console.log("POST -> user1Error:", user1Error);
-
     if (user2Error) {
       return new Response(JSON.stringify({ error: user2Error.message }), { status: 500 });
     }
@@ -55,7 +61,7 @@ export async function POST(req: Request) {
     // Create chat
     const { data: chatData, error: chatError } = await supabase
       .from("chats")
-      .insert([{ user1_id: user1Data?.id, user2_id: user2Data?.id }])
+      .insert([{ ai_id: user1Data?.id, user_id: user2Data?.id }])
       .select()
       .single();
 

@@ -43,7 +43,7 @@ const SwapMessageType = ({
           ...prevChat,
           createChatMessage({
             sender: "ai",
-            message: `Swap success ! Here is your tx Hash : ${res.txHash}`,
+            text: `Swap success ! Here is your tx Hash : ${res.txHash}`,
             type: "text",
             intent: "general",
           }),
@@ -68,7 +68,7 @@ const SwapMessageType = ({
           ...prevChat,
           createChatMessage({
             sender: "ai",
-            message: `Swap success ! Here is your tx Hash : ${res.txHash}`,
+            text: `Swap success ! Here is your tx Hash : ${res.txHash}`,
             type: "text",
             intent: "general",
           }),
@@ -87,7 +87,7 @@ const SwapMessageType = ({
             ...prevChat,
             createChatMessage({
               sender: "ai",
-              message: `Swap failed, Error : 'The swap failed because your minimum receive amount is too high. ' +    
+              text: `Swap failed, Error : 'The swap failed because your minimum receive amount is too high. ' +    
             'Please adjust your slippage settings at your .env to proceed with the swap.'`,
               type: "text",
               intent: "general",
@@ -98,7 +98,7 @@ const SwapMessageType = ({
             ...prevChat,
             createChatMessage({
               sender: "ai",
-              message: `Swap failed, Error : ${errorMessage}`,
+              text: `Swap failed, Error : ${errorMessage}`,
               type: "text",
               intent: "general",
             }),
@@ -110,7 +110,7 @@ const SwapMessageType = ({
           ...prevChat,
           createChatMessage({
             sender: "ai",
-            message: `Swap failed, Error : ${error}`,
+            text: `Swap failed, Error : ${error}`,
             type: "text",
             intent: "general",
           }),

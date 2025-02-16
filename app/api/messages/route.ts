@@ -1,5 +1,23 @@
 import { supabase } from "@/lib/supabaseClient";
 
+export async function GET(req: Request) {
+  const chatId = req.url.split("/").pop();
+
+  console.log("chatId:", chatId);
+
+  const { data, error } = await supabase
+    .from("messages")
+    .select("*")
+    .filter("chat_id", "eq", chatId);
+
+  if (error) {
+    console.error("Error fetching messages:", error);
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  }
+
+  return new Response(JSON.stringify({ data }), { status: 200 });
+}
+
 export async function POST(req: Request) {
   const { chatId, senderId, message } = await req.json();
 

@@ -1,16 +1,30 @@
 "use client";
 import { connectWallet } from "@/wallet/connectWallet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ChatMessage } from "../types";
+import { getLastChatNames } from "../services/chatServices";
+import type { Chat } from "../services/types";
 
 interface MenuProps {
+  loadChatHistory: (chatId: string) => void;
   injectiveAddress: string | null;
   setInjectiveAddress: (address: string | null) => void;
 }
 
-const Menu = ({ injectiveAddress, setInjectiveAddress }: MenuProps) => {
+const Menu = ({ injectiveAddress, setInjectiveAddress, loadChatHistory }: MenuProps) => {
   const [showPopup, setShowPopup] = useState(false);
   const [chat, setChat] = useState<ChatMessage[]>([]);
+  const [lastChats, setLastChats] = useState<Chat[]>([]);
+
+  useEffect(() => {
+    const fetchLastChatNames = async () => {
+      const response = await getLastChatNames(injectiveAddress || "");
+      if (response) {
+        setLastChats(response);
+      }
+    };
+    fetchLastChatNames();
+  }, [injectiveAddress]);
 
   const handleConnectWallet = async () => {
     console.log("Connecting wallet");
@@ -90,6 +104,19 @@ const Menu = ({ injectiveAddress, setInjectiveAddress }: MenuProps) => {
               )}
             </li>
           </ul>
+          {lastChats.map((chat, i) => (
+            <li key={i} className="py-3 px-4 hover:bg-zinc-700 hover:rounded-lg cursor-pointer">
+              <button
+                type="button"
+                className="w-full text-left"
+                onClick={() => {
+                  loadChatHistory(chat.id);
+                }}
+              >
+                {chat.title}
+              </button>
+            </li>
+          ))}
         </nav>
       </div>
 

@@ -2,6 +2,7 @@ import { MsgExecuteContractCompat, MsgSend } from "@injectivelabs/sdk-ts";
 import { useChat } from "../providers/chatProvider";
 import type { SendDetails } from "../types";
 import { msgBroadcastClient } from "@/components/ChatBot";
+import { createChatMessage } from "@/app/chat/utils";
 
 const SendTokenMessageType = ({
   text,
@@ -43,15 +44,13 @@ const SendTokenMessageType = ({
           msgs: msg,
         });
         setExecuting(false);
-        addMessage({
-          sender: "ai",
-          text: `Transfer success ! Here is your tx Hash : ${res.txHash}`,
-          type: "text",
-          balances: null,
-          validators: null,
-          contractInput: null,
-          send: null,
-        });
+        addMessage(
+          createChatMessage({
+            sender: "ai",
+            text: `Transfer success ! Here is your tx Hash : ${res.txHash}`,
+            type: "text",
+          })
+        );
       } else {
         const amount = {
           denom: sendDetails.token.denom,
@@ -67,27 +66,23 @@ const SendTokenMessageType = ({
           msgs: msg,
         });
         setExecuting(false);
-        addMessage({
-          sender: "ai",
-          text: `Transfer success ! Here is your tx Hash : ${res.txHash}`,
-          type: "text",
-          balances: null,
-          validators: null,
-          contractInput: null,
-          send: null,
-        });
+        addMessage(
+          createChatMessage({
+            sender: "ai",
+            text: `Transfer success ! Here is your tx Hash : ${res.txHash}`,
+            type: "text",
+          })
+        );
       }
     } catch (error) {
       setExecuting(false);
-      addMessage({
-        sender: "ai",
-        text: `Transfer failed, Error : ${error}`,
-        type: "text",
-        balances: null,
-        validators: null,
-        contractInput: null,
-        send: null,
-      });
+      addMessage(
+        createChatMessage({
+          sender: "ai",
+          text: `Transfer failed, Error : ${error}`,
+          type: "text",
+        })
+      );
       console.log(error);
       return;
     }

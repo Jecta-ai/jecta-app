@@ -1,6 +1,7 @@
 import { useChat } from "../providers/chatProvider";
 import { useValidator } from "../providers/validatorProvider";
 import type { Validator } from "../types";
+import { createChatMessage } from "../utils";
 
 const ValidatorsMessageType = ({
   injectiveAddress,
@@ -40,29 +41,25 @@ const ValidatorsMessageType = ({
 
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      await addMessage({
-        sender: "ai",
-        text: `Validator #${name} selected`,
-        type: "text",
-        balances: null,
-        validators: null,
-        contractInput: null,
-        send: null,
-      });
+      await addMessage(
+        createChatMessage({
+          sender: "ai",
+          text: `Validator #${name} selected`,
+          type: "text",
+        })
+      );
       setValidatorAddress(validator);
       setValidatorSelected(true);
       addMessages(data.messages); // Update chat history
     } catch (error) {
       console.error("Chat error:", error);
-      addMessage({
-        sender: "ai",
-        text: "Error processing request",
-        type: "error",
-        balances: null,
-        validators: null,
-        contractInput: null,
-        send: null,
-      });
+      addMessage(
+        createChatMessage({
+          sender: "ai",
+          text: "Error processing request",
+          type: "error",
+        })
+      );
     } finally {
       setLoading(false);
     }

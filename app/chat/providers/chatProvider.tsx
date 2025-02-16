@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { createChatIfNotExists, createMessage } from "../services/userMessage";
 import type { Chat } from "../services/types";
 import type { ChatMessage } from "../types";
@@ -18,29 +18,43 @@ const ChatContext = createContext<ChatContextType | undefined>(undefined);
 const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [chat, setChat] = useState<Chat | null>(null);
   const [messageHistory, setMessageHistory] = useState<ChatMessage[]>([]);
-  const [senderId, setSenderId] = useState<string | null>(null);
 
   const createChat = async (injectiveAddress: string) => {
-    const { id, user1Id, user2Id } = await createChatIfNotExists(injectiveAddress, "system");
+    const { id, aiId, userId } = await createChatIfNotExists(injectiveAddress, "system");
 
-    setChat({ id, user1Id, user2Id });
-    setSenderId(user1Id);
+    setChat({ id, aiId, userId });
   };
 
   const addMessage = async (message: ChatMessage) => {
-    console.log("addMessage -> senderId:", senderId);
-    console.log("addMessage -> chat:", chat);
-    if (!chat?.id || !senderId) {
+    console.log("addMessage -> chat:", message);
+
+    if (!chat?.id || (!chat.aiId && !chat.userId)) {
       console.error("Chat or senderId not found");
       return;
     }
-    const res = await createMessage(chat.id, senderId, message);
-    console.log("addMessage -> res:", res);
+    if (message.sender === "ai" && chat.aiId) {
+      await createMessage({ chatId: chat.id, senderId: chat.aiId, message });
+    } else if (message.sender === "user" && chat.userId) {
+      await createMessage({ chatId: chat.id, senderId: chat.userId, message });
+    }
     setMessageHistory((prev) => [...prev, message]);
   };
 
-  const addMessages = (messages: ChatMessage[]) => {
-    setMessageHistory((prev) => [...prev, ...messages]);
+  const addMessages = async (messages: ChatMessage[]) => {
+    console.log("addMessages -> messages:", messages);
+    if (!chat?.id || (!chat.aiId && !chat.userId)) {
+      console.error("addMessages --> Chat or senderId not found");
+      return;
+    }
+    if (Array.isArray(messages)) {
+      for (const message of messages) {
+        if (message.sender === "ai" && chat.aiId) {
+          await addMessage(message);
+        } else if (message.sender === "user" && chat.userId) {
+          await addMessage(message);
+        }
+      }
+    }
   };
 
   return (
