@@ -1,18 +1,98 @@
+import { MsgExecuteContractCompat, MsgSend } from "@injectivelabs/sdk-ts";
+import { useChat } from "../providers/chatProvider";
 import type { SendDetails } from "../types";
+import { msgBroadcastClient } from "@/components/ChatBot";
 
 const SendTokenMessageType = ({
   text,
   executing,
+  setExecuting,
   handleExit,
-  confirmSend,
   send,
+  injectiveAddress,
 }: {
+  injectiveAddress: string | null;
   text: string;
   executing: boolean;
+  setExecuting: (executing: boolean) => void;
   handleExit: () => void;
-  confirmSend: (send: SendDetails) => void;
   send: SendDetails;
 }) => {
+  const { addMessage } = useChat();
+
+  const confirmSend = async (sendDetails: SendDetails) => {
+    try {
+      if (injectiveAddress === null) {
+        return;
+      }
+      setExecuting(true);
+      if (sendDetails.token.tokenType === "cw20") {
+        const msg = MsgExecuteContractCompat.fromJSON({
+          sender: injectiveAddress,
+          contractAddress: sendDetails.token.address,
+          exec: {
+            msg: {
+              recipient: sendDetails.receiver,
+              amount: String(sendDetails.amount * 10 ** sendDetails.token.decimals),
+            },
+            action: "transfer",
+          },
+        });
+        const res = await msgBroadcastClient.broadcast({
+          injectiveAddress: injectiveAddress,
+          msgs: msg,
+        });
+        setExecuting(false);
+        addMessage({
+          sender: "ai",
+          text: `Transfer success ! Here is your tx Hash : ${res.txHash}`,
+          type: "text",
+          balances: null,
+          validators: null,
+          contractInput: null,
+          send: null,
+        });
+      } else {
+        const amount = {
+          denom: sendDetails.token.denom,
+          amount: String(sendDetails.amount * 10 ** sendDetails.token.decimals),
+        };
+        const msg = MsgSend.fromJSON({
+          amount,
+          srcInjectiveAddress: injectiveAddress,
+          dstInjectiveAddress: sendDetails.receiver,
+        });
+        const res = await msgBroadcastClient.broadcast({
+          injectiveAddress: injectiveAddress,
+          msgs: msg,
+        });
+        setExecuting(false);
+        addMessage({
+          sender: "ai",
+          text: `Transfer success ! Here is your tx Hash : ${res.txHash}`,
+          type: "text",
+          balances: null,
+          validators: null,
+          contractInput: null,
+          send: null,
+        });
+      }
+    } catch (error) {
+      setExecuting(false);
+      addMessage({
+        sender: "ai",
+        text: `Transfer failed, Error : ${error}`,
+        type: "text",
+        balances: null,
+        validators: null,
+        contractInput: null,
+        send: null,
+      });
+      console.log(error);
+      return;
+    }
+  };
+
   return (
     <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%] ">
       <h3 className="text-lg font-semibold mb-2">Your Transfer Details</h3>

@@ -36,6 +36,7 @@ export interface ChatMessage {
   sender: string;
   text: string;
   type: string;
+  intent?: string;
   validators: Validator[] | null;
   contractInput: ContractInput | null;
   send: SendDetails | null;

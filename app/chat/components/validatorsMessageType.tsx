@@ -1,18 +1,73 @@
+import { useChat } from "../providers/chatProvider";
+import { useValidator } from "../providers/validatorProvider";
 import type { Validator } from "../types";
 
 const ValidatorsMessageType = ({
+  injectiveAddress,
   validators,
-  validatorSelected,
-  handleValidatorSelection,
   isLastError,
   handleExit,
+  setLoading,
 }: {
+  injectiveAddress: string | null;
   validators: Validator[];
-  validatorSelected: boolean;
-  handleValidatorSelection: (index: number, moniker: string, address: string) => void;
   isLastError: boolean;
   handleExit: () => void;
+  setLoading: (isLoading: boolean) => void;
 }) => {
+  const { setValidatorAddress, validatorSelected, setValidatorSelected } = useValidator();
+  const { addMessage, addMessages, messageHistory } = useChat();
+
+  const handleValidatorSelection = async (
+    validatorIndex: number,
+    name: string,
+    validator: string
+  ) => {
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: `${validatorIndex}`,
+          chatHistory: messageHistory,
+          address: injectiveAddress,
+          intent: "stake_inj_amount",
+        }),
+      });
+
+      if (!res.ok) throw new Error(`Server Error: ${res.status}`);
+      console.log("Chatbot -> res:", res);
+
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      await addMessage({
+        sender: "ai",
+        text: `Validator #${name} selected`,
+        type: "text",
+        balances: null,
+        validators: null,
+        contractInput: null,
+        send: null,
+      });
+      setValidatorAddress(validator);
+      setValidatorSelected(true);
+      addMessages(data.messages); // Update chat history
+    } catch (error) {
+      console.error("Chat error:", error);
+      addMessage({
+        sender: "ai",
+        text: "Error processing request",
+        type: "error",
+        balances: null,
+        validators: null,
+        contractInput: null,
+        send: null,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">

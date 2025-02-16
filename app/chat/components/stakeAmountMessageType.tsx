@@ -1,12 +1,53 @@
+import { useValidator } from "../providers/validatorProvider";
+import { useChat } from "../providers/chatProvider";
+import { MsgDelegate } from "@injectivelabs/sdk-ts";
+import { msgBroadcastClient } from "@/components/ChatBot";
+import { useState } from "react";
+
 const StakeAmountMessageType = ({
-  setAmount,
   handleExit,
-  confirmStake,
+  injectiveAddress,
 }: {
-  setAmount: (amount: string) => void;
+  injectiveAddress: string | null;
   handleExit: () => void;
-  confirmStake: () => void;
 }) => {
+  const [amount, setAmount] = useState<string>();
+  const { validatorAddress, setValidatorSelected } = useValidator();
+  const { addMessage } = useChat();
+
+  const confirmStake = async () => {
+    try {
+      if (amount === undefined || injectiveAddress === null) {
+        return;
+      }
+
+      const msg = MsgDelegate.fromJSON({
+        injectiveAddress,
+        validatorAddress: validatorAddress,
+        amount: {
+          denom: "inj",
+          amount: String(Number(amount) * 10 ** 18),
+        },
+      });
+      const res = await msgBroadcastClient.broadcast({
+        injectiveAddress: injectiveAddress,
+        msgs: msg,
+      });
+      addMessage({
+        sender: "ai",
+        text: `Stake success ! Here is your tx Hash : ${res.txHash}`,
+        type: "text",
+        balances: null,
+        validators: null,
+        contractInput: null,
+        send: null,
+      });
+      setValidatorSelected(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
       <h3 className="text-lg font-semibold mb-2">Enter Staking Amount:</h3>

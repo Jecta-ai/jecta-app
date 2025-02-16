@@ -62,6 +62,12 @@ const Menu = ({ injectiveAddress, setInjectiveAddress }: MenuProps) => {
                 <div className="relative">
                   <button
                     type="button"
+                    className="px-6 py-2 mb-2  bg-white rounded-lg hover:bg-gray-200 text-black"
+                  >
+                    createChat
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => setShowPopup(!showPopup)}
                     className="px-6 py-2 bg-white rounded-lg hover:bg-gray-200 text-black"
                   >

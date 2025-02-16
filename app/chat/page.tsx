@@ -1,10 +1,8 @@
-// app/components/Chatbot.tsx
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MsgDelegate, MsgExecuteContractCompat, MsgSend } from "@injectivelabs/sdk-ts";
 import logo from "@/public/logo.png";
-import type { SendDetails, ChatMessage } from "./types";
+import type { ChatMessage } from "./types";
 import Menu from "./components/menu";
 import BalanceMessageType from "./components/balanceMessageType";
 import ValidatorsMessageType from "./components/validatorsMessageType";
@@ -15,206 +13,32 @@ import SendTokenMessageType from "./components/sendTokenMessageType";
 import ErrorMessageType from "./components/errorMessageType";
 import DefaultMessageType from "./components/defaultMessageType";
 import { fetchResponse } from "./services/userMessage";
-import { createChatMessage, msgBroadcastClient } from "./utils";
+import { createChatMessage } from "./utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SendHorizontal } from "lucide-react";
+import { useChat } from "./providers/chatProvider";
+import { useValidator } from "./providers/validatorProvider";
 
 const Chatbot = () => {
-  const [chat, setChat] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [executing, setExecuting] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const [injectiveAddress, setInjectiveAddress] = useState<string | null>(null);
-  const [validatorSelected, setValidatorSelected] = useState(false);
-  const [amount, setAmount] = useState<string>();
-  const [validatorInfo, setValidatorInfo] = useState<string>("");
 
-  const confirmSend = async (sendDetails: SendDetails) => {
-    try {
-      if (injectiveAddress === null) {
-        return;
-      }
-      setExecuting(true);
-      if (sendDetails.token.tokenType === "cw20") {
-        const msg = MsgExecuteContractCompat.fromJSON({
-          sender: injectiveAddress,
-          contractAddress: sendDetails.token.address,
-          exec: {
-            msg: {
-              recipient: sendDetails.receiver,
-              amount: String(sendDetails.amount * 10 ** sendDetails.token.decimals),
-            },
-            action: "transfer",
-          },
-        });
-        const res = await msgBroadcastClient.broadcast({
-          injectiveAddress: injectiveAddress,
-          msgs: msg,
-        });
-        setExecuting(false);
-        setChat((prevChat) => [
-          ...prevChat,
-          {
-            sender: "ai",
-            text: `Transfer success ! Here is your tx Hash : ${res.txHash}`,
-            type: "text",
-            intent: "general",
-            balances: null,
-            validators: null,
-            contractInput: null,
-            send: null,
-          },
-        ]);
-      } else {
-        const amount = {
-          denom: sendDetails.token.denom,
-          amount: String(sendDetails.amount * 10 ** sendDetails.token.decimals),
-        };
-        const msg = MsgSend.fromJSON({
-          amount,
-          srcInjectiveAddress: injectiveAddress,
-          dstInjectiveAddress: sendDetails.receiver,
-        });
-        const res = await msgBroadcastClient.broadcast({
-          injectiveAddress: injectiveAddress,
-          msgs: msg,
-        });
-        setExecuting(false);
-        setChat((prevChat) => [
-          ...prevChat,
-          {
-            sender: "ai",
-            text: `Transfer success ! Here is your tx Hash : ${res.txHash}`,
-            type: "text",
-            intent: "general",
-            balances: null,
-            validators: null,
-            contractInput: null,
-            send: null,
-          },
-        ]);
-      }
-    } catch (error) {
-      setExecuting(false);
-      setChat((prevChat) => [
-        ...prevChat,
-        {
-          sender: "ai",
-          text: `Transfer failed, Error : ${error}`,
-          type: "text",
-          intent: "general",
-          balances: null,
-          validators: null,
-          contractInput: null,
-          send: null,
-        },
-      ]);
-      console.log(error);
-      return;
+  const { validatorSelected, setValidatorSelected } = useValidator();
+  const { messageHistory, setMessageHistory, addMessage, addMessages, createChat } = useChat();
+
+  useEffect(() => {
+    if (injectiveAddress) {
+      console.log("useEffect -> injectiveAddress:", injectiveAddress);
+      createChat(injectiveAddress);
     }
-  };
-
-  const confirmStake = async () => {
-    try {
-      if (amount === undefined || injectiveAddress === null) {
-        return;
-      }
-
-      const msg = MsgDelegate.fromJSON({
-        injectiveAddress,
-        validatorAddress: validatorInfo,
-        amount: {
-          denom: "inj",
-          amount: String(Number(amount) * 10 ** 18),
-        },
-      });
-      const res = await msgBroadcastClient.broadcast({
-        injectiveAddress: injectiveAddress,
-        msgs: msg,
-      });
-      setChat((prevChat) => [
-        ...prevChat,
-        {
-          sender: "ai",
-          text: `Stake success ! Here is your tx Hash : ${res.txHash}`,
-          type: "text",
-          intent: "general",
-          balances: null,
-          validators: null,
-          contractInput: null,
-          send: null,
-        },
-      ]);
-      setValidatorSelected(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleValidatorSelection = async (
-    validatorIndex: number,
-    name: string,
-    validator: string
-  ) => {
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: `${validatorIndex}`,
-          chatHistory: chat,
-          address: injectiveAddress,
-          intent: "stake_inj_amount",
-        }),
-      });
-
-      if (!res.ok) throw new Error(`Server Error: ${res.status}`);
-
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      setChat((prevChat) => [
-        ...prevChat,
-        {
-          sender: "ai",
-          text: `Validator #${name} selected`,
-          type: "text",
-          intent: "stake_inj_amount",
-          balances: null,
-          validators: null,
-          contractInput: null,
-          send: null,
-        },
-      ]);
-      setValidatorInfo(validator);
-      setValidatorSelected(true);
-      setChat((prevChat) => [...prevChat, ...data.messages]); // Update chat history
-    } catch (error) {
-      console.error("Chat error:", error);
-      setChat((prevChat) => [
-        ...prevChat,
-        {
-          sender: "ai",
-          text: "Error processing request",
-          type: "error",
-          balances: null,
-          validators: null,
-          contractInput: null,
-          send: null,
-        },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-
-    /*
-    
-    */
-  };
+  }, [injectiveAddress]);
 
   const handleExit = async () => {
     setValidatorSelected(false);
-    setChat((prevChat) => {
+    setMessageHistory((prevChat) => {
       if (prevChat.length === 0) return prevChat;
 
       // ✅ Change the last message type to "text"
@@ -231,7 +55,7 @@ const Chatbot = () => {
       contractInput: null,
       send: null,
     };
-    setChat([...chat, exitToolMessage]);
+    addMessage(exitToolMessage);
   };
 
   const updateExecuting = (executing: boolean) => {
@@ -239,7 +63,7 @@ const Chatbot = () => {
   };
 
   const updateChat = (cb: (prevChat: ChatMessage[]) => ChatMessage[]) => {
-    setChat(cb);
+    setMessageHistory(cb);
   };
 
   useEffect(() => {
@@ -253,19 +77,20 @@ const Chatbot = () => {
         message: `User's Injective wallet address is: ${storedAddress}. If user asks you about his wallet address, you need to remember it.`,
         type: "text",
       });
-      setChat((prevChat) => [...prevChat, msg]);
+      addMessage(msg);
     }
-  }, []); // Empty dependency array since we only want this to run once
+  }, []); // Add addMessage to dependencies
 
   // ✅ Scroll to the bottom whenever chat updates
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [chat]); // Only depend on chat updates
+  }, [messageHistory]); // Depend on messageHistory changes since we need to scroll when it changes
 
   const disableSend = () => {
-    const lastMessageType = chat.length > 0 ? chat[chat.length - 1].type : null;
+    const lastMessageType =
+      messageHistory.length > 0 ? messageHistory[messageHistory.length - 1].type : null;
 
     return (
       validatorSelected ||
@@ -288,22 +113,25 @@ const Chatbot = () => {
       message: userMessage,
       type: "text",
     });
-    setChat([...chat, newUserMessage]);
-    setLoading(true);
 
-    fetchResponse(userMessage, chat, injectiveAddress)
+    addMessage(newUserMessage);
+    setLoading(true);
+    getAIResponse(userMessage);
+  };
+
+  const getAIResponse = async (userMessage: string) => {
+    fetchResponse(userMessage, messageHistory, injectiveAddress)
       .then((data) => {
-        setChat((prevChat) => [...prevChat, ...data.messages]); // Update chat history
+        addMessages(data.messages); // Update chat history
       })
       .catch(() => {
-        setChat((prevChat) => [
-          ...prevChat,
+        addMessage(
           createChatMessage({
             sender: "ai",
             message: "Error processing request",
             type: "error",
-          }),
-        ]);
+          })
+        );
       })
       .finally(() => {
         setLoading(false);
@@ -332,125 +160,121 @@ const Chatbot = () => {
             loading || executing ? "animate-neonBlink" : ""
           }`}
         >
-          {chat
-            .filter((msg) => msg.sender !== "system")
-            .map((msg, i) => {
-              // Detect if this is the last error message
-              const isLastError =
-                (msg.type === "error" ||
-                  msg.type === "validators" ||
-                  msg.type === "stake_amount" ||
-                  msg.type === "swap" ||
-                  msg.type === "send_token") &&
-                i === chat.length - 2;
-
-              return (
-                <div
-                  key={`chat-message-${i}-${msg.sender}`}
-                  className={`flex my-2 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-                >
-                  {msg.sender === "ai" && (
-                    <Image
-                      src={logo}
-                      alt="Logo"
-                      className="w-8 h-8 rounded-md mr-2 border-white border-1"
-                      width={32}
-                      height={32}
-                    />
-                  )}
-
-                  {msg.type === "balance" ? (
-                    msg.balances && <BalanceMessageType balances={msg.balances} />
-                  ) : msg.type === "validators" ? (
+          {messageHistory.map((msg, i) => {
+            if (msg.sender === "system") {
+              return null;
+            }
+            console.log("Chatbot -> msg:", msg.type);
+            // Detect if this is the last error message
+            const isLastError =
+              (msg.type === "error" ||
+                msg.type === "validators" ||
+                msg.type === "stake_amount" ||
+                msg.type === "swap" ||
+                msg.type === "send_token") &&
+              i === messageHistory.length - 1;
+            console.log(i === messageHistory.length - 1);
+            console.log(msg.type);
+            return (
+              <div
+                key={`chat-message-${i}-${msg.sender}`}
+                className={`flex my-2 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+              >
+                {msg.sender === "ai" && (
+                  <Image
+                    src={logo}
+                    alt="Logo"
+                    className="w-8 h-8 rounded-md mr-2 border-white border-1"
+                    width={32}
+                    height={32}
+                  />
+                )}
+                {msg.type === "balance" && msg.balances && (
+                  <BalanceMessageType balances={msg.balances} />
+                )}
+                {msg.type === "validators" &&
+                  (isLastError ? (
+                    msg.validators && (
+                      <ValidatorsMessageType
+                        injectiveAddress={injectiveAddress}
+                        validators={msg.validators}
+                        setLoading={setLoading}
+                        isLastError={isLastError}
+                        handleExit={handleExit}
+                      />
+                    )
+                  ) : (
                     <>
-                      {isLastError ? (
-                        msg.validators && (
-                          <ValidatorsMessageType
-                            validators={msg.validators}
-                            validatorSelected={validatorSelected}
-                            handleValidatorSelection={handleValidatorSelection}
-                            isLastError={isLastError}
-                            handleExit={handleExit}
-                          />
-                        )
-                      ) : (
-                        <>
-                          <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
-                            Selecting Validator...
-                          </div>
-                        </>
-                      )}
+                      <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                        Selecting Validator...
+                      </div>
                     </>
-                  ) : msg.type === "stake_amount" ? (
-                    <>
-                      {isLastError ? (
-                        <StakeAmountMessageType
-                          setAmount={(amount: string) => setAmount(amount)}
-                          handleExit={handleExit}
-                          confirmStake={confirmStake}
-                        />
-                      ) : (
-                        <>
-                          <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
-                            <h3 className="text-lg font-semibold mb-2">
-                              Amount successfull given !
-                            </h3>
-                          </div>
-                        </>
-                      )}
-                    </>
-                  ) : msg.type === "swap" ? (
-                    <>
-                      {isLastError ? (
-                        msg.contractInput && (
-                          <SwapMessageType
-                            executing={executing}
-                            text={msg.text}
-                            handleExit={handleExit}
-                            updateExecuting={updateExecuting}
-                            updateChat={updateChat}
-                            contractInput={msg.contractInput}
-                            injectiveAddress={injectiveAddress}
-                          />
-                        )
-                      ) : (
-                        <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
-                          <h3 className="text-lg font-semibold mb-2">Your Swap Details</h3>
-                          <div>{msg.text}</div>
-                        </div>
-                      )}
-                    </>
-                  ) : msg.type === "send_token" ? (
-                    <>
-                      {isLastError ? (
-                        msg.send && (
-                          <SendTokenMessageType
-                            text={msg.text}
-                            executing={executing}
-                            handleExit={handleExit}
-                            confirmSend={confirmSend}
-                            send={msg.send}
-                          />
-                        )
-                      ) : (
-                        <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
-                          <h3 className="text-lg font-semibold mb-2">Your Transfer Details</h3>
-                          <div>{msg.text}</div>
-                        </div>
-                      )}
-                    </>
-                  ) : msg.type === "error" ? (
-                    <ErrorMessageType
-                      text={msg.text}
+                  ))}
+                {msg.type === "stake_amount" &&
+                  (isLastError ? (
+                    <StakeAmountMessageType
                       handleExit={handleExit}
-                      isLastError={isLastError}
+                      injectiveAddress={injectiveAddress}
                     />
                   ) : (
-                    <DefaultMessageType text={msg.text} sender={msg.sender} />
-                  )}
-                </div>
-              );
-            })}
+                    <>
+                      <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                        <h3 className="text-lg font-semibold mb-2">Amount successfull given !</h3>
+                      </div>
+                    </>
+                  ))}
+                {msg.type === "swap" &&
+                  (isLastError ? (
+                    msg.contractInput && (
+                      <SwapMessageType
+                        executing={executing}
+                        text={msg.text}
+                        handleExit={handleExit}
+                        updateExecuting={updateExecuting}
+                        updateChat={updateChat}
+                        contractInput={msg.contractInput}
+                        injectiveAddress={injectiveAddress}
+                      />
+                    )
+                  ) : (
+                    <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                      <h3 className="text-lg font-semibold mb-2">Your Swap Details</h3>
+                      <div>{msg.text}</div>
+                    </div>
+                  ))}
+                {msg.type === "send_token" && (
+                  <>
+                    {isLastError ? (
+                      msg.send && (
+                        <SendTokenMessageType
+                          text={msg.text}
+                          injectiveAddress={injectiveAddress}
+                          setExecuting={updateExecuting}
+                          executing={executing}
+                          handleExit={handleExit}
+                          send={msg.send}
+                        />
+                      )
+                    ) : (
+                      <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                        <h3 className="text-lg font-semibold mb-2">Your Transfer Details</h3>
+                        <div>{msg.text}</div>
+                      </div>
+                    )}
+                  </>
+                )}
+                {msg.type === "error" ? (
+                  <ErrorMessageType
+                    text={msg.text}
+                    handleExit={handleExit}
+                    isLastError={isLastError}
+                  />
+                ) : (
+                  <DefaultMessageType text={msg.text} sender={msg.sender} />
+                )}
+              </div>
+            );
+          })}
           {loading && <p className="text-gray-400">⏳ JECTA is thinking...</p>}
           {executing && <p className="text-gray-400">⏳ Executing...</p>}
         </div>

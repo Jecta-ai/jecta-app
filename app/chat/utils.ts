@@ -1,18 +1,19 @@
 import { MsgBroadcaster, WalletStrategy } from "@injectivelabs/wallet-ts";
-import type { SendDetails, ContractInput, Validator, Token } from "./types";
+import type { ChatMessage, SendDetails, ContractInput, Validator, Token } from "./types";
 import { ChainId } from "@injectivelabs/ts-types";
 import { Network } from "@injectivelabs/networks";
 
-interface ChatMessage {
+interface CreateChatMessageInput {
   sender: string;
   message: string;
   type: string;
-  intent?: string | null;
+  intent?: string;
   balances?: Token[] | null;
   validators?: Validator[] | null;
   contractInput?: ContractInput | null;
   send?: SendDetails | null;
 }
+
 export const createChatMessage = ({
   sender,
   message,
@@ -21,23 +22,24 @@ export const createChatMessage = ({
   validators = null,
   contractInput = null,
   send = null,
-  intent = null,
-}: ChatMessage) => {
+  intent,
+}: CreateChatMessageInput): ChatMessage => {
   return {
-    sender: sender,
+    sender,
     text: message,
-    type: type,
-    intent: intent,
-    balances: balances,
-    validators: validators,
-    contractInput: contractInput,
-    send: send,
+    type,
+    intent,
+    balances,
+    validators,
+    contractInput,
+    send,
   };
 };
 
 export const walletStrategy = new WalletStrategy({
   chainId: ChainId.Mainnet,
 });
+
 export const msgBroadcastClient = new MsgBroadcaster({
   walletStrategy /* instantiated wallet strategy */,
   network: Network.Mainnet,
