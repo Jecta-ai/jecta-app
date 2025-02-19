@@ -22,7 +22,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const createChat = async (injectiveAddress: string) => {
     const { id, aiId, userId } = await createChatIfNotExists(injectiveAddress, "system");
 
-    setChat({ id, aiId, userId });
+    setChat({ id, aiId, userId, title: "Chat" });
   };
 
   const addMessage = async (message: ChatMessage) => {

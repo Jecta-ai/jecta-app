@@ -34,7 +34,7 @@ export const createChatIfNotExists = async (injectiveAddress: string, senderId: 
   const res = await fetch(`${baseUrl}/api/chats`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ injectiveAddress, senderId }),
+    body: JSON.stringify({ title: "Chat", injectiveAddress, senderId }),
   });
 
   if (!res.ok) {

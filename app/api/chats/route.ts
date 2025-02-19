@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     // Create chat
     const { data: chatData, error: chatError } = await supabase
       .from("chats")
-      .insert([{ ai_id: user1Data?.id, user_id: user2Data?.id }])
+      .insert([{ ai_id: user1Data?.id, user_id: user2Data?.id, title: "Chat" }])
       .select()
       .single();
 
