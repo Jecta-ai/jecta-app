@@ -28,13 +28,18 @@ const Chatbot = () => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const [injectiveAddress, setInjectiveAddress] = useState<string | null>(null);
   const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
-  const [chatId, setChatId] = useState<string>("");
-  const [allChats, setAllChats] = useState<Chat[]>([]);
-  const [newChatCreated, setNewChatCreated] = useState<number>(0);
 
   const { validatorSelected, setValidatorSelected } = useValidator();
-  const { messageHistory, setMessageHistory, addMessage, addMessages, createChat, setCurrentChat } =
-    useChat();
+  const {
+    messageHistory,
+    setMessageHistory,
+    addMessage,
+    addMessages,
+    createChat,
+    currentChat,
+    allChats,
+    setCurrentChat,
+  } = useChat();
 
   const handleExit = async () => {
     setValidatorSelected(false);
@@ -59,7 +64,6 @@ const Chatbot = () => {
       const response = await getChatHistory(chatId);
       const messages = response.map((chat: any) => chat.message);
       setMessageHistory(messages);
-      setChatId(chatId);
       const chatInfos = allChats.filter((chat) => chat.id === chatId);
       setCurrentChat({
         id: chatInfos[0].id,
@@ -98,44 +102,6 @@ const Chatbot = () => {
     );
   };
 
-  const createNewChat = async (injectiveAddress: string, userMessage: string) => {
-    const newUserMessage = createChatMessage({
-      sender: "user",
-      text: userMessage,
-      type: "text",
-    });
-
-    const newChat = await createChat(injectiveAddress, newUserMessage);
-
-    if (newChat?.id) {
-      setCurrentChat({
-        id: newChat.id,
-        title: newChat.title,
-        ai_id: newChat.ai_id,
-        user_id: newChat.user_id,
-      });
-
-      // 🚀 Wait for state update to complete
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      addMessage(newUserMessage, {
-        id: newChat.id,
-        title: newChat.title,
-        ai_id: newChat.ai_id,
-        user_id: newChat.user_id,
-      });
-      await getAIResponse(userMessage, {
-        id: newChat.id,
-        title: newChat.title,
-        ai_id: newChat.ai_id,
-        user_id: newChat.user_id,
-      });
-      setChatId(newChat.id);
-      setNewChatCreated(newChatCreated + 1);
-    } else {
-      console.error("Chat creation failed, no ID returned.");
-    }
-  };
-
   const sendMessage = async (formData: FormData) => {
     setLoading(true);
     const userMessage = formData.get("userMessage");
@@ -146,8 +112,20 @@ const Chatbot = () => {
     if (!injectiveAddress || !isWhitelisted) {
       return;
     }
-    if (chatId === "") {
-      await createNewChat(injectiveAddress, userMessage);
+    if (!currentChat?.id) {
+      const newUserMessage = createChatMessage({
+        sender: "user",
+        text: userMessage,
+        type: "text",
+      });
+      const newChat = await createChat(injectiveAddress, newUserMessage);
+      console.log("newChat -> newChat:", newChat);
+      if (newChat?.id) {
+        addMessage(newUserMessage, newChat);
+        await getAIResponse(userMessage, newChat);
+      } else {
+        console.error("Chat creation failed, no ID returned.");
+      }
 
       return;
     }
@@ -182,7 +160,7 @@ const Chatbot = () => {
   };
   const createNewChatButton = () => {
     if (!loading && !executing) {
-      setChatId("");
+      setCurrentChat(null);
       setMessageHistory([]);
     }
   };
@@ -202,10 +180,6 @@ const Chatbot = () => {
         injectiveAddress={injectiveAddress}
         setInjectiveAddress={(address) => setInjectiveAddress(address)}
         loadChatHistory={loadChatHistory}
-        allChats={allChats}
-        setAllChats={(chat) => setAllChats(chat)}
-        setNewChatCreated={(number) => setNewChatCreated(number)}
-        newChatCreated={newChatCreated}
         isWhitelisted={isWhitelisted}
       />
 
@@ -328,7 +302,9 @@ const Chatbot = () => {
                     isLastError={isLastError}
                   />
                 )}
-                {msg.type === "text" && <DefaultMessageType text={msg.text} sender={msg.sender} />}
+                {(msg.type === "text" || msg.type === "success" || msg.type === "loading") && (
+                  <DefaultMessageType text={msg.text} sender={msg.sender} />
+                )}
               </div>
             );
           })}

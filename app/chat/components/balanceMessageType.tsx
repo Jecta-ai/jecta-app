@@ -1,4 +1,3 @@
-import Image from "next/image";
 import type { Token } from "../types";
 
 const BalanceMessageType = ({ balances }: { balances: Token[] }) => {
