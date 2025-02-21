@@ -3,8 +3,6 @@ import { supabase } from "@/lib/supabaseClient";
 export async function GET(req: Request) {
   const chatId = req.url.split("/").pop();
 
-  console.log("chatId:", chatId);
-
   const { data, error } = await supabase
     .from("messages")
     .select("*")

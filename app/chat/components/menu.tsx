@@ -1,100 +1,115 @@
 "use client";
-import { connectWallet } from "@/wallet/connectWallet";
 import { useEffect, useState } from "react";
-import type { ChatMessage } from "../types";
 import { getLastChatNames } from "../services/chatServices";
 import type { Chat } from "../services/types";
+import { getRefCodeDetails } from "../referralUtils";
 
 interface MenuProps {
   loadChatHistory: (chatId: string) => void;
+  createNewChatButton: () => void;
   injectiveAddress: string | null;
   setInjectiveAddress: (address: string | null) => void;
+  allChats: Chat[];
+  setAllChats: (chats: Chat[]) => void;
+  newChatCreated: number;
+  setNewChatCreated: (number: number) => void;
+  isWhitelisted: boolean;
 }
 
-const Menu = ({ injectiveAddress, setInjectiveAddress, loadChatHistory }: MenuProps) => {
+const Menu = ({
+  injectiveAddress,
+  setInjectiveAddress,
+  loadChatHistory,
+  allChats,
+  setAllChats,
+  newChatCreated,
+  createNewChatButton,
+  isWhitelisted,
+}: MenuProps) => {
   const [showPopup, setShowPopup] = useState(false);
-  const [chat, setChat] = useState<ChatMessage[]>([]);
   const [lastChats, setLastChats] = useState<Chat[]>([]);
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
+  const [refDetails, setRefDetails] = useState<any>();
+  const [copySuccess, setCopySuccess] = useState<string>("");
 
   useEffect(() => {
     const fetchLastChatNames = async () => {
       const response = await getLastChatNames(injectiveAddress || "");
       if (response) {
-        setLastChats(response);
+        const sortedChats = response.sort(
+          (a: { updated_at: string | number | Date }, b: { updated_at: string | number | Date }) =>
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
+        setLastChats(sortedChats);
+        setAllChats(sortedChats);
       }
     };
     fetchLastChatNames();
-  }, [injectiveAddress]);
+  }, [injectiveAddress, newChatCreated]);
 
-  const handleConnectWallet = async () => {
-    console.log("Connecting wallet");
+  useEffect(() => {
+    const getRef = async () => {
+      if (isWhitelisted) {
+        const response = await getRefCodeDetails(injectiveAddress);
+        if (response) {
+          setRefDetails(response);
+        }
+      }
+    };
+    getRef();
+  }, [isWhitelisted]);
 
-    const address = await connectWallet((msg) => setChat((prevChat) => [...prevChat, msg]));
-    if (address) {
-      setInjectiveAddress(address);
+  const handleDisconnect = async () => {
+    setInjectiveAddress(null);
+    setShowPopup(false);
+    window.location.reload();
+  };
+  const copyToClipboard = () => {
+    if (refDetails?.ref_code) {
+      navigator.clipboard.writeText(refDetails.ref_code);
+      setCopySuccess("Copied!");
+      setTimeout(() => setCopySuccess(""), 2000);
     }
   };
 
-  const handleDisconnect = async () => {
-    if (!window.keplr) return;
-
-    // ✅ Disable Keplr permissions before removing wallet
-    await window.keplr.disable("injective-1");
-
-    localStorage.removeItem("injectiveAddress"); // ✅ Remove stored address
-    localStorage.removeItem("signature"); // ✅ Remove stored signature
-    setInjectiveAddress(null);
-    setShowPopup(false);
-    window.location.reload(); // ✅ Refresh page after disconnecting
-  };
-
   return (
-    <aside className="w-1/5 bg-zinc-950 p-6 flex flex-col justify-between">
+    <aside className="w-1/5 min-h-screen bg-zinc-900 text-white p-6 flex flex-col justify-between shadow-lg border-r border-zinc-800">
       <div>
-        <h1 className="text-xl font-bold">
+        <h1 className="text-2xl font-bold flex items-center gap-2">
           JECTA <span className="text-sm text-gray-400">v0.0.2</span>
         </h1>
-        <nav className="mt-6">
-          <ul>
-            <li className="py-3 px-4 rounded-lg bg-zinc-700">🤖 JECTA</li>
-            <li className="py-3 px-4 hover:bg-zinc-700  hover:rounded-lg cursor-pointer">
-              📄 Docs (Soon)
+        <nav className="mt-6 space-y-2">
+          <ul className="space-y-2">
+            <li className="py-3 px-4 rounded-lg bg-zinc-800 text-gray-200 font-semibold flex items-center gap-2 cursor-pointer">
+              JECTA
             </li>
-            <li className="py-3 px-4 hover:bg-zinc-700 hover:rounded-lg cursor-pointer">
-              💾 Chats (Soon)
+            <li className="py-3 px-4 hover:bg-zinc-800 rounded-lg cursor-pointer flex items-center gap-2 transition">
+              DOCS
             </li>
-            <li className="py-3 px-4  cursor-pointer">
-              {!injectiveAddress ? (
-                <button
-                  type="button"
-                  onClick={handleConnectWallet}
-                  className="px-6 py-2 bg-white rounded-lg hover:bg-gray-200 text-black"
-                >
-                  Connect Wallet
-                </button>
-              ) : (
+            <li className="py-3 px-4 cursor-pointer">
+              {injectiveAddress && (
                 <div className="relative">
                   <button
                     type="button"
-                    className="px-6 py-2 mb-2  bg-white rounded-lg hover:bg-gray-200 text-black"
+                    onClick={createNewChatButton}
+                    className="w-full py-2 mb-2 bg-green-500 rounded-lg hover:bg-green-600 text-white font-semibold transition"
                   >
-                    createChat
+                    Create Chat
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowPopup(!showPopup)}
-                    className="px-6 py-2 bg-white rounded-lg hover:bg-gray-200 text-black"
+                    className="w-full py-2 bg-gray-700 rounded-lg hover:bg-gray-600 text-white font-semibold transition"
                   >
                     {injectiveAddress.slice(0, 6)}...{injectiveAddress.slice(-4)}
                   </button>
 
-                  {/* Disconnect Popup */}
                   {showPopup && (
-                    <div className="absolute top-12 left-0 bg-gray-800 text-white p-3 rounded-lg shadow-lg">
+                    <div className="absolute top-14 left-0 bg-gray-800 text-white p-3 rounded-lg shadow-lg w-full">
                       <button
                         type="button"
                         onClick={handleDisconnect}
-                        className="hover:text-red-500"
+                        className="w-full text-left hover:text-red-500 transition"
                       >
                         Disconnect
                       </button>
@@ -104,23 +119,43 @@ const Menu = ({ injectiveAddress, setInjectiveAddress, loadChatHistory }: MenuPr
               )}
             </li>
           </ul>
+        </nav>
+        {isWhitelisted && refDetails && (
+          <div className="mt-4 p-4 bg-zinc-800 rounded-lg text-gray-200 relative">
+            <h3 className="text-lg font-semibold">Referral Details</h3>
+            <div className="flex items-center gap-2 text-sm ">
+              <span>REF :</span>
+              <span onClick={copyToClipboard} className="hover:cursor-pointer hover:text-blue-400">
+                {refDetails.ref_code.slice(0, 6)}...{refDetails.ref_code.slice(-4)}
+              </span>
+            </div>
+            <p className="text-sm">Ref Used: {refDetails.count}</p>
+            {copySuccess && (
+              <span className="text-green-400 text-xs absolute right-2 top-2">{copySuccess}</span>
+            )}
+          </div>
+        )}
+        <div className="px-4 py-2 flex items-center transition">CHATS</div>
+        <div className=" border-t border-zinc-800 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
           {lastChats.map((chat, i) => (
-            <li key={i} className="py-3 px-4 hover:bg-zinc-700 hover:rounded-lg cursor-pointer">
-              <button
-                type="button"
-                className="w-full text-left"
-                onClick={() => {
-                  loadChatHistory(chat.id);
-                }}
-              >
-                {chat.title}
-              </button>
+            <li
+              key={i}
+              className={`py-3 px-4 rounded-lg cursor-pointer transition ${
+                selectedChat === chat.id
+                  ? "bg-blue-600 text-white"
+                  : "hover:bg-zinc-800 text-gray-300 hover:text-white"
+              }`}
+              onClick={() => {
+                setSelectedChat(chat.id);
+                loadChatHistory(chat.id);
+              }}
+            >
+              {chat.title}
             </li>
           ))}
-        </nav>
+        </div>
       </div>
-
-      <div className="text-sm text-gray-400">@jecta</div>
+      <div className="text-sm text-gray-500">@jecta</div>
     </aside>
   );
 };

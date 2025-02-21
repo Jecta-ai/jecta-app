@@ -152,7 +152,6 @@ const Chatbot = () => {
           send: null,
         },
       ]);
-      console.log(error);
       return;
     }
   };
@@ -190,7 +189,6 @@ const Chatbot = () => {
             send: null,
           },
         ]);
-        console.log(res);
       } else {
         const msg = MsgExecuteContractCompat.fromJSON({
           sender: injectiveAddress,
@@ -219,7 +217,6 @@ const Chatbot = () => {
             send: null,
           },
         ]);
-        console.log(res);
       }
       setExecuting(false);
     } catch (error) {
@@ -565,7 +562,6 @@ const Chatbot = () => {
           {chat
             .filter((msg) => msg.sender !== "system")
             .map((msg, i) => {
-              console.log("Chatbot -> msg:", msg);
               // Detect if this is the last error message
               const isLastError =
                 (msg.type === "error" ||

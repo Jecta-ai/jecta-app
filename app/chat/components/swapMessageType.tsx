@@ -34,8 +34,9 @@ const SwapMessageType = ({
             action: "send",
           },
         });
+        const msgClient = msgBroadcastClient();
 
-        const res = await msgBroadcastClient.broadcast({
+        const res = await msgClient.broadcast({
           injectiveAddress: injectiveAddress,
           msgs: msg,
         });
@@ -48,7 +49,6 @@ const SwapMessageType = ({
             intent: "general",
           }),
         ]);
-        console.log(res);
       } else {
         const msg = MsgExecuteContractCompat.fromJSON({
           sender: injectiveAddress,
@@ -59,8 +59,9 @@ const SwapMessageType = ({
           },
           funds: contractInput.funds,
         });
+        const msgClient = msgBroadcastClient();
 
-        const res = await msgBroadcastClient.broadcast({
+        const res = await msgClient.broadcast({
           injectiveAddress: injectiveAddress,
           msgs: msg,
         });
@@ -73,7 +74,6 @@ const SwapMessageType = ({
             intent: "general",
           }),
         ]);
-        console.log(res);
       }
       updateExecuting(false);
     } catch (error) {
