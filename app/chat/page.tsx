@@ -22,20 +22,19 @@ import { useValidator } from "./providers/validatorProvider";
 import { getChatHistory } from "./services/chatServices";
 import type { Chat } from "./services/types";
 
-
 const Chatbot = () => {
   const [loading, setLoading] = useState(false);
   const [executing, setExecuting] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const [injectiveAddress, setInjectiveAddress] = useState<string | null>(null);
   const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
-  const [chatId,setChatId] = useState<string>("");
-  const [allChats,setAllChats] = useState<Chat[]>([])
-  const [newChatCreated,setNewChatCreated] = useState<number>(0);
+  const [chatId, setChatId] = useState<string>("");
+  const [allChats, setAllChats] = useState<Chat[]>([]);
+  const [newChatCreated, setNewChatCreated] = useState<number>(0);
 
   const { validatorSelected, setValidatorSelected } = useValidator();
-  const { messageHistory, setMessageHistory, addMessage, addMessages, createChat,setCurrentChat } = useChat();
-
+  const { messageHistory, setMessageHistory, addMessage, addMessages, createChat, setCurrentChat } =
+    useChat();
 
   const handleExit = async () => {
     setValidatorSelected(false);
@@ -56,16 +55,18 @@ const Chatbot = () => {
   };
 
   const loadChatHistory = async (chatId: string) => {
-    if (!loading && !executing){
-      console.log("Loading chat history:", chatId);
+    if (!loading && !executing) {
       const response = await getChatHistory(chatId);
-      console.log("response:", response);
       const messages = response.map((chat: any) => chat.message);
       setMessageHistory(messages);
-      setChatId(chatId)
-      const chatInfos = allChats.filter(chat => chat.id === chatId);
-      console.log(chatInfos)
-      setCurrentChat(chatInfos[0].id,chatInfos[0].title,chatInfos[0].ai_id,chatInfos[0].user_id)
+      setChatId(chatId);
+      const chatInfos = allChats.filter((chat) => chat.id === chatId);
+      setCurrentChat({
+        id: chatInfos[0].id,
+        title: chatInfos[0].title,
+        ai_id: chatInfos[0].ai_id,
+        user_id: chatInfos[0].user_id,
+      });
     }
   };
 
@@ -103,60 +104,68 @@ const Chatbot = () => {
       text: userMessage,
       type: "text",
     });
-  
+
     const newChat = await createChat(injectiveAddress, newUserMessage);
-    console.log("New Chat:", newChat);
-  
-    if (newChat && newChat.id) {
-      setCurrentChat(newChat.id, newChat.title, newChat.ai_id, newChat.user_id);
-  
+
+    if (newChat?.id) {
+      setCurrentChat({
+        id: newChat.id,
+        title: newChat.title,
+        ai_id: newChat.ai_id,
+        user_id: newChat.user_id,
+      });
+
       // 🚀 Wait for state update to complete
       await new Promise((resolve) => setTimeout(resolve, 0));
-      addMessage(newUserMessage, { id: newChat.id, title: newChat.title, ai_id: newChat.ai_id, user_id: newChat.user_id });
-      await getAIResponse(userMessage, { id: newChat.id, title: newChat.title, ai_id: newChat.ai_id, user_id: newChat.user_id });
-      console.log("NEW CHAT INFO:", newChat.id);
-      setChatId(newChat.id)
-      setNewChatCreated(newChatCreated +1);
+      addMessage(newUserMessage, {
+        id: newChat.id,
+        title: newChat.title,
+        ai_id: newChat.ai_id,
+        user_id: newChat.user_id,
+      });
+      await getAIResponse(userMessage, {
+        id: newChat.id,
+        title: newChat.title,
+        ai_id: newChat.ai_id,
+        user_id: newChat.user_id,
+      });
+      setChatId(newChat.id);
+      setNewChatCreated(newChatCreated + 1);
     } else {
       console.error("Chat creation failed, no ID returned.");
     }
   };
-  
 
   const sendMessage = async (formData: FormData) => {
     setLoading(true);
     const userMessage = formData.get("userMessage");
-    
+
     if (typeof userMessage !== "string" || !userMessage.trim()) {
       return;
     }
     if (!injectiveAddress || !isWhitelisted) {
       return;
     }
-    if(chatId == ""){
-      await createNewChat(injectiveAddress,userMessage)
-      
-      return
-    }
-    
-      const newUserMessage = createChatMessage({
-        sender: "user",
-        text: userMessage,
-        type: "text",
-      });
-      
-      addMessage(newUserMessage);
-      await getAIResponse(userMessage);
-    
+    if (chatId === "") {
+      await createNewChat(injectiveAddress, userMessage);
 
-    
+      return;
+    }
+
+    const newUserMessage = createChatMessage({
+      sender: "user",
+      text: userMessage,
+      type: "text",
+    });
+
+    addMessage(newUserMessage);
+    await getAIResponse(userMessage);
   };
 
-  const getAIResponse = async (userMessage: string,updatedChat?:Chat) => {
+  const getAIResponse = async (userMessage: string, updatedChat?: Chat) => {
     fetchResponse(userMessage, messageHistory, injectiveAddress)
       .then((data) => {
-        console.log(".then -> data:", data);
-        addMessages(data.messages,updatedChat); // Update chat history
+        addMessages(data.messages, updatedChat); // Update chat history
       })
       .catch(() => {
         addMessage(
@@ -171,24 +180,23 @@ const Chatbot = () => {
         setLoading(false);
       });
   };
-  const createNewChatButton = ()=>{
-    if(!loading && !executing){
-      setChatId("")
-      setMessageHistory([])
-      console.log("CHAT ID:",chatId)
-    }    
-  }
+  const createNewChatButton = () => {
+    if (!loading && !executing) {
+      setChatId("");
+      setMessageHistory([]);
+    }
+  };
 
   return (
     <div className="flex h-screen w-screen bg-black text-white">
-      
-      {!isWhitelisted &&
+      {!isWhitelisted && (
         <EarlyAccessPage
-        injectiveAddress={injectiveAddress}
-        setInjectiveAddress={(address) => setInjectiveAddress(address)}
-        isWhitelisted={isWhitelisted}
-        setIsWhitelisted={(WL) =>setIsWhitelisted(WL)} />
-      }
+          injectiveAddress={injectiveAddress}
+          setInjectiveAddress={(address) => setInjectiveAddress(address)}
+          isWhitelisted={isWhitelisted}
+          setIsWhitelisted={(WL) => setIsWhitelisted(WL)}
+        />
+      )}
       <Menu
         createNewChatButton={createNewChatButton}
         injectiveAddress={injectiveAddress}
@@ -220,7 +228,6 @@ const Chatbot = () => {
             if (msg.sender === "system") {
               return null;
             }
-            console.log("Chatbot -> msg:", msg.type);
             // Detect if this is the last error message
             const isLastError =
               (msg.type === "error" ||
@@ -229,8 +236,6 @@ const Chatbot = () => {
                 msg.type === "swap" ||
                 msg.type === "send_token") &&
               i === messageHistory.length - 1;
-            console.log(i === messageHistory.length - 1);
-            console.log(msg.type);
             return (
               <div
                 key={`chat-message-${i}-${msg.sender}`}
@@ -298,67 +303,64 @@ const Chatbot = () => {
                       <div>{msg.text}</div>
                     </div>
                   ))}
-                {msg.type === "send_token" && (
-                  <>
-                    {isLastError ? (
-                      msg.send && (
-                        <SendTokenMessageType
-                          text={msg.text}
-                          injectiveAddress={injectiveAddress}
-                          setExecuting={updateExecuting}
-                          executing={executing}
-                          handleExit={handleExit}
-                          send={msg.send}
-                        />
-                      )
-                    ) : (
-                      <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
-                        <h3 className="text-lg font-semibold mb-2">Your Transfer Details</h3>
-                        <div>{msg.text}</div>
-                      </div>
-                    )}
-                  </>
-                )}
+                {msg.type === "send_token" &&
+                  (isLastError ? (
+                    msg.send && (
+                      <SendTokenMessageType
+                        text={msg.text}
+                        injectiveAddress={injectiveAddress}
+                        setExecuting={updateExecuting}
+                        executing={executing}
+                        handleExit={handleExit}
+                        send={msg.send}
+                      />
+                    )
+                  ) : (
+                    <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                      <h3 className="text-lg font-semibold mb-2">Your Transfer Details</h3>
+                      <div>{msg.text}</div>
+                    </div>
+                  ))}
                 {msg.type === "error" && (
                   <ErrorMessageType
                     text={msg.text}
                     handleExit={handleExit}
                     isLastError={isLastError}
                   />
-                )}{
-                  msg.type === "text" &&(
-                    <DefaultMessageType text={msg.text} sender={msg.sender} />
-            )} 
-                
+                )}
+                {msg.type === "text" && <DefaultMessageType text={msg.text} sender={msg.sender} />}
               </div>
             );
           })}
-          {loading && <p className="text-gray-400">⏳ JECTA is thinking...</p>}
+          {loading && (
+            <p className="text-gray-app/chat/providers/chatProvider.tsx400">
+              ⏳ JECTA is thinking...
+            </p>
+          )}
           {executing && <p className="text-gray-400">⏳ Executing...</p>}
         </div>
 
         {/* Chat Input */}
         <div className="px-6 pb-6 flex items-center gap-3">
-  <form
-    className="w-full flex items-center gap-3"
-    onSubmit={async (e) => {
-      e.preventDefault(); 
-      setLoading(true);   
-      const formData = new FormData(e.currentTarget);
-      await sendMessage(formData);
-    }}
-  >
-    <Input className="w-full" name="userMessage" placeholder="Ask to JECTA..." />
-    <Button
-      className="disabled:opacity-50 disabled:cursor-not-allowed"
-      disabled={disableSend()}
-      type="submit"
-    >
-      <SendHorizontal className="w-4 h-4" />
-    </Button>
-  </form>
-</div>
-
+          <form
+            className="w-full flex items-center gap-3"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setLoading(true);
+              const formData = new FormData(e.currentTarget);
+              await sendMessage(formData);
+            }}
+          >
+            <Input className="w-full" name="userMessage" placeholder="Ask to JECTA..." />
+            <Button
+              className="disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={disableSend()}
+              type="submit"
+            >
+              <SendHorizontal className="w-4 h-4" />
+            </Button>
+          </form>
+        </div>
       </main>
     </div>
   );

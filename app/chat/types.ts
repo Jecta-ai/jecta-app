@@ -32,12 +32,12 @@ export interface ContractInput {
 }
 
 export interface ChatMessage {
-  balances: Token[] | null;
+  balances?: Token[] | null;
   sender: string;
   text: string;
-  type: string;
+  type?: string;
   intent?: string | null;
-  validators: Validator[] | null;
-  contractInput: ContractInput | null;
-  send: SendDetails | null;
+  validators?: Validator[] | null;
+  contractInput?: ContractInput | null;
+  send?: SendDetails | null;
 }

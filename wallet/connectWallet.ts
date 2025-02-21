@@ -1,9 +1,7 @@
 import { ChainId } from "@injectivelabs/ts-types";
-import { DirectSignResponse } from "@cosmjs/proto-signing";
 import { createInjectiveIfNotExists } from "@/app/api/db/route";
 
 export const connectWallet = async (addToChat: (msg: any) => void) => {
-  console.log("connectWal -> addToChat:", addToChat);
   if (!window.keplr) {
     alert("Keplr Wallet is not installed. Please install it and try again.");
     return;
@@ -17,9 +15,7 @@ export const connectWallet = async (addToChat: (msg: any) => void) => {
 
     // ✅ Get Injective Address
     const keplrOfflineSigner = window.keplr.getOfflineSigner(ChainId.Mainnet);
-    console.log("connectWal -> keplrOfflineSigner:", keplrOfflineSigner);
     const accounts = await keplrOfflineSigner.getAccounts();
-    console.log("connectWal -> accounts:", accounts);
 
     if (!accounts.length) {
       alert("No Injective accounts found in Keplr.");
@@ -27,8 +23,6 @@ export const connectWallet = async (addToChat: (msg: any) => void) => {
     }
 
     const injectiveAddress = accounts[0].address;
-    console.log("connectWal -> injectiveAddress:", injectiveAddress);
-    console.log({ "ChainId.Mainnet": ChainId.Mainnet, injectiveAddress });
     const res = await createInjectiveIfNotExists(injectiveAddress);
     // ✅ Sign a Message to Accept Terms
     // const msg = "By signing this message, you agree to the terms of use.";

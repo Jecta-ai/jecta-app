@@ -1,11 +1,11 @@
-import { ChainGrpcWasmApi, toBase64 } from '@injectivelabs/sdk-ts'
-import { getNetworkEndpoints, Network } from '@injectivelabs/networks'
+import { ChainGrpcWasmApi, toBase64 } from "@injectivelabs/sdk-ts";
+import { getNetworkEndpoints, Network } from "@injectivelabs/networks";
 
 interface RefDetails {
-    ref_code:string;
-    count:number;
-    refferer:string;
-  }
+  ref_code: string;
+  count: number;
+  refferer: string;
+}
 
 const endpoints = getNetworkEndpoints(Network.Testnet);
 const chainGrpcWasmApi = new ChainGrpcWasmApi(endpoints.grpc);
@@ -22,12 +22,13 @@ export const getRefCodeDetails = async (injectiveAddress: string | null) => {
         queryFromObject
       );
 
-      console.log("Query Response:", contractState);
-      const decodedResponse = new TextDecoder().decode(Uint8Array.from(Object.values(contractState.data)));
+      const decodedResponse = new TextDecoder().decode(
+        Uint8Array.from(Object.values(contractState.data))
+      );
 
-      const parsedResponse:RefDetails = JSON.parse(decodedResponse);
+      const parsedResponse: RefDetails = JSON.parse(decodedResponse);
 
-      if(parsedResponse !== null || parsedResponse !== undefined){
+      if (parsedResponse !== null || parsedResponse !== undefined) {
         return parsedResponse;
       }
     }

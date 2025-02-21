@@ -28,7 +28,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { title,injectiveAddress, senderId } = await req.json();
+    const { title, injectiveAddress, senderId } = await req.json();
 
     if (!injectiveAddress || !senderId) {
       return new Response(JSON.stringify({ error: "Missing parameters" }), { status: 400 });
@@ -64,9 +64,6 @@ export async function POST(req: Request) {
       .insert([{ ai_id: user1Data?.id, user_id: user2Data?.id, title: title }])
       .select()
       .single();
-
-    console.log("POST -> chatData:", chatData);
-    console.log("POST -> chatError:", chatError);
 
     if (chatError) {
       return new Response(JSON.stringify({ error: chatError.message }), { status: 500 });

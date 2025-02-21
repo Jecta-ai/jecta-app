@@ -2,9 +2,7 @@
 import { useEffect, useState } from "react";
 import { getLastChatNames } from "../services/chatServices";
 import type { Chat } from "../services/types";
-import { getRefCodeDetails } from "../services/referralUtils";
-import { ClipboardCopy, Copy } from "lucide-react";
-
+import { getRefCodeDetails } from "../referralUtils";
 
 interface MenuProps {
   loadChatHistory: (chatId: string) => void;
@@ -13,44 +11,53 @@ interface MenuProps {
   setInjectiveAddress: (address: string | null) => void;
   allChats: Chat[];
   setAllChats: (chats: Chat[]) => void;
-  newChatCreated: number,
+  newChatCreated: number;
   setNewChatCreated: (number: number) => void;
-  isWhitelisted:boolean;
+  isWhitelisted: boolean;
 }
 
-const Menu = ({ injectiveAddress, setInjectiveAddress, loadChatHistory, allChats, setAllChats ,newChatCreated,createNewChatButton,isWhitelisted}: MenuProps) => {
+const Menu = ({
+  injectiveAddress,
+  setInjectiveAddress,
+  loadChatHistory,
+  allChats,
+  setAllChats,
+  newChatCreated,
+  createNewChatButton,
+  isWhitelisted,
+}: MenuProps) => {
   const [showPopup, setShowPopup] = useState(false);
   const [lastChats, setLastChats] = useState<Chat[]>([]);
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
-  const [refDetails,setRefDetails] = useState<any>();
+  const [refDetails, setRefDetails] = useState<any>();
   const [copySuccess, setCopySuccess] = useState<string>("");
-  
 
   useEffect(() => {
     const fetchLastChatNames = async () => {
       const response = await getLastChatNames(injectiveAddress || "");
       if (response) {
-        const sortedChats = response.sort((a: { updated_at: string | number | Date; }, b: { updated_at: string | number | Date; }) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+        const sortedChats = response.sort(
+          (a: { updated_at: string | number | Date }, b: { updated_at: string | number | Date }) =>
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
         setLastChats(sortedChats);
         setAllChats(sortedChats);
       }
     };
     fetchLastChatNames();
-  }, [injectiveAddress,newChatCreated]);
+  }, [injectiveAddress, newChatCreated]);
 
-  
-
-  useEffect(()=>{
-    const getRef = async ()=>{
-      if(isWhitelisted){
-        const response = await getRefCodeDetails(injectiveAddress)
-        if(response){
+  useEffect(() => {
+    const getRef = async () => {
+      if (isWhitelisted) {
+        const response = await getRefCodeDetails(injectiveAddress);
+        if (response) {
           setRefDetails(response);
         }
-       }
-    }
+      }
+    };
     getRef();
-  },[isWhitelisted])
+  }, [isWhitelisted]);
 
   const handleDisconnect = async () => {
     setInjectiveAddress(null);
@@ -80,14 +87,17 @@ const Menu = ({ injectiveAddress, setInjectiveAddress, loadChatHistory, allChats
               DOCS
             </li>
             <li className="py-3 px-4 cursor-pointer">
-              {injectiveAddress && <div className="relative">
+              {injectiveAddress && (
+                <div className="relative">
                   <button
-                  onClick={createNewChatButton}
+                    type="button"
+                    onClick={createNewChatButton}
                     className="w-full py-2 mb-2 bg-green-500 rounded-lg hover:bg-green-600 text-white font-semibold transition"
                   >
                     Create Chat
                   </button>
                   <button
+                    type="button"
                     onClick={() => setShowPopup(!showPopup)}
                     className="w-full py-2 bg-gray-700 rounded-lg hover:bg-gray-600 text-white font-semibold transition"
                   >
@@ -97,6 +107,7 @@ const Menu = ({ injectiveAddress, setInjectiveAddress, loadChatHistory, allChats
                   {showPopup && (
                     <div className="absolute top-14 left-0 bg-gray-800 text-white p-3 rounded-lg shadow-lg w-full">
                       <button
+                        type="button"
                         onClick={handleDisconnect}
                         className="w-full text-left hover:text-red-500 transition"
                       >
@@ -104,7 +115,8 @@ const Menu = ({ injectiveAddress, setInjectiveAddress, loadChatHistory, allChats
                       </button>
                     </div>
                   )}
-                </div>}
+                </div>
+              )}
             </li>
           </ul>
         </nav>
@@ -113,20 +125,26 @@ const Menu = ({ injectiveAddress, setInjectiveAddress, loadChatHistory, allChats
             <h3 className="text-lg font-semibold">Referral Details</h3>
             <div className="flex items-center gap-2 text-sm ">
               <span>REF :</span>
-              <span onClick={copyToClipboard} className="hover:cursor-pointer hover:text-blue-400">{refDetails.ref_code.slice(0, 6)}...{refDetails.ref_code.slice(-4)}</span>
+              <span onClick={copyToClipboard} className="hover:cursor-pointer hover:text-blue-400">
+                {refDetails.ref_code.slice(0, 6)}...{refDetails.ref_code.slice(-4)}
+              </span>
             </div>
             <p className="text-sm">Ref Used: {refDetails.count}</p>
-            {copySuccess && <span className="text-green-400 text-xs absolute right-2 top-2">{copySuccess}</span>}
+            {copySuccess && (
+              <span className="text-green-400 text-xs absolute right-2 top-2">{copySuccess}</span>
+            )}
           </div>
         )}
-        <div className="px-4 py-2 flex items-center transition">
-              CHATS
-            </div>
+        <div className="px-4 py-2 flex items-center transition">CHATS</div>
         <div className=" border-t border-zinc-800 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
           {lastChats.map((chat, i) => (
             <li
               key={i}
-              className={`py-3 px-4 rounded-lg cursor-pointer transition ${selectedChat === chat.id ? "bg-blue-600 text-white" : "hover:bg-zinc-800 text-gray-300 hover:text-white"}`}
+              className={`py-3 px-4 rounded-lg cursor-pointer transition ${
+                selectedChat === chat.id
+                  ? "bg-blue-600 text-white"
+                  : "hover:bg-zinc-800 text-gray-300 hover:text-white"
+              }`}
               onClick={() => {
                 setSelectedChat(chat.id);
                 loadChatHistory(chat.id);
@@ -136,7 +154,6 @@ const Menu = ({ injectiveAddress, setInjectiveAddress, loadChatHistory, allChats
             </li>
           ))}
         </div>
-        
       </div>
       <div className="text-sm text-gray-500">@jecta</div>
     </aside>

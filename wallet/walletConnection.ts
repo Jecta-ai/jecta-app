@@ -1,6 +1,5 @@
-import { Wallet } from "@injectivelabs/wallet-ts";
-import { useState } from "react";
-import { createChatMessage, configureWalletStrategy, getWalletStrategy } from "@/app/chat/utils";
+import type { Wallet } from "@injectivelabs/wallet-ts";
+import { configureWalletStrategy, getWalletStrategy } from "@/app/chat/utils";
 
 export const connectToWallet = async (wallet: Wallet) => {
   try {
@@ -16,10 +15,8 @@ export const connectToWallet = async (wallet: Wallet) => {
     }
 
     const signStatus = await signMessage(addresses[0]);
-    if(signStatus === "success"){
+    if (signStatus === "success") {
       return { address: addresses[0], wallet: wallet };
-    }else{
-      return undefined
     }
 
     //TODO: Save user’s wallet address to chat history
@@ -31,8 +28,6 @@ export const connectToWallet = async (wallet: Wallet) => {
         intent: "general",
       }));
     */
-
-    
   } catch (error) {
     console.error(`Error connecting to ${wallet}:`, error);
   }
@@ -43,9 +38,8 @@ const signMessage = async (address: string) => {
     const message = "Please sign this message to verify ownership.";
     const walletStrategy = getWalletStrategy();
     const signedMessage = await walletStrategy.signArbitrary(address, message);
-    console.log("Signed Message:", signedMessage);
     return "success";
   } catch (error) {
-    return "signing error";
+    throw new Error("Signing error", { cause: error });
   }
 };

@@ -1,10 +1,8 @@
-import { executeTask } from "./taskRunner";
-import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 import OpenAI from "openai";
-import { intentClassification } from "./intentClassification";
 
-const OPENAI_API_KEY = process.env.OPENROUTER_API_KEY; 
+const OPENAI_API_KEY = process.env.OPENROUTER_API_KEY;
 const OPENROUTER_BASE_URL = process.env.OPENROUTER_BASE_URL;
 const MODEL = process.env.MODEL;
 
@@ -13,24 +11,23 @@ const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,
 });
 
-
-
 export const createTitleFromMessage = async (userMessage: string) => {
   try {
-
-
     const messages: ChatCompletionMessageParam[] = [
-      { role: "system", content: `
+      {
+        role: "system",
+        content: `
 You are an AI assistant that generates concise and contextually relevant sentences based on the user's message. 
 Your response should be short, clear, and aligned with the given input. Your goal is only summarizing the message.
 Only respond the summarize as a title shortly.
 
 Input : ${userMessage}
 
-` },
+`,
+      },
     ];
-    if (!MODEL){
-      return
+    if (!MODEL) {
+      return;
     }
 
     const completion = await openai.chat.completions.create({
