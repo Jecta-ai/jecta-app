@@ -3,16 +3,14 @@ import { useEffect, useState } from "react";
 import { getLastChatNames } from "../services/chatServices";
 import type { Chat } from "../services/types";
 import { getRefCodeDetails } from "../referralUtils";
+import { useChat } from "../providers/chatProvider";
+import { Button } from "@/components/ui/button";
 
 interface MenuProps {
   loadChatHistory: (chatId: string) => void;
   createNewChatButton: () => void;
   injectiveAddress: string | null;
   setInjectiveAddress: (address: string | null) => void;
-  allChats: Chat[];
-  setAllChats: (chats: Chat[]) => void;
-  newChatCreated: number;
-  setNewChatCreated: (number: number) => void;
   isWhitelisted: boolean;
 }
 
@@ -20,17 +18,14 @@ const Menu = ({
   injectiveAddress,
   setInjectiveAddress,
   loadChatHistory,
-  allChats,
-  setAllChats,
-  newChatCreated,
   createNewChatButton,
   isWhitelisted,
 }: MenuProps) => {
   const [showPopup, setShowPopup] = useState(false);
-  const [lastChats, setLastChats] = useState<Chat[]>([]);
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [refDetails, setRefDetails] = useState<any>();
   const [copySuccess, setCopySuccess] = useState<string>("");
+  const { allChats, setAllChats } = useChat();
 
   useEffect(() => {
     const fetchLastChatNames = async () => {
@@ -40,12 +35,11 @@ const Menu = ({
           (a: { updated_at: string | number | Date }, b: { updated_at: string | number | Date }) =>
             new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
         );
-        setLastChats(sortedChats);
         setAllChats(sortedChats);
       }
     };
     fetchLastChatNames();
-  }, [injectiveAddress, newChatCreated]);
+  }, [injectiveAddress]);
 
   useEffect(() => {
     const getRef = async () => {
@@ -137,20 +131,16 @@ const Menu = ({
         )}
         <div className="px-4 py-2 flex items-center transition">CHATS</div>
         <div className=" border-t border-zinc-800 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-          {lastChats.map((chat, i) => (
-            <li
-              key={i}
-              className={`py-3 px-4 rounded-lg cursor-pointer transition ${
-                selectedChat === chat.id
-                  ? "bg-blue-600 text-white"
-                  : "hover:bg-zinc-800 text-gray-300 hover:text-white"
-              }`}
-              onClick={() => {
-                setSelectedChat(chat.id);
-                loadChatHistory(chat.id);
-              }}
-            >
-              {chat.title}
+          {allChats.map((chat) => (
+            <li key={chat.id} className="list-none mb-2">
+              <Button
+                onClick={() => {
+                  setSelectedChat(chat.id);
+                  loadChatHistory(chat.id);
+                }}
+              >
+                {chat.title}
+              </Button>
             </li>
           ))}
         </div>

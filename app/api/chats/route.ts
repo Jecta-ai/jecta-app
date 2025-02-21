@@ -26,6 +26,7 @@ export async function GET(req: Request) {
   return new Response(JSON.stringify({ data }), { status: 200 });
 }
 
+// Create chat
 export async function POST(req: Request) {
   try {
     const { title, injectiveAddress, senderId } = await req.json();
@@ -35,33 +36,35 @@ export async function POST(req: Request) {
     }
 
     // Get user2Id from injectives table
-    const { data: user2Data, error: user2Error } = await supabase
+    const { data: userData, error: userError } = await supabase
       .from("injectives")
       .select("id")
       .eq("wallet_address", injectiveAddress)
       .single();
 
-    const { data: user1Data, error: user1Error } = await supabase
+    const { data: systemData, error: systemError } = await supabase
       .from("injectives")
       .select("id")
       .eq("wallet_address", senderId)
       .single();
 
-    if (user2Error) {
-      return new Response(JSON.stringify({ error: user2Error.message }), { status: 500 });
+    if (systemError || userError) {
+      return new Response(JSON.stringify({ error: systemError?.message || userError?.message }), {
+        status: 500,
+      });
     }
 
-    if (!user1Data || !user1Data.id) {
+    if (!systemData || !systemData.id) {
       return new Response(JSON.stringify({ error: "Sender not found" }), { status: 400 });
     }
-    if (!user2Data || !user2Data.id) {
+    if (!userData || !userData.id) {
       return new Response(JSON.stringify({ error: "Recipient not found" }), { status: 400 });
     }
 
     // Create chat
     const { data: chatData, error: chatError } = await supabase
       .from("chats")
-      .insert([{ ai_id: user1Data?.id, user_id: user2Data?.id, title: title }])
+      .insert([{ ai_id: systemData?.id, user_id: userData?.id, title: title }])
       .select()
       .single();
 
@@ -70,7 +73,7 @@ export async function POST(req: Request) {
     }
 
     return new Response(JSON.stringify({ data: chatData }), { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }

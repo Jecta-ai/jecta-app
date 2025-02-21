@@ -29,11 +29,15 @@ export const fetchResponse = async (
   return data;
 };
 
-export const createChatIfNotExists = async (
-  injectiveAddress: string,
-  senderId: string,
-  userMessage: string
-) => {
+export const createChatIfNotExists = async ({
+  injectiveAddress,
+  senderId,
+  userMessage,
+}: {
+  injectiveAddress: string;
+  senderId: string;
+  userMessage: string;
+}) => {
   const title = await createTitleFromMessage(userMessage);
   const res = await fetch(`${baseUrl}/api/chats`, {
     method: "POST",
