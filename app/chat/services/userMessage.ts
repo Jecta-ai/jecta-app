@@ -1,4 +1,5 @@
 "use server";
+import { createTitleFromMessage } from "@/ai/titleManager";
 import type { ChatMessage } from "../types";
 import type { Chat } from "./types";
 
@@ -28,14 +29,16 @@ export const fetchResponse = async (
   return data;
 };
 
-export const createChatIfNotExists = async (injectiveAddress: string, senderId: string) => {
+export const createChatIfNotExists = async (injectiveAddress: string, senderId: string,userMessage:string) => {
   console.log("createChatIfNotExists -> senderId:", senderId);
   console.log("createChatIfNotExists -> injectiveAddress:", injectiveAddress);
+  const title = await createTitleFromMessage(userMessage)
   const res = await fetch(`${baseUrl}/api/chats`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title: "Chat", injectiveAddress, senderId }),
+    body: JSON.stringify({ title, injectiveAddress, senderId }),
   });
+  
 
   if (!res.ok) {
     throw new Error(`Failed to create chat: ${res.statusText}`);
@@ -43,7 +46,7 @@ export const createChatIfNotExists = async (injectiveAddress: string, senderId: 
 
   const { data } = await res.json();
 
-  return { id: data.id, aiId: data.ai_id, userId: data.user_id };
+  return { id: data.id,title:data.title, ai_id: data.ai_id, user_id: data.user_id };
 };
 
 export const crateInjectiveIfNotExists = async (injectiveAddress: string) => {

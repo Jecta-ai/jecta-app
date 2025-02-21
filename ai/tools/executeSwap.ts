@@ -56,7 +56,7 @@ export const fetchSwapDetails = async (fromMetaData: any,amount:number,toMetaDat
   const injectiveMainnetChainId = "injective-1";
       
       const res = await fetch(
-        `https://swap.coinhall.org/v1/swap?chainId=${injectiveMainnetChainId}&from=${checkErc20(fromMetaData)}&to=${checkErc20(toMetaData)}&amount=${amount*(10**fromMetaData.decimals)}&slippageBps=200`
+        `https://swap.coinhall.org/v1/swap?chainId=${injectiveMainnetChainId}&from=${checkErc20(fromMetaData)}&to=${checkErc20(toMetaData)}&amount=${amount*(10**fromMetaData.decimals)}&slippageBps=500`
       );
       const { 
         expectedReturn,

@@ -28,7 +28,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { injectiveAddress, senderId } = await req.json();
+    const { title,injectiveAddress, senderId } = await req.json();
 
     if (!injectiveAddress || !senderId) {
       return new Response(JSON.stringify({ error: "Missing parameters" }), { status: 400 });
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     // Create chat
     const { data: chatData, error: chatError } = await supabase
       .from("chats")
-      .insert([{ ai_id: user1Data?.id, user_id: user2Data?.id, title: "Chat" }])
+      .insert([{ ai_id: user1Data?.id, user_id: user2Data?.id, title: title }])
       .select()
       .single();
 

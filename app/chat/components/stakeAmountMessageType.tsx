@@ -1,9 +1,8 @@
 import { useValidator } from "../providers/validatorProvider";
 import { useChat } from "../providers/chatProvider";
 import { MsgDelegate } from "@injectivelabs/sdk-ts";
-import { msgBroadcastClient } from "@/components/ChatBot";
 import { useState } from "react";
-import { createChatMessage } from "../utils";
+import { createChatMessage,msgBroadcastClient } from "../utils";
 
 const StakeAmountMessageType = ({
   handleExit,
@@ -30,7 +29,8 @@ const StakeAmountMessageType = ({
           amount: String(Number(amount) * 10 ** 18),
         },
       });
-      const res = await msgBroadcastClient.broadcast({
+      const msgClient = msgBroadcastClient()
+      const res = await msgClient.broadcast({
         injectiveAddress: injectiveAddress,
         msgs: msg,
       });
