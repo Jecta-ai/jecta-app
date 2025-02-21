@@ -11,11 +11,19 @@ import {
   Plus,
   FileText,
   MessageSquare,
-  LogOut,
   Menu as MenuIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import Header from "./header";
 
 interface ChatItem {
   id: string;
@@ -39,7 +47,6 @@ const Menu = ({
   isWhitelisted,
 }: MenuProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
   const [refDetails, setRefDetails] = useState<{ ref_code: string; count: number } | null>(null);
   const [copySuccess, setCopySuccess] = useState<string>("");
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -70,12 +77,6 @@ const Menu = ({
     };
     getRef();
   }, [isWhitelisted, injectiveAddress]);
-
-  const handleDisconnect = () => {
-    setInjectiveAddress(null);
-    setShowPopup(false);
-    window.location.reload();
-  };
 
   const copyToClipboard = () => {
     if (refDetails?.ref_code) {
@@ -113,32 +114,6 @@ const Menu = ({
             <FileText className="h-4 w-4 mr-2" />
             {!isCollapsed && "Docs"}
           </Button>
-
-          {injectiveAddress && (
-            <div className="relative">
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                onClick={() => setShowPopup(!showPopup)}
-              >
-                <MessageSquare className="h-4 w-4 mr-2" />
-                {!isCollapsed && `${injectiveAddress.slice(0, 6)}...${injectiveAddress.slice(-4)}`}
-              </Button>
-
-              {showPopup && (
-                <div className="absolute top-full left-0 w-full mt-2 bg-zinc-800 rounded-lg shadow-lg overflow-hidden">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-red-500"
-                    onClick={handleDisconnect}
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Disconnect
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
         </nav>
 
         {isWhitelisted && refDetails && !isCollapsed && (
@@ -216,7 +191,7 @@ const Menu = ({
                 className={cn(
                   "w-full justify-start py-2 text-sm transition-colors duration-200",
                   selectedChatId === chat.id
-                    ? "bg-zinc-800/80 text-white hover:bg-zinc-800/90 hover:text-slate-200"
+                    ? "bg-zinc-800/80 text-white hover:bg-zinc-800/90 hover:text-slate-200 active:text-slate-200"
                     : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
                 )}
                 onClick={() => handleChatSelect(chat.id)}
@@ -225,7 +200,7 @@ const Menu = ({
                   <MessageSquare
                     className={cn(
                       "h-4 w-4 flex-shrink-0",
-                      selectedChatId === chat.id ? "text-white" : "text-zinc-100"
+                      selectedChatId === chat.id ? "text-white" : "text-zinc-400"
                     )}
                   />
                   {!isCollapsed && <span className="truncate">{chat.title}</span>}
@@ -242,6 +217,13 @@ const Menu = ({
 
   return (
     <>
+      <Header
+        injectiveAddress={injectiveAddress}
+        setInjectiveAddress={setInjectiveAddress}
+        isWhitelisted={isWhitelisted}
+        isCollapsed={isCollapsed}
+      />
+
       {/* Mobile Menu Trigger */}
       <Sheet>
         <SheetTrigger asChild>
@@ -249,7 +231,19 @@ const Menu = ({
             <MenuIcon className="h-5 w-5" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-80 p-0 bg-zinc-900 border-zinc-800">
+        <SheetContent
+          aria-label="Menu"
+          side="left"
+          className="w-80 p-0 bg-zinc-900 border-zinc-800"
+        >
+          <SheetHeader>
+            <VisuallyHidden>
+              <SheetTitle>Menu</SheetTitle>
+            </VisuallyHidden>
+            <VisuallyHidden>
+              <SheetDescription>Navigation menu for accessing chat options.</SheetDescription>
+            </VisuallyHidden>
+          </SheetHeader>
           <MenuContent />
         </SheetContent>
       </Sheet>
@@ -267,7 +261,11 @@ const Menu = ({
           className="absolute -right-4 top-2 bg-zinc-800 rounded-full"
           onClick={() => setIsCollapsed(!isCollapsed)}
         >
-          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          {isCollapsed ? (
+            <ChevronRight className="h-4 w-4 z-50" />
+          ) : (
+            <ChevronLeft className="h-4 w-4 z-50" />
+          )}
         </Button>
 
         <MenuContent />

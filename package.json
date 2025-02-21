@@ -18,6 +18,7 @@
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-scroll-area": "^1.2.3",
     "@radix-ui/react-slot": "^1.1.2",
+    "@radix-ui/react-visually-hidden": "^1.1.2",
     "@supabase/supabase-js": "^2.48.1",
     "@walletconnect/ethereum-provider": "^2.18.0",
     "alchemy-sdk": "^3.5.1",

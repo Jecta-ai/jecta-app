@@ -184,137 +184,128 @@ const Chatbot = () => {
       />
 
       {/* Chat Section */}
-      <main className="flex flex-col w-4/5">
-        <div className="p-6 text-center">
-          <h2 className="text-3xl font-semibold">
-            JECTA <span className="text-xl text-gray-400">v0.0.2</span>
-          </h2>
-        </div>
-
-        {/* Chat Messages */}
-        <div
-          ref={chatContainerRef}
-          className={`flex-1 bg-zinc-900 p-6 mx-6 mb-4 rounded-xl overflow-y-auto flex flex-col ${
-            loading || executing ? "animate-neonBlink" : ""
-          }`}
-        >
-          {messageHistory.map((msg, i) => {
-            if (msg.sender === "system") {
-              return null;
-            }
-            // Detect if this is the last error message
-            const isLastError =
-              (msg.type === "error" ||
-                msg.type === "validators" ||
-                msg.type === "stake_amount" ||
-                msg.type === "swap" ||
-                msg.type === "send_token") &&
-              i === messageHistory.length - 1;
-            return (
-              <div
-                key={`chat-message-${i}-${msg.sender}`}
-                className={`flex my-2 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-              >
-                {msg.sender === "ai" && (
-                  <Image
-                    src={logo}
-                    alt="Logo"
-                    className="w-8 h-8 rounded-md mr-2 border-white border-1"
-                    width={32}
-                    height={32}
-                  />
-                )}
-                {msg.type === "balance" && msg.balances && (
-                  <BalanceMessageType balances={msg.balances} />
-                )}
-                {msg.type === "validators" &&
-                  (isLastError ? (
-                    msg.validators && (
-                      <ValidatorsMessageType
-                        injectiveAddress={injectiveAddress}
-                        validators={msg.validators}
-                        setLoading={setLoading}
-                        isLastError={isLastError}
-                        handleExit={handleExit}
-                      />
-                    )
-                  ) : (
-                    <>
-                      <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
-                        Selecting Validator...
-                      </div>
-                    </>
-                  ))}
-                {msg.type === "stake_amount" &&
-                  (isLastError ? (
-                    <StakeAmountMessageType
-                      handleExit={handleExit}
-                      injectiveAddress={injectiveAddress}
+      <main className="flex flex-col w-full">
+        {messageHistory.length > 0 && (
+          <div
+            ref={chatContainerRef}
+            className={`flex-1 bg-zinc-900 p-6 mx-6 mb-4 rounded-xl overflow-y-auto flex flex-col ${
+              loading || executing ? "animate-neonBlink" : ""
+            }`}
+          >
+            {messageHistory.map((msg, i) => {
+              if (msg.sender === "system") {
+                return null;
+              }
+              // Detect if this is the last error message
+              const isLastError =
+                (msg.type === "error" ||
+                  msg.type === "validators" ||
+                  msg.type === "stake_amount" ||
+                  msg.type === "swap" ||
+                  msg.type === "send_token") &&
+                i === messageHistory.length - 1;
+              return (
+                <div
+                  key={`chat-message-${i}-${msg.sender}`}
+                  className={`flex my-2 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  {msg.sender === "ai" && (
+                    <Image
+                      src={logo}
+                      alt="Logo"
+                      className="w-8 h-8 rounded-md mr-2 border-white border-1"
+                      width={32}
+                      height={32}
                     />
-                  ) : (
-                    <>
+                  )}
+                  {msg.type === "balance" && msg.balances && (
+                    <BalanceMessageType balances={msg.balances} />
+                  )}
+                  {msg.type === "validators" &&
+                    (isLastError ? (
+                      msg.validators && (
+                        <ValidatorsMessageType
+                          injectiveAddress={injectiveAddress}
+                          validators={msg.validators}
+                          setLoading={setLoading}
+                          isLastError={isLastError}
+                          handleExit={handleExit}
+                        />
+                      )
+                    ) : (
+                      <>
+                        <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                          Selecting Validator...
+                        </div>
+                      </>
+                    ))}
+                  {msg.type === "stake_amount" &&
+                    (isLastError ? (
+                      <StakeAmountMessageType
+                        handleExit={handleExit}
+                        injectiveAddress={injectiveAddress}
+                      />
+                    ) : (
+                      <>
+                        <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                          <h3 className="text-lg font-semibold mb-2">Amount successfull given !</h3>
+                        </div>
+                      </>
+                    ))}
+                  {msg.type === "swap" &&
+                    (isLastError ? (
+                      msg.contractInput && (
+                        <SwapMessageType
+                          executing={executing}
+                          text={msg.text}
+                          handleExit={handleExit}
+                          updateExecuting={updateExecuting}
+                          updateChat={updateChat}
+                          contractInput={msg.contractInput}
+                          injectiveAddress={injectiveAddress}
+                        />
+                      )
+                    ) : (
                       <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
-                        <h3 className="text-lg font-semibold mb-2">Amount successfull given !</h3>
+                        <h3 className="text-lg font-semibold mb-2">Your Swap Details</h3>
+                        <div>{msg.text}</div>
                       </div>
-                    </>
-                  ))}
-                {msg.type === "swap" &&
-                  (isLastError ? (
-                    msg.contractInput && (
-                      <SwapMessageType
-                        executing={executing}
-                        text={msg.text}
-                        handleExit={handleExit}
-                        updateExecuting={updateExecuting}
-                        updateChat={updateChat}
-                        contractInput={msg.contractInput}
-                        injectiveAddress={injectiveAddress}
-                      />
-                    )
-                  ) : (
-                    <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
-                      <h3 className="text-lg font-semibold mb-2">Your Swap Details</h3>
-                      <div>{msg.text}</div>
-                    </div>
-                  ))}
-                {msg.type === "send_token" &&
-                  (isLastError ? (
-                    msg.send && (
-                      <SendTokenMessageType
-                        text={msg.text}
-                        injectiveAddress={injectiveAddress}
-                        setExecuting={updateExecuting}
-                        executing={executing}
-                        handleExit={handleExit}
-                        send={msg.send}
-                      />
-                    )
-                  ) : (
-                    <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
-                      <h3 className="text-lg font-semibold mb-2">Your Transfer Details</h3>
-                      <div>{msg.text}</div>
-                    </div>
-                  ))}
-                {msg.type === "error" && (
-                  <ErrorMessageType
-                    text={msg.text}
-                    handleExit={handleExit}
-                    isLastError={isLastError}
-                  />
-                )}
-                {(msg.type === "text" || msg.type === "success" || msg.type === "loading") && (
-                  <DefaultMessageType text={msg.text} sender={msg.sender} />
-                )}
-              </div>
-            );
-          })}
-          {loading && (
-            <p className="text-gray-app/chat/providers/chatProvider.tsx400">
-              ⏳ JECTA is thinking...
-            </p>
-          )}
-          {executing && <p className="text-gray-400">⏳ Executing...</p>}
-        </div>
+                    ))}
+                  {msg.type === "send_token" &&
+                    (isLastError ? (
+                      msg.send && (
+                        <SendTokenMessageType
+                          text={msg.text}
+                          injectiveAddress={injectiveAddress}
+                          setExecuting={updateExecuting}
+                          executing={executing}
+                          handleExit={handleExit}
+                          send={msg.send}
+                        />
+                      )
+                    ) : (
+                      <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                        <h3 className="text-lg font-semibold mb-2">Your Transfer Details</h3>
+                        <div>{msg.text}</div>
+                      </div>
+                    ))}
+                  {msg.type === "error" && (
+                    <ErrorMessageType
+                      text={msg.text}
+                      handleExit={handleExit}
+                      isLastError={isLastError}
+                    />
+                  )}
+                  {(msg.type === "text" || msg.type === "success" || msg.type === "loading") && (
+                    <DefaultMessageType text={msg.text} sender={msg.sender} />
+                  )}
+                </div>
+              );
+            })}
+            {loading && <p className="text-gray-400">⏳ JECTA is thinking...</p>}
+            {executing && <p className="text-gray-400">⏳ Executing...</p>}
+          </div>
+        )}
 
         {/* Chat Input */}
         <div className="px-6 pb-6 flex items-center gap-3">
