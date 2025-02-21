@@ -65,6 +65,7 @@ const EarlyAccessPage= ({ injectiveAddress,setInjectiveAddress,isWhitelisted,set
 
     const handleConnectWallet = async (wallet:Wallet) => {
       const walletInfo = await connectToWallet(wallet);
+      console.log(walletInfo)
       if (walletInfo?.address) {
         setInjectiveAddress(walletInfo?.address);
         

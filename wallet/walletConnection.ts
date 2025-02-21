@@ -15,7 +15,12 @@ export const connectToWallet = async (wallet: Wallet) => {
       return;
     }
 
-    await signMessage(addresses[0]);
+    const signStatus = await signMessage(addresses[0]);
+    if(signStatus === "success"){
+      return { address: addresses[0], wallet: wallet };
+    }else{
+      return undefined
+    }
 
     //TODO: Save user’s wallet address to chat history
     /*
@@ -27,7 +32,7 @@ export const connectToWallet = async (wallet: Wallet) => {
       }));
     */
 
-    return { address: addresses[0], wallet: wallet };
+    
   } catch (error) {
     console.error(`Error connecting to ${wallet}:`, error);
   }
@@ -39,7 +44,8 @@ const signMessage = async (address: string) => {
     const walletStrategy = getWalletStrategy();
     const signedMessage = await walletStrategy.signArbitrary(address, message);
     console.log("Signed Message:", signedMessage);
+    return "success";
   } catch (error) {
-    console.error("Error signing message:", error);
+    return "signing error";
   }
 };
