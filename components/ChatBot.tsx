@@ -565,6 +565,7 @@ const Chatbot = () => {
           {chat
             .filter((msg) => msg.sender !== "system")
             .map((msg, i) => {
+              console.log("Chatbot -> msg:", msg);
               // Detect if this is the last error message
               const isLastError =
                 (msg.type === "error" ||
@@ -573,9 +574,6 @@ const Chatbot = () => {
                   msg.type === "swap" ||
                   msg.type === "send_token") &&
                 i === chat.length - 2;
-
-              console.log(chat.length - 1);
-              console.log(i);
 
               return (
                 <div
@@ -594,54 +592,55 @@ const Chatbot = () => {
                   {msg.type === "balance" ? (
                     <div className="p-3 rounded-xl bg-zinc-800 text-white">
                       <div className="flex flex-col gap-3">
-                        {msg.balances &&  msg.balances.map(
-                          (
-                            token: {
-                              logo: string;
-                              symbol: string;
-                              balance: string;
-                              address: string;
-                            },
-                            index: Key | null | undefined
-                          ) => (
-                            <div
-                              key={index}
-                              className="flex items-center bg-gray-800 p-4 rounded-lg shadow-md border border-gray-700"
-                            >
-                              {/* Token Logo */}
-                              <img
-                                src={token.logo}
-                                alt={token.symbol}
-                                className="w-10 h-10 rounded-full mr-4"
-                              />
-
-                              {/* Symbol & Balance */}
-                              <div className="flex flex-col flex-1">
-                                <span className="text-white font-semibold text-lg">
-                                  {token.symbol}
-                                </span>
-                                <span className="text-gray-400 text-sm">
-                                  {Number(token.balance).toLocaleString("en-US", {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2,
-                                  })}
-                                </span>
-                              </div>
-
-                              {/* Contract Link */}
-                              <a
-                                href={`https://injscan.com/asset/${encodeURIComponent(
-                                  token.address
-                                )}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-400 hover:underline text-sm"
+                        {msg.balances &&
+                          msg.balances.map(
+                            (
+                              token: {
+                                logo: string;
+                                symbol: string;
+                                balance: string;
+                                address: string;
+                              },
+                              index: Key | null | undefined
+                            ) => (
+                              <div
+                                key={index}
+                                className="flex items-center bg-gray-800 p-4 rounded-lg shadow-md border border-gray-700"
                               >
-                                Contract ↗
-                              </a>
-                            </div>
-                          )
-                        )}
+                                {/* Token Logo */}
+                                <img
+                                  src={token.logo}
+                                  alt={token.symbol}
+                                  className="w-10 h-10 rounded-full mr-4"
+                                />
+
+                                {/* Symbol & Balance */}
+                                <div className="flex flex-col flex-1">
+                                  <span className="text-white font-semibold text-lg">
+                                    {token.symbol}
+                                  </span>
+                                  <span className="text-gray-400 text-sm">
+                                    {Number(token.balance).toLocaleString("en-US", {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                    })}
+                                  </span>
+                                </div>
+
+                                {/* Contract Link */}
+                                <a
+                                  href={`https://injscan.com/asset/${encodeURIComponent(
+                                    token.address
+                                  )}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-400 hover:underline text-sm"
+                                >
+                                  Contract ↗
+                                </a>
+                              </div>
+                            )
+                          )}
                       </div>
                     </div>
                   ) : msg.type === "validators" ? (
@@ -653,37 +652,40 @@ const Chatbot = () => {
 
                             {/* ✅ Grid Layout for Validators */}
                             <div className="grid grid-cols-4 gap-3">
-                              {msg.validators && msg.validators.map(
-                                (
-                                  validator: {
-                                    moniker: string;
-                                    address: string;
-                                    commission: string;
-                                  },
-                                  index: number
-                                ) => (
-                                  <button
-                                    key={index}
-                                    onClick={() => {
-                                      if (!validatorSelected) {
-                                        handleValidatorSelection(
-                                          index,
-                                          validator.moniker,
-                                          validator.address
-                                        );
-                                      } else {
-                                        alert("Validator already selected !");
-                                      }
-                                    }}
-                                    className="p-2 bg-gray-700 rounded-lg hover:bg-gray-600 flex flex-col items-center text-center"
-                                  >
-                                    <span className="block font-semibold">{validator.moniker}</span>
-                                    <span className="text-sm text-gray-300">
-                                      Commission: {validator.commission}
-                                    </span>
-                                  </button>
-                                )
-                              )}
+                              {msg.validators &&
+                                msg.validators.map(
+                                  (
+                                    validator: {
+                                      moniker: string;
+                                      address: string;
+                                      commission: string;
+                                    },
+                                    index: number
+                                  ) => (
+                                    <button
+                                      key={index}
+                                      onClick={() => {
+                                        if (!validatorSelected) {
+                                          handleValidatorSelection(
+                                            index,
+                                            validator.moniker,
+                                            validator.address
+                                          );
+                                        } else {
+                                          alert("Validator already selected !");
+                                        }
+                                      }}
+                                      className="p-2 bg-gray-700 rounded-lg hover:bg-gray-600 flex flex-col items-center text-center"
+                                    >
+                                      <span className="block font-semibold">
+                                        {validator.moniker}
+                                      </span>
+                                      <span className="text-sm text-gray-300">
+                                        Commission: {validator.commission}
+                                      </span>
+                                    </button>
+                                  )
+                                )}
                             </div>
 
                             {isLastError && (
@@ -761,8 +763,8 @@ const Chatbot = () => {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  if(msg.contractInput){
-                                    confirmSwap(msg.contractInput)
+                                  if (msg.contractInput) {
+                                    confirmSwap(msg.contractInput);
                                   }
                                 }}
                                 className="mt-3 px-4 py-2 bg-white text-red-700 font-semibold rounded-lg hover:bg-gray-300"
@@ -797,8 +799,8 @@ const Chatbot = () => {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  if(msg.send){
-                                    confirmSend(msg.send)
+                                  if (msg.send) {
+                                    confirmSend(msg.send);
                                   }
                                 }}
                                 className="mt-3 px-4 py-2 bg-white text-red-700 font-semibold rounded-lg hover:bg-gray-300"
@@ -861,8 +863,7 @@ const Chatbot = () => {
             value={message}
             onChange={(e) => {
               const lastMessageType = chat.length > 0 ? chat[chat.length - 1].type : null;
-              console.log(lastMessageType);
-              console.log(loading);
+
               if (
                 !(
                   validatorSelected ||

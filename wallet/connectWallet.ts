@@ -1,13 +1,13 @@
 import { ChainId } from "@injectivelabs/ts-types";
 import { DirectSignResponse } from "@cosmjs/proto-signing";
+import { createInjectiveIfNotExists } from "@/app/api/db/route";
 
 export const connectWallet = async (addToChat: (msg: any) => void) => {
+  console.log("connectWal -> addToChat:", addToChat);
   if (!window.keplr) {
     alert("Keplr Wallet is not installed. Please install it and try again.");
     return;
   }
-
-  
 
   try {
     // ✅ Reset Keplr permissions to force approval every time
@@ -17,7 +17,9 @@ export const connectWallet = async (addToChat: (msg: any) => void) => {
 
     // ✅ Get Injective Address
     const keplrOfflineSigner = window.keplr.getOfflineSigner(ChainId.Mainnet);
+    console.log("connectWal -> keplrOfflineSigner:", keplrOfflineSigner);
     const accounts = await keplrOfflineSigner.getAccounts();
+    console.log("connectWal -> accounts:", accounts);
 
     if (!accounts.length) {
       alert("No Injective accounts found in Keplr.");
@@ -25,23 +27,26 @@ export const connectWallet = async (addToChat: (msg: any) => void) => {
     }
 
     const injectiveAddress = accounts[0].address;
-
+    console.log("connectWal -> injectiveAddress:", injectiveAddress);
+    console.log({ "ChainId.Mainnet": ChainId.Mainnet, injectiveAddress });
+    const res = await createInjectiveIfNotExists(injectiveAddress);
     // ✅ Sign a Message to Accept Terms
-    const msg = "By signing this message, you agree to the terms of use.";
-    const signResult: DirectSignResponse = await window.keplr.signArbitrary(
-      ChainId.Mainnet,
-      injectiveAddress,
-      msg
-    );
+    // const msg = "By signing this message, you agree to the terms of use.";
+    // const signResult: DirectSignResponse = await window.keplr.signArbitrary(
+    //   ChainId.Mainnet,
+    //   injectiveAddress,
+    //   msg
+    // );
+    // console.log("connectWal -> signResult:", signResult);
 
-    if (!signResult) {
-      alert("Signature failed. You must accept the terms to connect.");
-      return;
-    }
+    // if (!signResult) {
+    //   alert("Signature failed. You must accept the terms to connect.");
+    //   return;
+    // }
 
     // ✅ Store the signed address in localStorage
     localStorage.setItem("injectiveAddress", injectiveAddress);
-    localStorage.setItem("signature", JSON.stringify(signResult));
+    // localStorage.setItem("signature", JSON.stringify(signResult));
 
     alert(`Connected! Your Injective address is: ${injectiveAddress}`);
 
@@ -49,7 +54,7 @@ export const connectWallet = async (addToChat: (msg: any) => void) => {
       sender: "system",
       text: `User's Injective wallet address is: ${injectiveAddress}. If user asks you about his wallet address, you need to remember it.`,
       type: "text",
-      intent:"general",
+      intent: "general",
     });
 
     return injectiveAddress;
@@ -58,7 +63,3 @@ export const connectWallet = async (addToChat: (msg: any) => void) => {
     alert("Failed to connect Keplr wallet. Please try again.");
   }
 };
-
-
-
-
