@@ -192,7 +192,7 @@ const Menu = ({
                 className={cn(
                   "w-full justify-start py-2 text-sm transition-colors duration-200",
                   selectedChatId === chat.id
-                    ? "bg-zinc-800/80 text-white hover:bg-zinc-800/90 hover:text-slate-200 active:text-slate-200"
+                    ? "bg-zinc-800/80 text-white hover:bg-zinc-800/90"
                     : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
                 )}
                 onClick={() => handleChatSelect(chat.id)}

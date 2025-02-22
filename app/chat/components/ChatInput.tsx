@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { SendHorizontal } from "lucide-react";
-import type { FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import ChatSuggestions from "./ChatSuggestions";
 import { useMenu } from "../providers/menuProvider";
@@ -16,6 +16,7 @@ interface ChatInputProps {
 
 const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputProps) => {
   const { isCollapsed } = useMenu();
+  const [message, setMessage] = useState("");
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -26,6 +27,8 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
   const handleSuggestionClick = (prompt: string) => {
     const formData = new FormData();
     formData.append("userMessage", prompt);
+    setMessage(prompt);
+
     onSubmit(formData);
   };
 
@@ -36,7 +39,7 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "absolute inset-0 flex flex-col items-center justify-start pt-20 md:pl-72 pointer-events-none transition-all duration-300",
+          "absolute inset-0 flex flex-col items-center justify-start pt-32 md:pl-72 pointer-events-none transition-all duration-300",
           isCollapsed && "md:pl-0"
         )}
       >
@@ -70,6 +73,8 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
                   maxHeight: "200px",
                   overflow: "auto",
                 }}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
                 onInput={(e) => {
                   const target = e.target as HTMLTextAreaElement;
                   target.style.height = "auto";
@@ -88,7 +93,7 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
               />
               <Button
                 className={cn(
-                  "absolute right-3 bottom-3 h-10 w-10 rounded-xl bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed p-0 flex items-center justify-center transition-all duration-200 hover:scale-105",
+                  "absolute right-3 bottom-4 h-10 w-10 rounded-xl bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed p-0 flex items-center justify-center transition-all duration-200 hover:scale-105",
                   loading && "animate-pulse"
                 )}
                 disabled={disableSend()}

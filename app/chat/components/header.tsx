@@ -89,7 +89,7 @@ const Header = ({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="w-full justify-start gap-2 rounded-none px-3 py-2 text-sm font-normal text-red-400 hover:bg-zinc-800 hover:text-red-400"
+                        className="w-full justify-start gap-2 rounded-none px-3 py-2 text-sm font-normal text-red-400 hover:bg-zinc-800 hover:text-red-400 z-50"
                         onClick={handleDisconnect}
                       >
                         <LogOut className="h-4 w-4" />

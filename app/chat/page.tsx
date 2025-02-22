@@ -20,10 +20,12 @@ import { getChatHistory } from "./services/chatServices";
 import type { Chat } from "./services/types";
 import ChatInput from "./components/ChatInput";
 import { motion, AnimatePresence } from "framer-motion";
-import { useMenu } from "./providers/menuProvider";
+import LoadingIndicator from "./components/LoadingIndicator";
+
+export type LoadingState = "thinking" | "executing" | "general" | null;
+
 const Chatbot = () => {
-  const [loading, setLoading] = useState(false);
-  const [executing, setExecuting] = useState(false);
+  const [loadingState, setLoadingState] = useState<LoadingState>(null);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const [injectiveAddress, setInjectiveAddress] = useState<string | null>(null);
   const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
@@ -59,7 +61,8 @@ const Chatbot = () => {
   };
 
   const loadChatHistory = async (chatId: string) => {
-    if (!loading && !executing) {
+    if (!loadingState) {
+      setLoadingState("general");
       const response = await getChatHistory(chatId);
       const messages = response.map((chat: { message: ChatMessage }) => chat.message);
       setMessageHistory(messages);
@@ -70,11 +73,12 @@ const Chatbot = () => {
         ai_id: chatInfos[0].ai_id,
         user_id: chatInfos[0].user_id,
       });
+      setLoadingState(null);
     }
   };
 
   const updateExecuting = (executing: boolean) => {
-    setExecuting(executing);
+    setLoadingState(executing ? "executing" : null);
   };
 
   const updateChat = (cb: (prevChat: ChatMessage[]) => ChatMessage[]) => {
@@ -98,14 +102,15 @@ const Chatbot = () => {
       validatorSelected ||
       lastMessageType === "swap" ||
       lastMessageType === "send_token" ||
-      loading ||
-      executing ||
+      !!loadingState ||
       lastMessageType === "validators"
     );
   };
 
   const sendMessage = async (formData: FormData) => {
-    setLoading(true);
+    if (messageHistory.length === 0) setLoadingState("general");
+    else if (messageHistory.length > 0) setLoadingState("thinking");
+
     const userMessage = formData.get("userMessage");
 
     if (typeof userMessage !== "string" || !userMessage.trim()) {
@@ -121,6 +126,7 @@ const Chatbot = () => {
         type: "text",
       });
       const newChat = await createChat(injectiveAddress, newUserMessage);
+
       console.log("newChat -> newChat:", newChat);
       if (newChat?.id) {
         addMessage(newUserMessage, newChat);
@@ -157,11 +163,11 @@ const Chatbot = () => {
         );
       })
       .finally(() => {
-        setLoading(false);
+        setLoadingState(null);
       });
   };
   const createNewChatButton = () => {
-    if (!loading && !executing) {
+    if (!loadingState) {
       setCurrentChat(null);
       setMessageHistory([]);
     }
@@ -195,9 +201,13 @@ const Chatbot = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className={`flex-1 bg-zinc-900 p-6 mx-2 rounded-xl overflow-y-auto flex flex-col pb-20 ${
+              className={`flex-1 bg-zinc-900 p-6 mx-2 rounded-xl overflow-y-auto flex flex-col pb-20 relative ${
                 messageHistory.length === 0 ? "mb-2" : "mb-16"
-              } ${loading || executing ? "animate-neonBlink" : ""}`}
+              } ${
+                loadingState
+                  ? "border-[3px] border-transparent animate-neonBlink"
+                  : "border border-zinc-800"
+              }`}
             >
               <AnimatePresence initial={false} mode="popLayout">
                 {messageHistory.map((msg, i) => {
@@ -258,7 +268,7 @@ const Chatbot = () => {
                             <ValidatorsMessageType
                               injectiveAddress={injectiveAddress}
                               validators={msg.validators}
-                              setLoading={setLoading}
+                              setLoadingState={setLoadingState}
                               isLastError={isLastError}
                               handleExit={handleExit}
                             />
@@ -289,7 +299,7 @@ const Chatbot = () => {
                         (isLastError ? (
                           msg.contractInput && (
                             <SwapMessageType
-                              executing={executing}
+                              executing={loadingState === "executing"}
                               text={msg.text}
                               handleExit={handleExit}
                               updateExecuting={updateExecuting}
@@ -311,7 +321,7 @@ const Chatbot = () => {
                               text={msg.text}
                               injectiveAddress={injectiveAddress}
                               setExecuting={updateExecuting}
-                              executing={executing}
+                              executing={loadingState === "executing"}
                               handleExit={handleExit}
                               send={msg.send}
                             />
@@ -338,32 +348,14 @@ const Chatbot = () => {
                   );
                 })}
               </AnimatePresence>
-              {loading && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="text-gray-400"
-                >
-                  ⏳ JECTA is thinking...
-                </motion.p>
-              )}
-              {executing && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="text-gray-400"
-                >
-                  ⏳ Executing...
-                </motion.p>
-              )}
+              {loadingState === "thinking" && <LoadingIndicator type="thinking" />}
+              {loadingState === "executing" && <LoadingIndicator type="executing" />}
             </motion.div>
           }
         </AnimatePresence>
 
         <ChatInput
-          loading={loading}
+          loading={!!loadingState}
           onSubmit={sendMessage}
           disableSend={disableSend}
           isEmptyState={messageHistory.length === 0}
