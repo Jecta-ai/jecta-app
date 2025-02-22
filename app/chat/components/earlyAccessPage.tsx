@@ -1,11 +1,23 @@
-import React, { useEffect, useState } from "react";
+"use client";
 
+import React, { useCallback, useEffect, useState } from "react";
 import { ChainGrpcWasmApi, MsgExecuteContractCompat, toBase64 } from "@injectivelabs/sdk-ts";
 import { getNetworkEndpoints, Network } from "@injectivelabs/networks";
 import { MsgBroadcaster, Wallet, WalletStrategy } from "@injectivelabs/wallet-ts";
 import { connectToWallet } from "@/wallet/walletConnection";
 import { BigNumberInBase } from "@injectivelabs/utils";
 import { ChainId } from "@injectivelabs/ts-types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Loader2, Wallet as WalletIcon } from "lucide-react";
 
 const endpoints = getNetworkEndpoints(Network.Testnet);
 const chainGrpcWasmApi = new ChainGrpcWasmApi(endpoints.grpc);
@@ -15,7 +27,7 @@ export const walletStrategy = new WalletStrategy({
 });
 
 export const msgBroadcastClient = new MsgBroadcaster({
-  walletStrategy /* instantiated wallet strategy */,
+  walletStrategy,
   network: Network.Testnet,
 });
 
@@ -36,7 +48,7 @@ const EarlyAccessPage = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const earlyAccessContract = "inj17rtl3ctxp2wqw48cgf0mga0qthsr7lygsqul2r";
 
-  const checkIsWhitelisted = async () => {
+  const checkIsWhitelisted = useCallback(async () => {
     try {
       setIsLoading(true);
       const queryFromObject = toBase64({ is_whitelisted: { address: `${injectiveAddress}` } });
@@ -59,126 +71,138 @@ const EarlyAccessPage = ({
       setIsWhitelisted(false);
       console.error("Error querying contract:", error);
     }
-  };
+  }, [injectiveAddress]);
 
   useEffect(() => {
     if (injectiveAddress) {
       checkIsWhitelisted();
     }
-  }, [injectiveAddress]);
+  }, [injectiveAddress, checkIsWhitelisted]);
 
   const handleConnectWallet = async (wallet: Wallet) => {
-    const walletInfo = await connectToWallet(wallet);
-    if (walletInfo?.address) {
-      setInjectiveAddress(walletInfo?.address);
+    try {
+      setIsLoading(true);
+      const walletInfo = await connectToWallet(wallet);
+      if (walletInfo?.address) {
+        setInjectiveAddress(walletInfo?.address);
+      }
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const joinEAP = async (ref_code: string) => {
     try {
+      setIsLoading(true);
       if (injectiveAddress) {
-        let msg: MsgExecuteContractCompat;
-        if (ref_code !== "") {
-          msg = MsgExecuteContractCompat.fromJSON({
-            sender: injectiveAddress,
-            contractAddress: earlyAccessContract,
-            msg: {
-              join_whitelist: {
-                ref_code: ref_code, // Handle optionality correctly
-              },
+        const msg = MsgExecuteContractCompat.fromJSON({
+          sender: injectiveAddress,
+          contractAddress: earlyAccessContract,
+          msg: {
+            join_whitelist: {
+              ref_code: ref_code || "", // Handle empty referral code
             },
-            funds: {
-              denom: "inj",
-              amount: new BigNumberInBase(1).toWei().toFixed(),
-            },
-          });
-        } else {
-          msg = MsgExecuteContractCompat.fromJSON({
-            sender: injectiveAddress,
-            contractAddress: earlyAccessContract,
-            msg: {
-              join_whitelist: {
-                ref_code: "", // Handle optionality correctly
-              },
-            },
-            funds: {
-              denom: "inj",
-              amount: new BigNumberInBase(1).toWei().toFixed(),
-            },
-          });
-        }
+          },
+          funds: {
+            denom: "inj",
+            amount: new BigNumberInBase(1).toWei().toFixed(),
+          },
+        });
+
         await msgBroadcastClient.broadcast({
           injectiveAddress: injectiveAddress,
           msgs: msg,
         });
+
         checkIsWhitelisted();
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error joining EAP:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-1 bg-black bg-opacity-50 backdrop-blur-md flex items-center justify-center z-50">
-      <div className="bg-zinc-800 text-white p-6 rounded-2xl shadow-lg  flex flex-col gap-4">
-        {/* Connect with Keplr Button */}
-        {isLoading ? (
-          <>
-            <div className="flex items-center justify-center">
-              <div className="relative w-16 h-16">
-                <div className="absolute w-full h-full border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-              </div>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 text-zinc-100">
+        <CardHeader className="space-y-2 text-center">
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+            Welcome to JECTA
+          </CardTitle>
+          <CardDescription className="text-zinc-400">
+            {injectiveAddress
+              ? "Join our Early Access Program"
+              : "Connect your wallet to get started"}
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="space-y-4">
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
             </div>
-          </>
-        ) : (
-          <>
-            {/* Welcome Message */}
-            <h2 className="text-xl font-semibold text-center">Welcome to Jecta</h2>
-            {injectiveAddress ? (
-              <>
-                Your Injective Address: {injectiveAddress}
-                {!isWhitelisted && (
-                  <>
-                    {/* Referral Code Input */}
-                    <input
-                      type="text"
-                      placeholder="Referral Code (Optional)"
-                      value={referralCode}
-                      onChange={(e) => setReferralCode(e.target.value)}
-                      className="w-full p-2 bg-zinc-700 text-white rounded-md outline-none focus:ring-2 focus:ring-purple-400"
-                    />
-                    {/* Join EAP Button */}
-                    <button
-                      type="button"
-                      onClick={() => joinEAP(referralCode)}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md font-semibold transition"
-                    >
-                      Join EAP (1 INJ)
-                    </button>
-                  </>
-                )}
-              </>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={() => handleConnectWallet(Wallet.Keplr)}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-md font-semibold transition"
-                >
-                  Connect with Keplr
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleConnectWallet(Wallet.Leap)}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-md font-semibold transition"
-                >
-                  Connect with Leap
-                </button>
-              </>
-            )}
-          </>
+          ) : (
+            <>
+              {injectiveAddress ? (
+                <div className="space-y-4">
+                  <div className="p-3 rounded-lg bg-zinc-800/50 border border-zinc-700 break-all">
+                    <p className="text-xs font-medium text-zinc-500 mb-1">Connected Address</p>
+                    <p className="text-sm font-medium text-zinc-300">{injectiveAddress}</p>
+                  </div>
+
+                  {!isWhitelisted && (
+                    <div className="space-y-3">
+                      <Input
+                        type="text"
+                        placeholder="Enter referral code (Optional)"
+                        value={referralCode}
+                        onChange={(e) => setReferralCode(e.target.value)}
+                        className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                      />
+                      <Button
+                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white"
+                        onClick={() => joinEAP(referralCode)}
+                      >
+                        Join Early Access (1 INJ)
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="grid gap-3">
+                  <Button
+                    variant="outline"
+                    className="w-full border-zinc-800 hover:bg-zinc-800 hover:text-zinc-100 bg-slate-700"
+                    onClick={() => handleConnectWallet(Wallet.Keplr)}
+                  >
+                    <WalletIcon className="mr-2 h-4 w-4" />
+                    Connect with Keplr
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full border-zinc-800 hover:bg-zinc-800 hover:text-zinc-100 bg-slate-700"
+                    onClick={() => handleConnectWallet(Wallet.Leap)}
+                  >
+                    <WalletIcon className="mr-2 h-4 w-4" />
+                    Connect with Leap
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+
+        {injectiveAddress && isWhitelisted && (
+          <CardFooter>
+            <p className="text-sm text-emerald-500 font-medium w-full text-center">
+              ✨ You have Early Access! ✨
+            </p>
+          </CardFooter>
         )}
-      </div>
+      </Card>
     </div>
   );
 };

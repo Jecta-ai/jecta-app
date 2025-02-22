@@ -15,7 +15,6 @@ const getChatHistory = async (chatId: string) => {
     headers: { "Content-Type": "application/json" },
   });
   const data = await response.json();
-  console.log("getChatHistory -> data:", data);
   return data;
 };
 

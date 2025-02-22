@@ -35,9 +35,10 @@ export const connectToWallet = async (wallet: Wallet) => {
 
 const signMessage = async (address: string) => {
   try {
-    const message = "Please sign this message to verify ownership.";
+    const message = "Please sign this message to verify ownership. Nonce = 2";
     const walletStrategy = getWalletStrategy();
     const signedMessage = await walletStrategy.signArbitrary(address, message);
+    console.log(" signMessage -> signedMessage:", signedMessage);
     return "success";
   } catch (error) {
     throw new Error("Signing error", { cause: error });

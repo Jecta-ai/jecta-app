@@ -1,3 +1,4 @@
+import { LoadingState } from "../page";
 import { useChat } from "../providers/chatProvider";
 import { useValidator } from "../providers/validatorProvider";
 import type { Validator } from "../types";
@@ -8,13 +9,13 @@ const ValidatorsMessageType = ({
   validators,
   isLastError,
   handleExit,
-  setLoading,
+  setLoadingState,
 }: {
   injectiveAddress: string | null;
   validators: Validator[];
   isLastError: boolean;
   handleExit: () => void;
-  setLoading: (isLoading: boolean) => void;
+  setLoadingState: (loadingState: LoadingState) => void;
 }) => {
   const { setValidatorAddress, validatorSelected, setValidatorSelected } = useValidator();
   const { addMessage, addMessages, messageHistory } = useChat();
@@ -61,7 +62,7 @@ const ValidatorsMessageType = ({
         })
       );
     } finally {
-      setLoading(false);
+      setLoadingState(null);
     }
   };
 
