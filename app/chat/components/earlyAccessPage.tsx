@@ -71,7 +71,7 @@ const EarlyAccessPage = ({
       setIsWhitelisted(false);
       console.error("Error querying contract:", error);
     }
-  });
+  }, [injectiveAddress]);
 
   useEffect(() => {
     if (injectiveAddress) {

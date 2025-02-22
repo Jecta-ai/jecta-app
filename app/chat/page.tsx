@@ -14,14 +14,13 @@ import DefaultMessageType from "./components/defaultMessageType";
 import EarlyAccessPage from "./components/earlyAccessPage";
 import { fetchResponse } from "./services/userMessage";
 import { createChatMessage } from "./utils";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { SendHorizontal } from "lucide-react";
 import { useChat } from "./providers/chatProvider";
 import { useValidator } from "./providers/validatorProvider";
 import { getChatHistory } from "./services/chatServices";
 import type { Chat } from "./services/types";
-
+import ChatInput from "./components/ChatInput";
+import { motion, AnimatePresence } from "framer-motion";
+import { useMenu } from "./providers/menuProvider";
 const Chatbot = () => {
   const [loading, setLoading] = useState(false);
   const [executing, setExecuting] = useState(false);
@@ -62,7 +61,7 @@ const Chatbot = () => {
   const loadChatHistory = async (chatId: string) => {
     if (!loading && !executing) {
       const response = await getChatHistory(chatId);
-      const messages = response.map((chat: any) => chat.message);
+      const messages = response.map((chat: { message: ChatMessage }) => chat.message);
       setMessageHistory(messages);
       const chatInfos = allChats.filter((chat) => chat.id === chatId);
       setCurrentChat({
@@ -83,9 +82,12 @@ const Chatbot = () => {
   };
 
   useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
+    const scrollToBottom = () => {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      }
+    };
+    scrollToBottom();
   }, [messageHistory]);
 
   const disableSend = () => {
@@ -184,150 +186,188 @@ const Chatbot = () => {
       />
 
       {/* Chat Section */}
-      <main className="flex flex-col w-full">
-        {messageHistory.length > 0 && (
-          <div
-            ref={chatContainerRef}
-            className={`flex-1 bg-zinc-900 p-6 mx-6 mb-4 rounded-xl overflow-y-auto flex flex-col ${
-              loading || executing ? "animate-neonBlink" : ""
-            }`}
-          >
-            {messageHistory.map((msg, i) => {
-              if (msg.sender === "system") {
-                return null;
-              }
-              // Detect if this is the last error message
-              const isLastError =
-                (msg.type === "error" ||
-                  msg.type === "validators" ||
-                  msg.type === "stake_amount" ||
-                  msg.type === "swap" ||
-                  msg.type === "send_token") &&
-                i === messageHistory.length - 1;
-              return (
-                <div
-                  key={`chat-message-${i}-${msg.sender}`}
-                  className={`flex my-2 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-                >
-                  {msg.sender === "ai" && (
-                    <Image
-                      src={logo}
-                      alt="Logo"
-                      className="w-8 h-8 rounded-md mr-2 border-white border-1"
-                      width={32}
-                      height={32}
-                    />
-                  )}
-                  {msg.type === "balance" && msg.balances && (
-                    <BalanceMessageType balances={msg.balances} />
-                  )}
-                  {msg.type === "validators" &&
-                    (isLastError ? (
-                      msg.validators && (
-                        <ValidatorsMessageType
-                          injectiveAddress={injectiveAddress}
-                          validators={msg.validators}
-                          setLoading={setLoading}
-                          isLastError={isLastError}
-                          handleExit={handleExit}
-                        />
-                      )
-                    ) : (
-                      <>
-                        <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
-                          Selecting Validator...
-                        </div>
-                      </>
-                    ))}
-                  {msg.type === "stake_amount" &&
-                    (isLastError ? (
-                      <StakeAmountMessageType
-                        handleExit={handleExit}
-                        injectiveAddress={injectiveAddress}
-                      />
-                    ) : (
-                      <>
-                        <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
-                          <h3 className="text-lg font-semibold mb-2">Amount successfull given !</h3>
-                        </div>
-                      </>
-                    ))}
-                  {msg.type === "swap" &&
-                    (isLastError ? (
-                      msg.contractInput && (
-                        <SwapMessageType
-                          executing={executing}
-                          text={msg.text}
-                          handleExit={handleExit}
-                          updateExecuting={updateExecuting}
-                          updateChat={updateChat}
-                          contractInput={msg.contractInput}
-                          injectiveAddress={injectiveAddress}
-                        />
-                      )
-                    ) : (
-                      <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
-                        <h3 className="text-lg font-semibold mb-2">Your Swap Details</h3>
-                        <div>{msg.text}</div>
-                      </div>
-                    ))}
-                  {msg.type === "send_token" &&
-                    (isLastError ? (
-                      msg.send && (
-                        <SendTokenMessageType
-                          text={msg.text}
-                          injectiveAddress={injectiveAddress}
-                          setExecuting={updateExecuting}
-                          executing={executing}
-                          handleExit={handleExit}
-                          send={msg.send}
-                        />
-                      )
-                    ) : (
-                      <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
-                        <h3 className="text-lg font-semibold mb-2">Your Transfer Details</h3>
-                        <div>{msg.text}</div>
-                      </div>
-                    ))}
-                  {msg.type === "error" && (
-                    <ErrorMessageType
-                      text={msg.text}
-                      handleExit={handleExit}
-                      isLastError={isLastError}
-                    />
-                  )}
-                  {(msg.type === "text" || msg.type === "success" || msg.type === "loading") && (
-                    <DefaultMessageType text={msg.text} sender={msg.sender} />
-                  )}
-                </div>
-              );
-            })}
-            {loading && <p className="text-gray-400">⏳ JECTA is thinking...</p>}
-            {executing && <p className="text-gray-400">⏳ Executing...</p>}
-          </div>
-        )}
-
-        {/* Chat Input */}
-        <div className="px-6 pb-6 flex items-center gap-3">
-          <form
-            className="w-full flex items-center gap-3"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              setLoading(true);
-              const formData = new FormData(e.currentTarget);
-              await sendMessage(formData);
-            }}
-          >
-            <Input className="w-full" name="userMessage" placeholder="Ask to JECTA..." />
-            <Button
-              className="disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={disableSend()}
-              type="submit"
+      <main className="flex flex-col w-full mt-16">
+        <AnimatePresence>
+          {
+            <motion.div
+              ref={chatContainerRef}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className={`flex-1 bg-zinc-900 p-6 mx-2 rounded-xl overflow-y-auto flex flex-col pb-20 ${
+                messageHistory.length === 0 ? "mb-2" : "mb-16"
+              } ${loading || executing ? "animate-neonBlink" : ""}`}
             >
-              <SendHorizontal className="w-4 h-4" />
-            </Button>
-          </form>
-        </div>
+              <AnimatePresence initial={false} mode="popLayout">
+                {messageHistory.map((msg, i) => {
+                  if (msg.sender === "system") {
+                    return null;
+                  }
+                  const isLastError =
+                    (msg.type === "error" ||
+                      msg.type === "validators" ||
+                      msg.type === "stake_amount" ||
+                      msg.type === "swap" ||
+                      msg.type === "send_token") &&
+                    i === messageHistory.length - 1;
+
+                  // Only animate new messages (last 3)
+                  const isRecent = i >= messageHistory.length - 3;
+                  const animationProps = isRecent
+                    ? {
+                        initial: { opacity: 0, y: 10 },
+                        animate: { opacity: 1, y: 0 },
+                        exit: { opacity: 0, y: -10 },
+                        transition: {
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 30,
+                          mass: 1,
+                          delay: isRecent ? 0.1 : 0,
+                        },
+                      }
+                    : {
+                        initial: { opacity: 1 },
+                        animate: { opacity: 1 },
+                      };
+
+                  return (
+                    <motion.div
+                      key={`chat-message-${i}-${msg.sender}`}
+                      {...animationProps}
+                      className={`flex my-2 ${
+                        msg.sender === "user" ? "justify-end" : "justify-start"
+                      }`}
+                    >
+                      {msg.sender === "ai" && (
+                        <Image
+                          src={logo}
+                          alt="Logo"
+                          className="w-8 h-8 rounded-md mr-2 border-white border-1"
+                          width={32}
+                          height={32}
+                        />
+                      )}
+                      {msg.type === "balance" && msg.balances && (
+                        <BalanceMessageType balances={msg.balances} />
+                      )}
+                      {msg.type === "validators" &&
+                        (isLastError ? (
+                          msg.validators && (
+                            <ValidatorsMessageType
+                              injectiveAddress={injectiveAddress}
+                              validators={msg.validators}
+                              setLoading={setLoading}
+                              isLastError={isLastError}
+                              handleExit={handleExit}
+                            />
+                          )
+                        ) : (
+                          <>
+                            <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                              Selecting Validator...
+                            </div>
+                          </>
+                        ))}
+                      {msg.type === "stake_amount" &&
+                        (isLastError ? (
+                          <StakeAmountMessageType
+                            handleExit={handleExit}
+                            injectiveAddress={injectiveAddress}
+                          />
+                        ) : (
+                          <>
+                            <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                              <h3 className="text-lg font-semibold mb-2">
+                                Amount successfull given !
+                              </h3>
+                            </div>
+                          </>
+                        ))}
+                      {msg.type === "swap" &&
+                        (isLastError ? (
+                          msg.contractInput && (
+                            <SwapMessageType
+                              executing={executing}
+                              text={msg.text}
+                              handleExit={handleExit}
+                              updateExecuting={updateExecuting}
+                              updateChat={updateChat}
+                              contractInput={msg.contractInput}
+                              injectiveAddress={injectiveAddress}
+                            />
+                          )
+                        ) : (
+                          <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                            <h3 className="text-lg font-semibold mb-2">Your Swap Details</h3>
+                            <div>{msg.text}</div>
+                          </div>
+                        ))}
+                      {msg.type === "send_token" &&
+                        (isLastError ? (
+                          msg.send && (
+                            <SendTokenMessageType
+                              text={msg.text}
+                              injectiveAddress={injectiveAddress}
+                              setExecuting={updateExecuting}
+                              executing={executing}
+                              handleExit={handleExit}
+                              send={msg.send}
+                            />
+                          )
+                        ) : (
+                          <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                            <h3 className="text-lg font-semibold mb-2">Your Transfer Details</h3>
+                            <div>{msg.text}</div>
+                          </div>
+                        ))}
+                      {msg.type === "error" && (
+                        <ErrorMessageType
+                          text={msg.text}
+                          handleExit={handleExit}
+                          isLastError={isLastError}
+                        />
+                      )}
+                      {(msg.type === "text" ||
+                        msg.type === "success" ||
+                        msg.type === "loading") && (
+                        <DefaultMessageType text={msg.text} sender={msg.sender} />
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+              {loading && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-gray-400"
+                >
+                  ⏳ JECTA is thinking...
+                </motion.p>
+              )}
+              {executing && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-gray-400"
+                >
+                  ⏳ Executing...
+                </motion.p>
+              )}
+            </motion.div>
+          }
+        </AnimatePresence>
+
+        <ChatInput
+          loading={loading}
+          onSubmit={sendMessage}
+          disableSend={disableSend}
+          isEmptyState={messageHistory.length === 0}
+        />
       </main>
     </div>
   );

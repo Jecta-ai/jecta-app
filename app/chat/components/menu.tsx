@@ -24,6 +24,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Header from "./header";
+import { useMenu } from "../providers/menuProvider";
 
 interface ChatItem {
   id: string;
@@ -46,7 +47,7 @@ const Menu = ({
   createNewChatButton,
   isWhitelisted,
 }: MenuProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { isCollapsed, setIsCollapsed } = useMenu();
   const [refDetails, setRefDetails] = useState<{ ref_code: string; count: number } | null>(null);
   const [copySuccess, setCopySuccess] = useState<string>("");
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
