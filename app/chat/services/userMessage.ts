@@ -11,7 +11,7 @@ export const fetchResponse = async (
   injectiveAddress: string | null
 ) => {
   console.log("userMessage:", userMessage);
-  const res = await fetch(`${baseUrl}/api/chat`, {
+  const res = await fetch(`${baseUrl}/api/chats`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getMessages, createInjectiveIfNotExists, sendMessageToDB } from "./utils";
+import { createInjectiveIfNotExists, getMessages, sendMessageToDB } from "./utils";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
