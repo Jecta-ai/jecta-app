@@ -1,56 +1,50 @@
-import { supabase } from "@/lib/supabaseClient";
+import { NextResponse } from "next/server";
+import { getMessages, createInjectiveIfNotExists, sendMessageToDB } from "./utils";
 
-export async function getMessages(chatId: number) {
-  const { data, error } = await supabase
-    .from("messages")
-    .select("*")
-    .eq("chat_id", chatId)
-    .order("created_at", { ascending: true });
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const chatId = searchParams.get("chatId");
 
-  if (error) {
-    console.error("Error fetching messages:", error);
-    return [];
+  if (!chatId) {
+    return NextResponse.json({ error: "Chat ID is required" }, { status: 400 });
   }
 
-  return data;
+  const messages = await getMessages(Number(chatId));
+  return NextResponse.json(messages);
 }
 
-export async function createInjectiveIfNotExists(injectiveAddress: string) {
-  const { data: existingInjective, error: existingInjectiveError } = await supabase
-    .from("injectives")
-    .select("wallet_address")
-    .eq("wallet_address", injectiveAddress)
-    .single();
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { type, ...data } = body;
 
-  if (existingInjectiveError) {
-    return existingInjectiveError;
+    switch (type) {
+      case "createInjective": {
+        const { injectiveAddress } = data;
+        if (!injectiveAddress) {
+          return NextResponse.json({ error: "Injective address is required" }, { status: 400 });
+        }
+        const result = await createInjectiveIfNotExists(injectiveAddress);
+        return NextResponse.json(result);
+      }
+
+      case "sendMessage": {
+        const { chatId, senderId, message } = data;
+        if (!chatId || !senderId || !message) {
+          return NextResponse.json(
+            { error: "ChatId, senderId, and message are required" },
+            { status: 400 }
+          );
+        }
+        const result = await sendMessageToDB(Number(chatId), Number(senderId), message);
+        return NextResponse.json(result);
+      }
+
+      default:
+        return NextResponse.json({ error: "Invalid operation type" }, { status: 400 });
+    }
+  } catch (error) {
+    console.error("API Error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-
-  if (existingInjective) {
-    return existingInjective;
-  }
-
-  const { data, error } = await supabase
-    .from("injectives")
-    .insert([{ wallet_address: injectiveAddress }]);
-
-  if (error) {
-    console.error("Error creating injective:", error);
-    return error;
-  }
-
-  return data;
-}
-
-export async function sendMessageToDB(chatId: number, senderId: number, message: object) {
-  const { data, error } = await supabase
-    .from("messages")
-    .insert([{ chat_id: chatId, sender_id: senderId, message }]);
-
-  if (error) {
-    console.error("Error sending message:", error);
-    return error;
-  }
-
-  return data;
 }
