@@ -5,14 +5,7 @@ import { getRefCodeDetails } from "../referralUtils";
 import { useChat } from "../providers/chatProvider";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Plus,
-  FileText,
-  MessageSquare,
-  Menu as MenuIcon,
-} from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
@@ -25,6 +18,31 @@ import {
 } from "@/components/ui/sheet";
 import Header from "./header";
 import { useMenu } from "../providers/menuProvider";
+import dynamic from "next/dynamic";
+
+const ChevronLeft = dynamic(() => import("lucide-react").then((mod) => mod.ChevronLeft), {
+  ssr: false,
+});
+
+const ChevronRight = dynamic(() => import("lucide-react").then((mod) => mod.ChevronRight), {
+  ssr: false,
+});
+
+const Plus = dynamic(() => import("lucide-react").then((mod) => mod.Plus), {
+  ssr: false,
+});
+
+const FileText = dynamic(() => import("lucide-react").then((mod) => mod.FileText), {
+  ssr: false,
+});
+
+const MessageSquare = dynamic(() => import("lucide-react").then((mod) => mod.MessageSquare), {
+  ssr: false,
+});
+
+const MenuIcon = dynamic(() => import("lucide-react").then((mod) => mod.Menu), {
+  ssr: false,
+});
 
 interface ChatItem {
   id: string;

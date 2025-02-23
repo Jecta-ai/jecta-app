@@ -2,8 +2,20 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LogOut, MessageSquare, Wallet } from "lucide-react";
 import { useState } from "react";
+import dynamic from "next/dynamic";
+
+const LogOutIcon = dynamic(() => import("lucide-react").then((mod) => mod.LogOut), {
+  ssr: false,
+});
+
+const MessageSquareIcon = dynamic(() => import("lucide-react").then((mod) => mod.MessageSquare), {
+  ssr: false,
+});
+
+const WalletIcon = dynamic(() => import("lucide-react").then((mod) => mod.Wallet), {
+  ssr: false,
+});
 
 interface HeaderProps {
   injectiveAddress: string | null;
@@ -62,7 +74,7 @@ const Header = ({
                   )}
                   onClick={() => setShowPopup(!showPopup)}
                 >
-                  <Wallet className="h-4 w-4" />
+                  <WalletIcon className="h-4 w-4" />
                   <span>
                     {injectiveAddress.slice(0, 6)}...{injectiveAddress.slice(-4)}
                   </span>
@@ -92,7 +104,7 @@ const Header = ({
                         className="w-full justify-start gap-2 rounded-none px-3 py-2 text-sm font-normal text-red-400 hover:bg-zinc-800 hover:text-red-400 z-50"
                         onClick={handleDisconnect}
                       >
-                        <LogOut className="h-4 w-4" />
+                        <LogOutIcon className="h-4 w-4" />
                         Disconnect
                       </Button>
                     </div>
@@ -125,7 +137,7 @@ const Header = ({
                 className="h-8 px-2 text-sm text-zinc-400"
                 onClick={() => setShowPopup(!showPopup)}
               >
-                <MessageSquare className="h-4 w-4" />
+                <MessageSquareIcon className="h-4 w-4" />
               </Button>
             )}
           </div>

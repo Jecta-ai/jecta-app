@@ -55,10 +55,10 @@ export const createChatIfNotExists = async ({
 };
 
 export const crateInjectiveIfNotExists = async (injectiveAddress: string) => {
-  const res = await fetch(`${baseUrl}/api/db/createInjectiveIfNotExists`, {
+  const res = await fetch(`${baseUrl}/api/db`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ injectiveAddress }),
+    body: JSON.stringify({ type: "createInjective", injectiveAddress }),
   });
   const data = await res.json();
   return data;

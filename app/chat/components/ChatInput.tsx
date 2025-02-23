@@ -2,11 +2,16 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { SendHorizontal } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import ChatSuggestions from "./ChatSuggestions";
 import { useMenu } from "../providers/menuProvider";
+import dynamic from "next/dynamic";
+
+const SendHorizontal = dynamic(() => import("lucide-react").then((mod) => mod.SendHorizontal), {
+  ssr: false,
+});
+
 interface ChatInputProps {
   loading: boolean;
   onSubmit: (formData: FormData) => Promise<void>;

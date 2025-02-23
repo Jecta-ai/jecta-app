@@ -51,10 +51,10 @@ export async function fetchBalance(
       balances: balances.bank
         .filter((token) => token !== undefined) // ✅ Ensure all tokens are defined
         .map((token) => ({
-          symbol: token!.symbol, // ✅ Use `!` to assert that it's now defined
-          balance: token!.balance,
-          logo: token!.logo,
-          address: token!.address,
+          symbol: token.symbol,
+          balance: token.balance.toString(),
+          logo: token.logo,
+          address: token.address,
         })),
       intent: intent,
     })
@@ -91,7 +91,7 @@ export async function fetchBalance(
         .filter((token) => token !== undefined)
         .map((token) => ({
           symbol: token.symbol,
-          balance: token.balance,
+          balance: token.balance.toString(),
           logo: token.logo,
           address: token.address, // Ensure fetchInjectiveBalance includes a logo field
         })),

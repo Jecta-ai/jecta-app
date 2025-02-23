@@ -17,7 +17,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, Wallet as WalletIcon } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const Loader2 = dynamic(() => import("lucide-react").then((mod) => mod.Loader2), {
+  ssr: false,
+});
+
+const WalletIcon = dynamic(() => import("lucide-react").then((mod) => mod.Wallet), {
+  ssr: false,
+});
 
 const endpoints = getNetworkEndpoints(Network.Testnet);
 const chainGrpcWasmApi = new ChainGrpcWasmApi(endpoints.grpc);

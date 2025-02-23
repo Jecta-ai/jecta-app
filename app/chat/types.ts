@@ -34,7 +34,7 @@ export interface ContractInput {
 export interface ChatMessage {
   balances?: Token[] | null;
   sender: string;
-  text: string;
+  text?: string;
   type?: string;
   intent?: string | null;
   validators?: Validator[] | null;

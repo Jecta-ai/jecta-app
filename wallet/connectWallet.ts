@@ -23,7 +23,10 @@ export const connectWallet = async (addToChat: (msg: any) => void) => {
     }
 
     const injectiveAddress = accounts[0].address;
-    const res = await createInjectiveIfNotExists(injectiveAddress);
+    const res = await fetch("/api/db", {
+      method: "POST",
+      body: JSON.stringify({ type: "createInjective", injectiveAddress }),
+    });
     // ✅ Sign a Message to Accept Terms
     // const msg = "By signing this message, you agree to the terms of use.";
     // const signResult: DirectSignResponse = await window.keplr.signArbitrary(
