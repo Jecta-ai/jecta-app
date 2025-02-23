@@ -1,9 +1,9 @@
 const ErrorMessageType = ({
-  text,
+  text = "",
   handleExit,
   isLastError,
 }: {
-  text: string;
+  text?: string;
   handleExit: () => void;
   isLastError: boolean;
 }) => {
