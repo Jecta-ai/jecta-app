@@ -1,7 +1,6 @@
 "use server";
 import { createTitleFromMessage } from "@/ai/titleManager";
 import type { ChatMessage } from "../types";
-import type { Chat } from "./types";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000"; // Default to localhost if not set
 
@@ -39,6 +38,7 @@ export const createChatIfNotExists = async ({
   userMessage: string;
 }) => {
   const title = await createTitleFromMessage(userMessage);
+  console.log(" title:", title);
   const res = await fetch(`${baseUrl}/api/chats`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -60,6 +60,7 @@ export const crateInjectiveIfNotExists = async (injectiveAddress: string) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ type: "createInjective", injectiveAddress }),
   });
+  console.log(" crateInjectiveIfNotExists -> res:", res);
   const data = await res.json();
   return data;
 };
@@ -78,6 +79,7 @@ export const createMessage = async ({
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ chatId, senderId, message }),
   });
+  console.log(" res:", res);
   const data = await res.json();
   return data;
 };

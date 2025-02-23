@@ -22,6 +22,11 @@ export async function createInjectiveIfNotExists(injectiveAddress: string) {
     .eq("wallet_address", injectiveAddress)
     .single();
 
+  if (existingInjectiveError && existingInjectiveError.code !== "PGRST116") {
+    console.error("Error checking injective existence:", existingInjectiveError);
+    return existingInjectiveError;
+  }
+
   if (existingInjectiveError) {
     return existingInjectiveError;
   }
