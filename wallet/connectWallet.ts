@@ -1,5 +1,4 @@
 import { ChainId } from "@injectivelabs/ts-types";
-import { createInjectiveIfNotExists } from "@/app/api/db/route";
 
 export const connectWallet = async (addToChat: (msg: any) => void) => {
   if (!window.keplr) {
