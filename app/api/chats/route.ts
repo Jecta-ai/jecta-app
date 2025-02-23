@@ -14,7 +14,9 @@ export async function GET(req: Request) {
     .single();
 
   if (userIdError) {
-    return new Response(JSON.stringify({ error: userIdError.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: `userError: ${userIdError.message}` }), {
+      status: 500,
+    });
   }
 
   const { data, error } = await supabase.from("chats").select("*").eq("user_id", userId?.id);
