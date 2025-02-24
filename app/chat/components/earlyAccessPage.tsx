@@ -18,6 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import dynamic from "next/dynamic";
+import { crateInjectiveIfNotExists } from "../services/userMessage";
 
 const Loader2 = dynamic(() => import("lucide-react").then((mod) => mod.Loader2), {
   ssr: false,
@@ -125,6 +126,7 @@ const EarlyAccessPage = ({
         });
 
         checkIsWhitelisted();
+        crateInjectiveIfNotExists(injectiveAddress);
       }
     } catch (error) {
       console.error("Error joining EAP:", error);

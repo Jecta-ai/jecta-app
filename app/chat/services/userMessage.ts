@@ -1,7 +1,6 @@
 "use server";
 import { createTitleFromMessage } from "@/ai/titleManager";
 import type { ChatMessage } from "../types";
-import type { Chat } from "./types";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000"; // Default to localhost if not set
 
