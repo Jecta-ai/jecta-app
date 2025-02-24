@@ -65,13 +65,16 @@ const Menu = ({
   createNewChatButton,
   isWhitelisted,
 }: MenuProps) => {
+  const { allChats, setAllChats } = useChat();
   const { isCollapsed, setIsCollapsed } = useMenu();
   const [refDetails, setRefDetails] = useState<{ ref_code: string; count: number } | null>(null);
   const [copySuccess, setCopySuccess] = useState<string>("");
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
-  const { allChats, setAllChats } = useChat();
 
   useEffect(() => {
+    if (!injectiveAddress) {
+      return;
+    }
     const fetchLastChatNames = async () => {
       const response = await getLastChatNames(injectiveAddress || "");
       if (response) {
@@ -83,7 +86,7 @@ const Menu = ({
       }
     };
     fetchLastChatNames();
-  }, [injectiveAddress, setAllChats]);
+  }, [injectiveAddress]);
 
   useEffect(() => {
     const getRef = async () => {
