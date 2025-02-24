@@ -55,7 +55,7 @@ const EarlyAccessPage = ({
 }: EarlyAccessPageProps) => {
   const [referralCode, setReferralCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const earlyAccessContract = "inj17rtl3ctxp2wqw48cgf0mga0qthsr7lygsqul2r";
+  const earlyAccessContract = "inj1dhzwl09judskmt56qynsxfv44rq4c4xq583rw8";
 
   const checkIsWhitelisted = useCallback(async () => {
     try {

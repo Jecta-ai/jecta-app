@@ -15,6 +15,17 @@ export const connectToWallet = async (wallet: Wallet) => {
       return;
     }
 
+    console.log(addresses);
+    const res = await fetch("/api/users", {
+      method: "GET",
+      headers: { "Content-Type": "application/json", injectiveAddress: addresses[0] },
+    });
+
+    const userData = await res.json();
+    if (!userData.data || Object.keys(userData.data).length === 0) {
+      return { address: addresses[0], wallet: wallet };
+    }
+    console.log("-->>>userData", userData);
     const nonce = await fetch("/api/auth/nonce", {
       method: "POST",
       body: JSON.stringify({ address: addresses[0] }),
