@@ -8,7 +8,7 @@ export async function GET(req: Request) {
   }
 
   const { data: userId, error: userIdError } = await supabase
-    .from("injectives")
+    .from("users")
     .select("id")
     .eq("wallet_address", injectiveAddress)
     .single();
@@ -37,13 +37,13 @@ export async function POST(req: Request) {
 
     // Get user2Id from injectives table
     const { data: userData, error: userError } = await supabase
-      .from("injectives")
+      .from("users")
       .select("id")
       .eq("wallet_address", injectiveAddress)
       .single();
 
     const { data: systemData, error: systemError } = await supabase
-      .from("injectives")
+      .from("users")
       .select("id")
       .eq("wallet_address", senderId)
       .single();

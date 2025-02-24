@@ -4,16 +4,17 @@
 import { Buffer } from "buffer";
 import { PubKeySecp256k1, Hash } from "@keplr-wallet/crypto";
 import { serializeSignDoc } from "@keplr-wallet/cosmos";
+import { supabase } from "@/lib/supabaseClient";
 //IMPORTANT !
 
 export async function POST(req: Request) {
   try {
     console.log("here");
-    const { message, signature, pubkey, address } = await req.json();
+    const { nonce, signature, pubkey, address } = await req.json();
 
     console.log("Received address:", address);
     console.log("Received pubkey:", pubkey);
-    console.log("Received message:", message);
+    console.log("Received message:", nonce);
 
     // Convert parameters to the correct types
     // Convert base64 pubkey and signature to Uint8Array
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
           type: "sign/MsgSignData",
           value: {
             signer: address,
-            data: Buffer.from(message).toString("base64"),
+            data: Buffer.from(nonce).toString("base64"),
           },
         },
       ],
@@ -59,8 +60,22 @@ export async function POST(req: Request) {
       console.error("Keccak-256 verification failed:", error);
     }
 
-    console.log(" POST -> isValid:", isValid);
-    return new Response(JSON.stringify({ isValid }), { status: 200 });
+    if (isValid) {
+      const { data } = await supabase
+        .from("users")
+        .select("*")
+        .eq("wallet_address", address)
+        .eq("nonce", nonce)
+        .single();
+
+      if (data) {
+        return new Response(JSON.stringify({ isValid: true }), { status: 200 });
+      } else {
+        return new Response(JSON.stringify({ isValid: false }), { status: 200 });
+      }
+    } else {
+      return new Response(JSON.stringify({ isValid: false }), { status: 200 });
+    }
   } catch (error) {
     console.error("Error in verification:", error);
     return new Response(

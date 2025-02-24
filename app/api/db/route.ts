@@ -17,7 +17,7 @@ export async function getMessages(chatId: number) {
 
 export async function createInjectiveIfNotExists(injectiveAddress: string) {
   const { data: existingInjective, error: existingInjectiveError } = await supabase
-    .from("injectives")
+    .from("users")
     .select("wallet_address")
     .eq("wallet_address", injectiveAddress)
     .single();
@@ -31,7 +31,7 @@ export async function createInjectiveIfNotExists(injectiveAddress: string) {
   }
 
   const { data, error } = await supabase
-    .from("injectives")
+    .from("users")
     .insert([{ wallet_address: injectiveAddress }]);
 
   if (error) {

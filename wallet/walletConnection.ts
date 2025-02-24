@@ -15,7 +15,13 @@ export const connectToWallet = async (wallet: Wallet) => {
       return;
     }
 
-    const signStatus = await signMessage(addresses[0], pubkey);
+    const nonce = await fetch("/api/auth/nonce", {
+      method: "POST",
+      body: JSON.stringify({ address: addresses[0] }),
+    });
+    const nonceData = await nonce.json();
+
+    const signStatus = await signMessage(addresses[0], pubkey, nonceData.nonce);
 
     if (signStatus === "success") {
       return { address: addresses[0], wallet: wallet };
@@ -35,18 +41,18 @@ export const connectToWallet = async (wallet: Wallet) => {
   }
 };
 
-const signMessage = async (address: string, pubkey: string) => {
+const signMessage = async (address: string, pubkey: string, nonce: string) => {
   try {
-    const message = "Please sign this message to verify ownership. Nonce = 3";
     const walletStrategy = getWalletStrategy();
-    const signedMessage = await walletStrategy.signArbitrary(address, message);
+    const signedMessage = await walletStrategy.signArbitrary(address, nonce);
 
     if (signedMessage) {
-      const res = await fetch("/api/verifyArbitrary", {
+      const res = await fetch("/api/auth/verifyArbitrary", {
         method: "POST",
-        body: JSON.stringify({ message, signature: signedMessage, pubkey, address }),
+        body: JSON.stringify({ nonce, signature: signedMessage, pubkey, address }),
       });
       const isValid = await res.json();
+
       if (isValid) {
         return "success";
       }
