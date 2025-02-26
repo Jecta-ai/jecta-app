@@ -48,7 +48,7 @@ const suggestions = [
     description: "Learn the fundamentals",
     prompts: [
       {
-        text: "What is Injective Protocol?",
+        text: "What is Injective ?",
         icon: <Zap className="w-4 h-4" />,
       },
       {

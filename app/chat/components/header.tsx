@@ -41,12 +41,12 @@ const Header = ({
   return (
     <>
       {/* Header spacer to prevent content overlap */}
-      <div className="h-14" />
+      <div className="h-14 w-max" />
 
       {/* Fixed header */}
       <header
         className={cn(
-          "fixed top-0  border-b border-zinc-800 bg-zinc-900/95 backdrop-blur-sm transition-all duration-300",
+          "fixed top-0  border-b border-zinc-800 bg-zinc-900/95 backdrop-blur-sm transition-all duration-300 w-full",
           "hidden md:block", // Hide on mobile since we're using Sheet
           isCollapsed ? "left-20" : "left-72", // Adjust left position based on sidebar state
           "right-0" // Extend to the right edge
