@@ -94,9 +94,9 @@ const EarlyAccessPage = ({
       setIsLoading(true);
       const { address, token } = await connectToWallet(wallet);
 
-      if (address) {
+      if (address && token) {
         setInjectiveAddress(address);
-        setCookie("token", token);
+        localStorage.setItem("token", token);
       }
     } catch (error) {
       console.error("Error connecting wallet:", error);
@@ -129,7 +129,10 @@ const EarlyAccessPage = ({
         });
 
         checkIsWhitelisted();
+        
+        
         crateInjectiveIfNotExists(injectiveAddress);
+        
       }
     } catch (error) {
       console.error("Error joining EAP:", error);

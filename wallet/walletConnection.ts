@@ -6,6 +6,7 @@ export const connectToWallet = async (
 ): Promise<{ address: string | null; wallet: Wallet; token: string | null }> => {
   try {
     configureWalletStrategy(wallet);
+    
 
     const walletStrategy = getWalletStrategy();
     const addresses = await walletStrategy.getAddresses();
@@ -20,7 +21,7 @@ export const connectToWallet = async (
       method: "GET",
       headers: { "Content-Type": "application/json", injectiveAddress: addresses[0] },
     });
-
+    console.log(res)
     const userData = await res.json();
     if (!userData.data || Object.keys(userData.data).length === 0) {
       return { address: addresses[0], wallet: wallet, token: null };
