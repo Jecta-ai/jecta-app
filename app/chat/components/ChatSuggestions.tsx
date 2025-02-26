@@ -67,15 +67,15 @@ const suggestions = [
     description: "Explore opportunities",
     prompts: [
       {
-        text: "How do I start trading on Injective?",
+        text: "I want to swap 1 INJ to USDT",
         icon: <Coins className="w-4 h-4" />,
       },
       {
-        text: "What are the trading fees?",
+        text: "What is the current price of QUNT ?",
         icon: <Wallet className="w-4 h-4" />,
       },
       {
-        text: "How to provide liquidity on Injective?",
+        text: "I want to stake INJ.",
         icon: <Server className="w-4 h-4" />,
       },
     ],
@@ -86,15 +86,15 @@ const suggestions = [
     description: "Deep dive into tech",
     prompts: [
       {
-        text: "How to integrate Injective into my dApp?",
+        text: "Give me the latest Injective news.",
         icon: <Code className="w-4 h-4" />,
       },
       {
-        text: "Explain Injective's smart contract capabilities",
+        text: "Explain me a tx by it's own hash.",
         icon: <Server className="w-4 h-4" />,
       },
       {
-        text: "What are Injective's supported chains?",
+        text: "I want to see my own portfolio.",
         icon: <Zap className="w-4 h-4" />,
       },
     ],
