@@ -32,6 +32,7 @@ const Chatbot = () => {
   const [token,setToken] = useState<string>("");
 
   const { validatorSelected, setValidatorSelected } = useValidator();
+  
   useEffect(()=>{
     const token = localStorage.getItem("token")
     if(token){

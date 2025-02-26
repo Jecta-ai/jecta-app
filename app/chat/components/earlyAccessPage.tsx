@@ -93,7 +93,7 @@ const EarlyAccessPage = ({
     try {
       setIsLoading(true);
       const { address, token } = await connectToWallet(wallet);
-
+      console.log(token)
       if (address) {
         setInjectiveAddress(address);
       }
@@ -130,10 +130,11 @@ const EarlyAccessPage = ({
           msgs: msg,
         });
 
-        checkIsWhitelisted();
         
         
-        crateInjectiveIfNotExists(injectiveAddress);
+        localStorage.removeItem("token")
+        await crateInjectiveIfNotExists(injectiveAddress);
+        setInjectiveAddress(null)
         
       }
     } catch (error) {
