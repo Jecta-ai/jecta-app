@@ -1,15 +1,15 @@
 "use server";
 import { createTitleFromMessage } from "@/ai/titleManager";
 import type { ChatMessage } from "../types";
+import { fetchWithAuth } from "@/lib/fetch";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000"; // Default to localhost if not set
 
-export const fetchResponse = async (
+/* export const fetchResponse = async (
   userMessage: string,
   chatHistory: ChatMessage[],
   injectiveAddress: string | null
 ) => {
-  console.log("userMessage:", userMessage);
   const res = await fetch(`${baseUrl}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -27,7 +27,7 @@ export const fetchResponse = async (
 
   return data;
 };
-
+ */
 export const createChatIfNotExists = async ({
   injectiveAddress,
   senderId,
@@ -72,9 +72,7 @@ export const createMessage = async ({
   senderId: string;
   message: object;
 }) => {
-  console.log("here");
-
-  const res = await fetch(`${baseUrl}/api/messages`, {
+  const res = await fetchWithAuth(`${baseUrl}/api/messages`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ chatId, senderId, message }),

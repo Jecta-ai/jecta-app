@@ -38,7 +38,6 @@ const ValidatorsMessageType = ({
       });
 
       if (!res.ok) throw new Error(`Server Error: ${res.status}`);
-      console.log("Chatbot -> res:", res);
 
       const data = await res.json();
       if (data.error) throw new Error(data.error);

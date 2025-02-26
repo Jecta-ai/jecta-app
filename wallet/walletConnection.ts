@@ -16,19 +16,15 @@ export const connectToWallet = async (
       return { address: null, wallet: wallet, token: null };
     }
 
-    console.log(addresses);
     const res = await fetch("/api/users", {
       method: "GET",
       headers: { "Content-Type": "application/json", injectiveAddress: addresses[0] },
     });
-    console.log("res:", res);
 
     const userData = await res.json();
-    console.log("userData:", userData.data);
     if (!userData.data || Object.keys(userData.data).length === 0) {
       return { address: addresses[0], wallet: wallet, token: null };
     }
-    console.log("-->>>userData", userData);
     const nonce = await fetch("/api/auth/nonce", {
       method: "POST",
       body: JSON.stringify({ address: addresses[0] }),

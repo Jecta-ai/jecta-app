@@ -12,7 +12,7 @@ import SendTokenMessageType from "./components/sendTokenMessageType";
 import ErrorMessageType from "./components/errorMessageType";
 import DefaultMessageType from "./components/defaultMessageType";
 import EarlyAccessPage from "./components/earlyAccessPage";
-import { fetchResponse } from "./services/userMessage";
+import { fetchResponse } from "./services/apiChat";
 import { createChatMessage } from "./utils";
 import { useChat } from "./providers/chatProvider";
 import { useValidator } from "./providers/validatorProvider";
@@ -153,7 +153,8 @@ const Chatbot = () => {
       .then((data) => {
         addMessages(data.messages, updatedChat); // Update chat history
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("Error fetching response:", err);
         addMessage(
           createChatMessage({
             sender: "ai",

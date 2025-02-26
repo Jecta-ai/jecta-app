@@ -18,8 +18,6 @@ export async function GET(req: Request) {
     return new Response(JSON.stringify({ error: "Missing injectiveAddress" }), { status: 400 });
   }
   const { data, error } = await getInjectiveAddress(injectiveAddress);
-  console.log("GET -> error:", error);
-  console.log("GET -> data:", data);
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }

@@ -1,12 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-const publicPaths = ["/", "/chat", "/api/auth/nonce", "/api/auth/verifyArbitrary", "/api/users"];
+const publicPaths = ["/", "/mesaj", "/api/auth/nonce", "/api/auth/verifyArbitrary", "/api/users"];
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   console.log("middleware -> token:", token);
-
-  console.log(request.nextUrl.pathname);
 
   if (publicPaths.includes(request.nextUrl.pathname)) {
     NextResponse.next();
