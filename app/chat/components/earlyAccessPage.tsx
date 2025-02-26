@@ -99,6 +99,8 @@ const EarlyAccessPage = ({
       }
       if(token){
         localStorage.setItem("token", token);
+      }else{
+        localStorage.removeItem("token")
       }
     } catch (error) {
       console.error("Error connecting wallet:", error);
