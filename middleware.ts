@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from "next/server";
 const publicPaths = ["/api/auth/nonce", "/api/auth/verifyArbitrary", "/api/users"];
 export async function middleware(req: NextRequest) {
+  console.log("------>REQ:",req)
   if (publicPaths.includes(req.nextUrl.pathname)) {
     NextResponse.next();
     return;
@@ -32,7 +33,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: "/api/protected/:path*", // Protects all API routes under `/api/protected/`
+  matcher: "/api/:path*", // Protects all API routes under `/api/protected/`
 };
 
 /*

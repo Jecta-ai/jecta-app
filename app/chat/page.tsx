@@ -29,8 +29,15 @@ const Chatbot = () => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const [injectiveAddress, setInjectiveAddress] = useState<string | null>(null);
   const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
+  const [token,setToken] = useState<string>("");
 
   const { validatorSelected, setValidatorSelected } = useValidator();
+  useEffect(()=>{
+    const token = localStorage.getItem("token")
+    if(token){
+      setToken(token)
+    }
+  },[injectiveAddress])
   const {
     messageHistory,
     setMessageHistory,
@@ -57,7 +64,7 @@ const Chatbot = () => {
       text: "Tool closed successfully.",
       type: "text",
     });
-    addMessage(exitToolMessage);
+    addMessage(token,exitToolMessage);
   };
 
   const loadChatHistory = async (chatId: string) => {
@@ -125,11 +132,11 @@ const Chatbot = () => {
         text: userMessage,
         type: "text",
       });
-      const newChat = await createChat(injectiveAddress, newUserMessage);
+      const newChat = await createChat(injectiveAddress, newUserMessage,token);
 
       console.log("newChat -> newChat:", newChat);
       if (newChat?.id) {
-        addMessage(newUserMessage, newChat);
+        addMessage(token,newUserMessage, newChat);
         await getAIResponse(userMessage, newChat);
       } else {
         console.error("Chat creation failed, no ID returned.");
@@ -144,18 +151,18 @@ const Chatbot = () => {
       type: "text",
     });
 
-    addMessage(newUserMessage);
+    addMessage(token,newUserMessage);
     await getAIResponse(userMessage);
   };
 
   const getAIResponse = async (userMessage: string, updatedChat?: Chat) => {
     fetchResponse(userMessage, messageHistory, injectiveAddress)
       .then((data) => {
-        addMessages(data.messages, updatedChat); // Update chat history
+        addMessages(token,data.messages, updatedChat); // Update chat history
       })
       .catch((err) => {
         console.error("Error fetching response:", err);
-        addMessage(
+        addMessage(token,
           createChatMessage({
             sender: "ai",
             text: "Error processing request",

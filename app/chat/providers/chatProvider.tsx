@@ -8,11 +8,11 @@ type ChatContextType = {
   allChats: Chat[];
   setAllChats: (chats: Chat[]) => void;
   currentChat: Chat | null;
-  createChat: (injectiveAddress: string, userMessage: ChatMessage) => Promise<Chat>;
+  createChat: (injectiveAddress: string, userMessage: ChatMessage,token:string) => Promise<Chat>;
   messageHistory: ChatMessage[];
   setMessageHistory: (messages: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => void;
-  addMessage: (message: ChatMessage, updatedChat?: Chat) => void;
-  addMessages: (messages: ChatMessage[], updatedChat?: Chat) => void;
+  addMessage: (token:string,message: ChatMessage, updatedChat?: Chat) => void;
+  addMessages: (token:string,messages: ChatMessage[], updatedChat?: Chat) => void;
   setCurrentChat: (chat: Chat | null) => void;
 };
 
@@ -23,12 +23,13 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [allChats, setAllChats] = useState<Chat[]>([]);
   const [messageHistory, setMessageHistory] = useState<ChatMessage[]>([]);
 
-  const createChat = async (injectiveAddress: string, userMessage: ChatMessage) => {
+  const createChat = async (injectiveAddress: string, userMessage: ChatMessage,token:string) => {
     try {
       const { id, title, ai_id, user_id } = await createChatIfNotExists({
         injectiveAddress,
         senderId: "system",
         userMessage: userMessage.text || "",
+        token
       });
 
       if (!id || !user_id) {
@@ -44,7 +45,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const addMessage = async (message: ChatMessage, newChat?: Chat) => {
+  const addMessage = async (token:string,message: ChatMessage, newChat?: Chat) => {
     const chatToUse = newChat ? newChat : currentChat;
     setMessageHistory((prev) => [...prev, message]);
 
@@ -55,16 +56,16 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       if (message.sender === "ai" && chatToUse.ai_id) {
-        createMessage({ chatId: chatToUse.id, senderId: chatToUse.ai_id, message });
+        createMessage({ chatId: chatToUse.id, senderId: chatToUse.ai_id, message,token });
       } else if (message.sender === "user" && chatToUse.user_id) {
-        createMessage({ chatId: chatToUse.id, senderId: chatToUse.user_id, message });
+        createMessage({ chatId: chatToUse.id, senderId: chatToUse.user_id, message ,token});
       }
     } catch (error) {
       console.error("Error adding message:", error);
     }
   };
 
-  const addMessages = async (messages: ChatMessage[], newChat?: Chat) => {
+  const addMessages = async (token:string,messages: ChatMessage[], newChat?: Chat) => {
     const chatToUse = newChat ? newChat : currentChat;
     if (!chatToUse?.id || (!chatToUse.ai_id && !chatToUse.user_id)) {
       throw new Error("Chat or senderId not found");
@@ -73,9 +74,9 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     if (Array.isArray(messages)) {
       for (const message of messages) {
         if (message.sender === "ai" && chatToUse.ai_id) {
-          addMessage(message, newChat); // Pass updated chat state
+          addMessage(token,message, newChat); // Pass updated chat state
         } else if (message.sender === "user" && chatToUse.user_id) {
-          addMessage(message, newChat);
+          addMessage(token,message, newChat);
         }
       }
     }
