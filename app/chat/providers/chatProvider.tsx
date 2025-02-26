@@ -28,7 +28,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       const { id, title, ai_id, user_id } = await createChatIfNotExists({
         injectiveAddress,
         senderId: "system",
-        userMessage: userMessage.text,
+        userMessage: userMessage.text || "",
       });
 
       if (!id || !user_id) {

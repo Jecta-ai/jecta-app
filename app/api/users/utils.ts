@@ -24,10 +24,10 @@ export async function getInjectiveAddress(injectiveAddress: string): Promise<any
 
   if (error) {
     console.error("Error fetching injective address:", error);
-    return [];
+    return { data: null, error };
   }
 
-  return data;
+  return { data, error };
 }
 
 export async function createInjectiveIfNotExists(injectiveAddress: string): Promise<any> {
@@ -37,19 +37,13 @@ export async function createInjectiveIfNotExists(injectiveAddress: string): Prom
     .eq("wallet_address", injectiveAddress)
     .single();
 
-  console.log(" createInjectiveIfNotExists -> existingInjective:", existingInjective);
-  console.log(" createInjectiveIfNotExists -> existingInjectiveError:", existingInjectiveError);
-
   if (existingInjective) {
-    console.log("Injective already exists:", existingInjective);
     return existingInjective;
   }
 
   const { data, error } = await supabase
     .from("users")
     .insert([{ wallet_address: injectiveAddress }]);
-  console.log(" createInjectiveIfNotExists -> error:", error);
-  console.log(" createInjectiveIfNotExists -> data:", data);
 
   if (error) {
     console.error("Error creating injective:", error);

@@ -1,7 +1,5 @@
-//ONLY WORKS WITH KEPLR WALLET
-//CURRENTLY WE'LL DELETE CONNECT WITH LEAP BUTTON RN
-
-import { Buffer } from "buffer";
+import jwt from "jsonwebtoken";
+import { Buffer } from "node:buffer";
 import { PubKeySecp256k1, Hash } from "@keplr-wallet/crypto";
 import { serializeSignDoc } from "@keplr-wallet/cosmos";
 import { supabase } from "@/lib/supabaseClient";
@@ -9,12 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 
 export async function POST(req: Request) {
   try {
-    console.log("here");
     const { nonce, signature, pubkey, address } = await req.json();
-
-    console.log("Received address:", address);
-    console.log("Received pubkey:", pubkey);
-    console.log("Received message:", nonce);
 
     // Convert parameters to the correct types
     // Convert base64 pubkey and signature to Uint8Array
@@ -69,13 +62,25 @@ export async function POST(req: Request) {
         .single();
 
       if (data) {
-        return new Response(JSON.stringify({ isValid: true }), { status: 200 });
-      } else {
-        return new Response(JSON.stringify({ isValid: false }), { status: 200 });
+        const token = jwt.sign(
+          {
+            aud: "authenticated",
+            wallet_address: address,
+            nonce: nonce,
+            exp: Math.floor(Date.now() / 1000) + 60 * 60,
+            user_metadata: {
+              user_id: address,
+              nonce: nonce,
+            },
+            role: "authenticated",
+          },
+          process.env.SUPABASE_JWT_SECRET as string
+        );
+        return new Response(JSON.stringify({ isValid: true, token }), { status: 200 });
       }
-    } else {
-      return new Response(JSON.stringify({ isValid: false }), { status: 200 });
+      return new Response(JSON.stringify({ isValid: false, token: null }), { status: 200 });
     }
+    return new Response(JSON.stringify({ isValid: false, token: null }), { status: 200 });
   } catch (error) {
     console.error("Error in verification:", error);
     return new Response(

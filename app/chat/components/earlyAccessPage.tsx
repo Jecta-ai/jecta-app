@@ -17,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { setCookie } from "cookies-next";
 import dynamic from "next/dynamic";
 import { crateInjectiveIfNotExists } from "../services/userMessage";
 
@@ -91,9 +92,11 @@ const EarlyAccessPage = ({
   const handleConnectWallet = async (wallet: Wallet) => {
     try {
       setIsLoading(true);
-      const walletInfo = await connectToWallet(wallet);
-      if (walletInfo?.address) {
-        setInjectiveAddress(walletInfo?.address);
+      const { address, token } = await connectToWallet(wallet);
+
+      if (address) {
+        setInjectiveAddress(address);
+        setCookie("token", token);
       }
     } catch (error) {
       console.error("Error connecting wallet:", error);

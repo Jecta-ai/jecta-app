@@ -2,12 +2,9 @@ import { createInjectiveIfNotExists, getInjectiveAddress } from "./utils";
 
 export async function POST(req: Request) {
   const { type, injectiveAddress } = await req.json();
-  console.log(" api/users POST -> type:", type);
-  console.log(" api/users POST -> injectiveAddress:", injectiveAddress);
+
   if (type === "createInjective") {
     const { data, error } = await createInjectiveIfNotExists(injectiveAddress);
-    console.log(" api/users POST -> data:", data);
-    console.log(" api/users POST -> error:", error);
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), { status: 500 });
     }
@@ -21,6 +18,8 @@ export async function GET(req: Request) {
     return new Response(JSON.stringify({ error: "Missing injectiveAddress" }), { status: 400 });
   }
   const { data, error } = await getInjectiveAddress(injectiveAddress);
+  console.log("GET -> error:", error);
+  console.log("GET -> data:", data);
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }

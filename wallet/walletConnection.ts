@@ -1,8 +1,9 @@
 import type { Wallet } from "@injectivelabs/wallet-ts";
 import { configureWalletStrategy, getWalletStrategy } from "@/app/chat/utils";
-import { Keplr } from "@keplr-wallet/provider-extension";
 
-export const connectToWallet = async (wallet: Wallet) => {
+export const connectToWallet = async (
+  wallet: Wallet
+): Promise<{ address: string | null; wallet: Wallet; token: string | null }> => {
   try {
     configureWalletStrategy(wallet);
 
@@ -12,7 +13,7 @@ export const connectToWallet = async (wallet: Wallet) => {
 
     if (addresses.length === 0) {
       console.error("No addresses found.");
-      return;
+      return { address: null, wallet: wallet, token: null };
     }
 
     console.log(addresses);
@@ -20,10 +21,12 @@ export const connectToWallet = async (wallet: Wallet) => {
       method: "GET",
       headers: { "Content-Type": "application/json", injectiveAddress: addresses[0] },
     });
+    console.log("res:", res);
 
     const userData = await res.json();
+    console.log("userData:", userData.data);
     if (!userData.data || Object.keys(userData.data).length === 0) {
-      return { address: addresses[0], wallet: wallet };
+      return { address: addresses[0], wallet: wallet, token: null };
     }
     console.log("-->>>userData", userData);
     const nonce = await fetch("/api/auth/nonce", {
@@ -32,12 +35,13 @@ export const connectToWallet = async (wallet: Wallet) => {
     });
     const nonceData = await nonce.json();
 
-    const signStatus = await signMessage(addresses[0], pubkey, nonceData.nonce);
+    const { status, token } = await signMessage(addresses[0], pubkey, nonceData.nonce);
 
-    if (signStatus === "success") {
-      return { address: addresses[0], wallet: wallet };
+    if (status === "success") {
+      return { address: addresses[0], wallet: wallet, token: token };
     }
 
+    return { address: null, wallet: wallet, token: null };
     //TODO: Save user’s wallet address to chat history
     /*
     addToChat(createChatMessage({
@@ -49,10 +53,15 @@ export const connectToWallet = async (wallet: Wallet) => {
     */
   } catch (error) {
     console.error(`Error connecting to ${wallet}:`, error);
+    return { address: null, wallet: wallet, token: null };
   }
 };
 
-const signMessage = async (address: string, pubkey: string, nonce: string) => {
+const signMessage = async (
+  address: string,
+  pubkey: string,
+  nonce: string
+): Promise<{ status: string; token: string | null }> => {
   try {
     const walletStrategy = getWalletStrategy();
     const signedMessage = await walletStrategy.signArbitrary(address, nonce);
@@ -62,45 +71,15 @@ const signMessage = async (address: string, pubkey: string, nonce: string) => {
         method: "POST",
         body: JSON.stringify({ nonce, signature: signedMessage, pubkey, address }),
       });
-      const isValid = await res.json();
+      const { isValid, token } = await res.json();
 
       if (isValid) {
-        return "success";
+        return { status: "success", token };
       }
     }
 
-    return "failed";
+    return { status: "failed", token: null };
   } catch (error) {
     throw new Error("Signing error", { cause: error });
-  }
-};
-
-//ONLY WORKS WITH KEPLR WALLET
-//CURRENTLY WE'LL DELETE CONNECT WITH LEAP BUTTON RN
-//IMPORTANT !
-export const verifyArbitrary = async (
-  message: string,
-  signature: string,
-  pubkey: string,
-  address: string,
-  keplr?: Keplr
-): Promise<boolean> => {
-  try {
-    const stdSignature = {
-      pub_key: {
-        type: "tendermint/PubKeySecp256k1",
-        value: pubkey,
-      },
-      signature: signature,
-    };
-    if (keplr) {
-      const isValid = await keplr.verifyArbitrary("injective-1", address, message, stdSignature);
-      console.log("✅ Keplr Verification Result:", isValid);
-      return isValid;
-    }
-    return false;
-  } catch (error) {
-    console.error("❌ Error verifying signature with Keplr:", error);
-    return false;
   }
 };

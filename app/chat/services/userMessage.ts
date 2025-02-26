@@ -72,6 +72,8 @@ export const createMessage = async ({
   senderId: string;
   message: object;
 }) => {
+  console.log("here");
+
   const res = await fetch(`${baseUrl}/api/messages`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
