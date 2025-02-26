@@ -1,14 +1,16 @@
 
+"use server"
 import type { ChatMessage } from "../types";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
-const getAuthToken = () =>  localStorage.getItem("token");
+
 export const fetchResponse = async (
   userMessage: string,
   chatHistory: ChatMessage[],
-  injectiveAddress: string | null
+  injectiveAddress: string | null,
+  token:string
 ) => {
-  const token = getAuthToken(); // Retrieve the token
+  
 
   const res = await fetch(`${baseUrl}/api/chat`, {
     method: "POST",

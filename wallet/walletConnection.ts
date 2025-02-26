@@ -23,7 +23,8 @@ export const connectToWallet = async (
     });
     console.log(res)
     const userData = await res.json();
-    if (!userData.data || Object.keys(userData.data).length === 0) {
+    console.log(userData)
+    if (userData.data == null) {
       return { address: addresses[0], wallet: wallet, token: null };
     }
     const nonce = await fetch("/api/auth/nonce", {

@@ -156,7 +156,7 @@ const Chatbot = () => {
   };
 
   const getAIResponse = async (userMessage: string, updatedChat?: Chat) => {
-    fetchResponse(userMessage, messageHistory, injectiveAddress)
+    fetchResponse(userMessage, messageHistory, injectiveAddress,token)
       .then((data) => {
         addMessages(token,data.messages, updatedChat); // Update chat history
       })
@@ -274,6 +274,7 @@ const Chatbot = () => {
                         (isLastError ? (
                           msg.validators && (
                             <ValidatorsMessageType
+                            token={token}
                               injectiveAddress={injectiveAddress}
                               validators={msg.validators}
                               setLoadingState={setLoadingState}
@@ -291,6 +292,7 @@ const Chatbot = () => {
                       {msg.type === "stake_amount" &&
                         (isLastError ? (
                           <StakeAmountMessageType
+                          token={token}
                             handleExit={handleExit}
                             injectiveAddress={injectiveAddress}
                           />

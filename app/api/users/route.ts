@@ -14,6 +14,7 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   const injectiveAddress = req.headers.get("injectiveAddress");
+  console.log(injectiveAddress)
   if (!injectiveAddress) {
     return new Response(JSON.stringify({ error: "Missing injectiveAddress" }), { status: 400 });
   }

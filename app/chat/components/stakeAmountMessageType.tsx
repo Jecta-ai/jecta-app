@@ -7,9 +7,11 @@ import { createChatMessage,msgBroadcastClient } from "../utils";
 const StakeAmountMessageType = ({
   handleExit,
   injectiveAddress,
+  token
 }: {
   injectiveAddress: string | null;
   handleExit: () => void;
+  token:string;
 }) => {
   const [amount, setAmount] = useState<string>();
   const { validatorAddress, setValidatorSelected } = useValidator();
@@ -34,7 +36,7 @@ const StakeAmountMessageType = ({
         injectiveAddress: injectiveAddress,
         msgs: msg,
       });
-      addMessage(
+      addMessage(token,
         createChatMessage({
           sender: "ai",
           text: `Stake success ! Here is your tx Hash : ${res.txHash}`,

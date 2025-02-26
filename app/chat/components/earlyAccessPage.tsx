@@ -94,8 +94,10 @@ const EarlyAccessPage = ({
       setIsLoading(true);
       const { address, token } = await connectToWallet(wallet);
 
-      if (address && token) {
+      if (address) {
         setInjectiveAddress(address);
+      }
+      if(token){
         localStorage.setItem("token", token);
       }
     } catch (error) {
