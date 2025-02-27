@@ -86,7 +86,10 @@ const ChatSuggestions = ({ onSuggestionClick }: ChatSuggestionsProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className={cn("w-full px-4 sm:px-6 mb-4 mt-4 sm:mt-6 lg:mt-8", isCollapsed && "pl-24 mx-auto")}
+      className={cn(
+        "w-full mb-4 mt-4 sm:mt-6 lg:mt-8",
+        isCollapsed ? "pl-28 mx-auto" : "px-4 sm:px-6"
+      )}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:flex xl:flex-row gap-2 sm:gap-3 lg:gap-4 h-full max-h-[calc(100vh-250px)] overflow-y-auto pb-4">
         {suggestions.map((category, index) => (
@@ -122,7 +125,9 @@ const ChatSuggestions = ({ onSuggestionClick }: ChatSuggestionsProps) => {
                     <div className="text-zinc-500 group-hover:text-white transition-colors">
                       {prompt.icon}
                     </div>
-                    <span className="line-clamp-1 text-xs overflow-hidden text-ellipsis">{prompt.text}</span>
+                    <span className="line-clamp-1 text-xs overflow-hidden text-ellipsis">
+                      {prompt.text}
+                    </span>
                   </div>
                 </Button>
               ))}
