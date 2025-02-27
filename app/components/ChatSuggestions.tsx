@@ -86,9 +86,9 @@ const ChatSuggestions = ({ onSuggestionClick }: ChatSuggestionsProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className={cn("w-full px-4 sm:px-6 mb-4 mt-2 sm:mt-4 md:mt-12", isCollapsed && "pl-24 mx-auto")}
+      className={cn("w-full px-4 sm:px-6 mb-4 mt-4 sm:mt-6 lg:mt-8", isCollapsed && "pl-24 mx-auto")}
     >
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:flex xl:flex-row gap-1.5 sm:gap-2 lg:gap-4 h-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:flex xl:flex-row gap-2 sm:gap-3 lg:gap-4 h-full max-h-[calc(100vh-250px)] overflow-y-auto pb-4">
         {suggestions.map((category, index) => (
           <motion.div
             key={category.title}

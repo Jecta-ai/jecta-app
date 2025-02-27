@@ -43,9 +43,9 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
           const syntheticEvent = {
             preventDefault: () => {},
             currentTarget: form,
-            target: form
+            target: form,
           } as unknown as FormEvent<HTMLFormElement>;
-          
+
           handleSubmit(syntheticEvent);
         }
       }
@@ -59,7 +59,7 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "absolute inset-0 flex flex-col items-center justify-start pt-8 sm:pt-16 md:pt-32 md:pl-72 pointer-events-none transition-all duration-300",
+          "fixed inset-0 flex flex-col items-center justify-start pt-16 sm:pt-20 md:pt-24 md:pl-72 pointer-events-none transition-all duration-300 z-10",
           isCollapsed && "md:pl-0"
         )}
       >
@@ -68,18 +68,20 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-center mb-4 sm:mb-8"
+            className="text-center mb-6 sm:mb-8"
           >
-            <h1 className="text-3xl sm:text-4xl font-bold mb-2 sm:mb-4 bg-gradient-to-r from-white via-white to-zinc-500 bg-clip-text text-transparent">
+            <h1 className="text-2xl mt-4  sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-white via-white to-zinc-500 bg-clip-text text-transparent">
               Welcome to JECTA
             </h1>
-            <p className="text-base sm:text-lg text-zinc-400">Your AI assistant for the Injective ecosystem</p>
+            <p className="text-sm sm:text-base md:text-lg text-zinc-400">
+              Your AI assistant for the Injective ecosystem
+            </p>
           </motion.div>
           <motion.form
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-col mb-4 sm:mb-8 max-w-2xl mx-auto"
+            className="flex flex-col mb-4 sm:mb-6 max-w-2xl mx-auto w-full"
             onSubmit={handleSubmit}
           >
             <div className="relative group">
@@ -87,7 +89,7 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
                 name="userMessage"
                 rows={1}
                 className="w-full bg-black/40 backdrop-blur-sm rounded-2xl px-6 py-4 pr-14 leading-relaxed resize-none focus:outline-none border border-zinc-800/50 hover:border-zinc-700/50 focus:border-zinc-600 text-zinc-100 placeholder:text-zinc-600 transition-all duration-200 text-base shadow-lg"
-                placeholder="Ask anything about the Injective ecosystem..."
+                placeholder="Ask Jecta..."
                 style={{
                   minHeight: "56px",
                   maxHeight: "200px",
