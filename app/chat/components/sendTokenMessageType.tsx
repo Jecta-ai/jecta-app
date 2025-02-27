@@ -1,10 +1,10 @@
 import { MsgExecuteContractCompat, MsgSend } from "@injectivelabs/sdk-ts";
 import { useChat } from "../providers/chatProvider";
 import type { SendDetails } from "../types";
-import { createChatMessage,msgBroadcastClient } from "../utils";
+import { createChatMessage, msgBroadcastClient } from "../utils";
 
 const SendTokenMessageType = ({
-  text,
+  text = "",
   executing,
   setExecuting,
   handleExit,
@@ -13,7 +13,7 @@ const SendTokenMessageType = ({
   token,
 }: {
   injectiveAddress: string | null;
-  text: string;
+  text?: string;
   executing: boolean;
   setExecuting: (executing: boolean) => void;
   handleExit: () => void;
@@ -40,7 +40,7 @@ const SendTokenMessageType = ({
             action: "transfer",
           },
         });
-        const msgClient = msgBroadcastClient()
+        const msgClient = msgBroadcastClient();
         const res = await msgClient.broadcast({
           injectiveAddress: injectiveAddress,
           msgs: msg,
@@ -63,7 +63,7 @@ const SendTokenMessageType = ({
           srcInjectiveAddress: injectiveAddress,
           dstInjectiveAddress: sendDetails.receiver,
         });
-        const msgClient = msgBroadcastClient()
+        const msgClient = msgBroadcastClient();
         const res = await msgClient.broadcast({
           injectiveAddress: injectiveAddress,
           msgs: msg,

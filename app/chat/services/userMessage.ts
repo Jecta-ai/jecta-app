@@ -4,7 +4,7 @@ import type { ChatMessage } from "../types";
 import { fetchWithAuth } from "@/lib/fetch";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000"; // Default to localhost if not set
-const getAuthToken = () =>  localStorage.getItem("token");
+const getAuthToken = () => localStorage.getItem("token");
 /* export const fetchResponse = async (
   userMessage: string,
   chatHistory: ChatMessage[],
@@ -32,19 +32,19 @@ export const createChatIfNotExists = async ({
   injectiveAddress,
   senderId,
   userMessage,
-  token
+  token,
 }: {
   injectiveAddress: string;
   senderId: string;
   userMessage: string;
-  token:string;
+  token: string;
 }) => {
-  
   const title = await createTitleFromMessage(userMessage);
+  console.log(" title:", title);
   const res = await fetch(`${baseUrl}/api/chats`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" ,Authorization: token ? `Bearer ${token}` : "",},
-    
+    headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
+
     body: JSON.stringify({ title, injectiveAddress, senderId }),
   });
 
@@ -58,12 +58,12 @@ export const createChatIfNotExists = async ({
 };
 
 export const crateInjectiveIfNotExists = async (injectiveAddress: string) => {
-  
   const res = await fetch(`${baseUrl}/api/users`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ type: "createInjective", injectiveAddress }),
   });
+  console.log(" crateInjectiveIfNotExists -> res:", res);
   const data = await res.json();
   return data;
 };
@@ -72,19 +72,19 @@ export const createMessage = async ({
   chatId,
   senderId,
   message,
-  token
+  token,
 }: {
   chatId: string;
   senderId: string;
   message: object;
-  token:string;
+  token: string;
 }) => {
-  
   const res = await fetchWithAuth(`${baseUrl}/api/messages`, {
     method: "POST",
-    headers: { "Content-Type": "application/json",Authorization: token ? `Bearer ${token}` : "", },
+    headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
     body: JSON.stringify({ chatId, senderId, message }),
   });
+  console.log(" res:", res);
   const data = await res.json();
   return data;
 };

@@ -3,7 +3,7 @@ import type { ChatMessage, ContractInput } from "../types";
 import { createChatMessage, msgBroadcastClient } from "../utils";
 
 const SwapMessageType = ({
-  text,
+  text = "",
   executing,
   handleExit,
   contractInput,
@@ -11,7 +11,7 @@ const SwapMessageType = ({
   updateExecuting,
   injectiveAddress,
 }: {
-  text: string;
+  text?: string;
   executing: boolean;
   handleExit: () => void;
   contractInput: ContractInput;

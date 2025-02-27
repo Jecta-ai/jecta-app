@@ -1,4 +1,4 @@
-const DefaultMessageType = ({ text, sender }: { text: string; sender: string }) => {
+const DefaultMessageType = ({ text = "", sender }: { text?: string; sender: string }) => {
   return (
     <div
       className={`p-3 rounded-xl max-w-[75%] ${
