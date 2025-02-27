@@ -35,6 +35,8 @@ const Header = ({
   const handleDisconnect = () => {
     setInjectiveAddress(null);
     setShowPopup(false);
+    localStorage.removeItem("token");
+    
     window.location.reload();
   };
 
