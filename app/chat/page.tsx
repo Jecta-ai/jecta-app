@@ -327,6 +327,7 @@ const Chatbot = () => {
                               updateChat={updateChat}
                               contractInput={msg.contractInput}
                               injectiveAddress={injectiveAddress}
+                              token={token}
                             />
                           )
                         ) : (
@@ -345,6 +346,7 @@ const Chatbot = () => {
                               executing={loadingState === "executing"}
                               handleExit={handleExit}
                               send={msg.send}
+                              token={token}
                             />
                           )
                         ) : (

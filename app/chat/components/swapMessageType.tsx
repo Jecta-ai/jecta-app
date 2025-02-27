@@ -10,6 +10,7 @@ const SwapMessageType = ({
   updateChat,
   updateExecuting,
   injectiveAddress,
+  token,
 }: {
   text?: string;
   executing: boolean;
@@ -18,6 +19,7 @@ const SwapMessageType = ({
   updateChat: (cb: (prevChat: ChatMessage[]) => ChatMessage[]) => void;
   updateExecuting: (executing: boolean) => void;
   injectiveAddress: string | null;
+  token: string;
 }) => {
   const confirmSwap = async (contractInput: ContractInput) => {
     try {

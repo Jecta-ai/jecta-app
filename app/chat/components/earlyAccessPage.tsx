@@ -7,6 +7,7 @@ import {
   MsgBroadcaster,
   type Wallet as WalletType,
   WalletStrategy,
+  Wallet,
 } from "@injectivelabs/wallet-ts";
 import { connectToWallet } from "@/wallet/walletConnection";
 import { BigNumberInBase } from "@injectivelabs/utils";
@@ -23,7 +24,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { setCookie } from "cookies-next";
 import { Loader2, Wallet as WalletIcon } from "lucide-react";
 import { crateInjectiveIfNotExists } from "../services/userMessage";
 
@@ -45,7 +45,7 @@ const EarlyAccessPage = ({
 }: EarlyAccessPageProps) => {
   const [referralCode, setReferralCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [strategy, setStrategy] = useState<Wallet>();
+  const [strategy, setStrategy] = useState<WalletType>();
   const earlyAccessContract = "inj1dhzwl09judskmt56qynsxfv44rq4c4xq583rw8";
 
   const checkIsWhitelisted = useCallback(async () => {
@@ -79,7 +79,7 @@ const EarlyAccessPage = ({
     }
   }, [injectiveAddress, checkIsWhitelisted]);
 
-  const handleConnectWallet = async (wallet: Wallet) => {
+  const handleConnectWallet = async (wallet: WalletType) => {
     try {
       setIsLoading(true);
       const { address, token } = await connectToWallet(wallet);
