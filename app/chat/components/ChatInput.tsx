@@ -23,6 +23,7 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
   const { isCollapsed } = useMenu();
   const [message, setMessage] = useState("");
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     await onSubmit(formData);

@@ -86,7 +86,7 @@ const SendTokenMessageType = ({
           type: "text",
         })
       );
-      console.log(error);
+
       return;
     }
   };

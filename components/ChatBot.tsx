@@ -307,7 +307,7 @@ const Chatbot = () => {
       ]);
       setValidatorSelected(false);
     } catch (error) {
-      console.log(error);
+
     }
   };
 

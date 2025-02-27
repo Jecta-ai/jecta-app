@@ -45,7 +45,7 @@ const StakeAmountMessageType = ({
       );
       setValidatorSelected(false);
     } catch (error) {
-      console.log(error);
+
     }
   };
 

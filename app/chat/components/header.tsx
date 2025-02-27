@@ -41,12 +41,12 @@ const Header = ({
   return (
     <>
       {/* Header spacer to prevent content overlap */}
-      <div className="h-14 w-max" />
+      <div className="h-14 w-fit " />
 
       {/* Fixed header */}
       <header
         className={cn(
-          "fixed top-0  border-b border-zinc-800 bg-zinc-900/95 backdrop-blur-sm transition-all duration-300 w-full",
+          "fixed top-0  border-b border-zinc-800 bg-zinc-900/95 backdrop-blur-sm transition-all duration-300 z-20",
           "hidden md:block", // Hide on mobile since we're using Sheet
           isCollapsed ? "left-20" : "left-72", // Adjust left position based on sidebar state
           "right-0" // Extend to the right edge
@@ -84,7 +84,7 @@ const Header = ({
                   <>
                     {/* Backdrop to close popup when clicking outside */}
                     <div
-                      className="fixed inset-0 z-40"
+                      className="fixed inset-0"
                       onClick={() => setShowPopup(false)}
                       onKeyDown={(e) => e.key === "Escape" && setShowPopup(false)}
                       role="button"

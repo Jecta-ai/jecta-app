@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from "next/server";
 const publicPaths = ["/api/auth/nonce", "/api/auth/verifyArbitrary", "/api/users"];
 export async function middleware(req: NextRequest) {
-  console.log("------>REQ:",req)
+
   if (publicPaths.includes(req.nextUrl.pathname)) {
     NextResponse.next();
     return;
@@ -33,48 +33,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: "/api/:path*", // Protects all API routes under `/api/protected/`
+  matcher: "/api/:path*", 
 };
 
-/*
-import { type NextRequest, NextResponse } from "next/server";
 
-const publicPaths = ["/", "/mesaj", "/api/auth/nonce", "/api/auth/verifyArbitrary", "/api/users"];
-
-export async function middleware(request: NextRequest) {
-  const token = request.cookies.get("token")?.value;
-  console.log("middleware -> token:", token);
-
-  if (publicPaths.includes(request.nextUrl.pathname)) {
-    NextResponse.next();
-    return;
-  }
-
-  if (token) {
-    try {
-      const { jwtVerify } = await import("jose");
-
-      const secretKey = new TextEncoder().encode(
-        process.env.SUPABASE_JWT_SECRET || "your-secret-key"
-      );
-
-      const { payload } = await jwtVerify(token, secretKey);
-
-      console.log("Token verified successfully:", payload);
-      return NextResponse.next();
-    } catch (error) {
-      console.error("Token verification failed:", error);
-
-      if (!publicPaths.includes(request.nextUrl.pathname)) {
-        return NextResponse.redirect(new URL("/", request.nextUrl));
-      }
-    }
-  }
-
-  // return 401
-  return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-}
-
-
-
-*/

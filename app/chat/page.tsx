@@ -22,6 +22,7 @@ import ChatInput from "./components/ChatInput";
 import { motion, AnimatePresence } from "framer-motion";
 import LoadingIndicator from "./components/LoadingIndicator";
 
+
 export type LoadingState = "thinking" | "executing" | "general" | null;
 
 const Chatbot = () => {
@@ -30,7 +31,7 @@ const Chatbot = () => {
   const [injectiveAddress, setInjectiveAddress] = useState<string | null>(null);
   const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
   const [token,setToken] = useState<string>("");
-
+  const [newChatCreated,setNewChatCreated] = useState<boolean>(false);
   const { validatorSelected, setValidatorSelected } = useValidator();
   
   useEffect(()=>{
@@ -120,10 +121,13 @@ const Chatbot = () => {
     else if (messageHistory.length > 0) setLoadingState("thinking");
 
     const userMessage = formData.get("userMessage");
+    
 
     if (typeof userMessage !== "string" || !userMessage.trim()) {
+      setLoadingState(null)
       return;
     }
+    
     if (!injectiveAddress || !isWhitelisted) {
       return;
     }
@@ -135,10 +139,15 @@ const Chatbot = () => {
       });
       const newChat = await createChat(injectiveAddress, newUserMessage,token);
 
-      console.log("newChat -> newChat:", newChat);
+  
       if (newChat?.id) {
         addMessage(token,newUserMessage, newChat);
         await getAIResponse(userMessage, newChat);
+        if(newChatCreated == false){
+          setNewChatCreated(true);
+        }else{
+          setNewChatCreated(false);
+        }
       } else {
         console.error("Chat creation failed, no ID returned.");
       }
@@ -198,6 +207,7 @@ const Chatbot = () => {
         setInjectiveAddress={(address) => setInjectiveAddress(address)}
         loadChatHistory={loadChatHistory}
         isWhitelisted={isWhitelisted}
+        newChatCreated={newChatCreated}
       />
 
       {/* Chat Section */}
@@ -275,7 +285,7 @@ const Chatbot = () => {
                         (isLastError ? (
                           msg.validators && (
                             <ValidatorsMessageType
-                            token={token}
+                              token={token}
                               injectiveAddress={injectiveAddress}
                               validators={msg.validators}
                               setLoadingState={setLoadingState}

@@ -21,9 +21,9 @@ export const connectToWallet = async (
       method: "GET",
       headers: { "Content-Type": "application/json", injectiveAddress: addresses[0] },
     });
-    console.log(res)
+
     const userData = await res.json();
-    console.log(userData)
+  
     if (userData.data == null) {
       return { address: addresses[0], wallet: wallet, token: null };
     }

@@ -33,7 +33,7 @@ export const connectWallet = async (addToChat: (msg: any) => void) => {
     //   injectiveAddress,
     //   msg
     // );
-    // console.log("connectWal -> signResult:", signResult);
+
 
     // if (!signResult) {
     //   alert("Signature failed. You must accept the terms to connect.");

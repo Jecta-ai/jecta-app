@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     try {
       const keccakHash = Hash.keccak256(serializedSignDoc);
       isValid = cryptoPubKey.verifyDigest32(keccakHash, signatureUint8Array);
-      console.log("Keccak-256 verification result:", isValid);
+
     } catch (error) {
       console.error("Keccak-256 verification failed:", error);
     }
