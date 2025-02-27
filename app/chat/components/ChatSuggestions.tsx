@@ -3,43 +3,17 @@ import { Button } from "@/components/ui/button";
 
 import { useMenu } from "../providers/menuProvider";
 import { cn } from "@/lib/utils";
-import dynamic from "next/dynamic";
-
-const Rocket = dynamic(() => import("lucide-react").then((mod) => mod.Rocket), {
-  ssr: false,
-});
-
-const LineChart = dynamic(() => import("lucide-react").then((mod) => mod.LineChart), {
-  ssr: false,
-});
-
-const ArrowRight = dynamic(() => import("lucide-react").then((mod) => mod.ArrowRight), {
-  ssr: false,
-});
-
-const Code = dynamic(() => import("lucide-react").then((mod) => mod.Code), {
-  ssr: false,
-});
-
-const Coins = dynamic(() => import("lucide-react").then((mod) => mod.Coins), {
-  ssr: false,
-});
-
-const Wallet = dynamic(() => import("lucide-react").then((mod) => mod.Wallet), {
-  ssr: false,
-});
-
-const Server = dynamic(() => import("lucide-react").then((mod) => mod.Server), {
-  ssr: false,
-});
-
-const MessageSquare = dynamic(() => import("lucide-react").then((mod) => mod.MessageSquare), {
-  ssr: false,
-});
-
-const Zap = dynamic(() => import("lucide-react").then((mod) => mod.Zap), {
-  ssr: false,
-});
+import {
+  Rocket,
+  LineChart,
+  ArrowRight,
+  Code,
+  Coins,
+  Wallet,
+  Server,
+  MessageSquare,
+  Zap,
+} from "lucide-react";
 
 const suggestions = [
   {

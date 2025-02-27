@@ -3,7 +3,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { ChainGrpcWasmApi, MsgExecuteContractCompat, toBase64 } from "@injectivelabs/sdk-ts";
 import { getNetworkEndpoints, Network } from "@injectivelabs/networks";
-import { MsgBroadcaster, Wallet, WalletStrategy } from "@injectivelabs/wallet-ts";
+import {
+  MsgBroadcaster,
+  type Wallet as WalletType,
+  WalletStrategy,
+} from "@injectivelabs/wallet-ts";
 import { connectToWallet } from "@/wallet/walletConnection";
 import { BigNumberInBase } from "@injectivelabs/utils";
 import { ChainId } from "@injectivelabs/ts-types";
@@ -20,21 +24,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { setCookie } from "cookies-next";
-import dynamic from "next/dynamic";
+import { Loader2, Wallet as WalletIcon } from "lucide-react";
 import { crateInjectiveIfNotExists } from "../services/userMessage";
-
-const Loader2 = dynamic(() => import("lucide-react").then((mod) => mod.Loader2), {
-  ssr: false,
-});
-
-const WalletIcon = dynamic(() => import("lucide-react").then((mod) => mod.Wallet), {
-  ssr: false,
-});
 
 const endpoints = getNetworkEndpoints(Network.Testnet);
 const chainGrpcWasmApi = new ChainGrpcWasmApi(endpoints.grpc);
-
-
 
 interface EarlyAccessPageProps {
   injectiveAddress: string | null;
@@ -51,7 +45,7 @@ const EarlyAccessPage = ({
 }: EarlyAccessPageProps) => {
   const [referralCode, setReferralCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [strategy,setStrategy] = useState<Wallet>();
+  const [strategy, setStrategy] = useState<Wallet>();
   const earlyAccessContract = "inj1dhzwl09judskmt56qynsxfv44rq4c4xq583rw8";
 
   const checkIsWhitelisted = useCallback(async () => {
@@ -93,7 +87,7 @@ const EarlyAccessPage = ({
       if (address) {
         setStrategy(wallet);
         setInjectiveAddress(address);
-        toast.success("Wallet Connected !",{
+        toast.success("Wallet Connected !", {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -102,14 +96,13 @@ const EarlyAccessPage = ({
           draggable: true,
           progress: undefined,
           theme: "colored",
-        })
+        });
       }
-      if(token){
+      if (token) {
         localStorage.setItem("token", token);
-      }else{
-        localStorage.removeItem("token")
+      } else {
+        localStorage.removeItem("token");
       }
-      
     } catch (error) {
       console.error("Error connecting wallet:", error);
       toast.error("Login failed.", {
@@ -121,7 +114,7 @@ const EarlyAccessPage = ({
         draggable: true,
         progress: undefined,
         theme: "colored",
-      })
+      });
     } finally {
       setIsLoading(false);
     }
@@ -146,9 +139,9 @@ const EarlyAccessPage = ({
         });
         const walletStrategy = new WalletStrategy({
           chainId: ChainId.Testnet,
-          wallet:strategy,
+          wallet: strategy,
         });
-        
+
         const msgBroadcastClient = new MsgBroadcaster({
           walletStrategy,
           network: Network.Testnet,
@@ -159,11 +152,9 @@ const EarlyAccessPage = ({
           msgs: msg,
         });
 
-        
-        
-        localStorage.removeItem("token")
+        localStorage.removeItem("token");
         await crateInjectiveIfNotExists(injectiveAddress);
-        setInjectiveAddress(null)
+        setInjectiveAddress(null);
         toast.success("Payment success ! Please connect your wallet again.", {
           position: "top-right",
           autoClose: 3000,
@@ -173,8 +164,7 @@ const EarlyAccessPage = ({
           draggable: true,
           progress: undefined,
           theme: "colored",
-        })
-        
+        });
       }
     } catch (error) {
       toast.error(`❌ ${error instanceof Error ? error.message : "Something went wrong!"}`, {

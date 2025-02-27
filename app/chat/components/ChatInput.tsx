@@ -6,11 +6,7 @@ import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import ChatSuggestions from "./ChatSuggestions";
 import { useMenu } from "../providers/menuProvider";
-import dynamic from "next/dynamic";
-
-const SendHorizontal = dynamic(() => import("lucide-react").then((mod) => mod.SendHorizontal), {
-  ssr: false,
-});
+import { SendHorizontal } from "lucide-react";
 
 interface ChatInputProps {
   loading: boolean;
@@ -23,7 +19,6 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
   const { isCollapsed } = useMenu();
   const [message, setMessage] = useState("");
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     await onSubmit(formData);

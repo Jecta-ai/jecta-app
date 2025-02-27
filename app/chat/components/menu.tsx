@@ -18,32 +18,15 @@ import {
 } from "@/components/ui/sheet";
 import Header from "./header";
 import { useMenu } from "../providers/menuProvider";
-import dynamic from "next/dynamic";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  FileText,
+  MessageSquare,
+  Menu as MenuIcon,
+} from "lucide-react";
 import Link from "next/link";
-
-const ChevronLeft = dynamic(() => import("lucide-react").then((mod) => mod.ChevronLeft), {
-  ssr: false,
-});
-
-const ChevronRight = dynamic(() => import("lucide-react").then((mod) => mod.ChevronRight), {
-  ssr: false,
-});
-
-const Plus = dynamic(() => import("lucide-react").then((mod) => mod.Plus), {
-  ssr: false,
-});
-
-const FileText = dynamic(() => import("lucide-react").then((mod) => mod.FileText), {
-  ssr: false,
-});
-
-const MessageSquare = dynamic(() => import("lucide-react").then((mod) => mod.MessageSquare), {
-  ssr: false,
-});
-
-const MenuIcon = dynamic(() => import("lucide-react").then((mod) => mod.Menu), {
-  ssr: false,
-});
 
 interface ChatItem {
   id: string;
@@ -57,7 +40,7 @@ interface MenuProps {
   injectiveAddress: string | null;
   setInjectiveAddress: (address: string | null) => void;
   isWhitelisted: boolean;
-  newChatCreated:boolean;
+  newChatCreated: boolean;
 }
 
 const Menu = ({
@@ -66,7 +49,7 @@ const Menu = ({
   loadChatHistory,
   createNewChatButton,
   isWhitelisted,
-  newChatCreated
+  newChatCreated,
 }: MenuProps) => {
   const { allChats, setAllChats } = useChat();
   const { isCollapsed, setIsCollapsed } = useMenu();
@@ -74,16 +57,14 @@ const Menu = ({
   const [copySuccess, setCopySuccess] = useState<string>("");
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
-
-  function createTweetAndRedirect(refCode:string) {
+  function createTweetAndRedirect(refCode: string) {
     const tweetText = `I'm using @jectadotai on Early Access right now ! Use my referal code to get your early access too.\n\nMy ref code : ${refCode} .\n\nTry it now ! https://www.jectadotai.com`;
     const twitterBaseUrl = "https://twitter.com/intent/tweet";
     const encodedTweet = encodeURIComponent(tweetText);
     const tweetUrl = `${twitterBaseUrl}?text=${encodedTweet}`;
-    
+
     window.open(tweetUrl, "_blank");
   }
-
 
   useEffect(() => {
     if (!injectiveAddress) {
@@ -100,7 +81,7 @@ const Menu = ({
       }
     };
     fetchLastChatNames();
-  }, [isWhitelisted,newChatCreated]);
+  }, [isWhitelisted, newChatCreated]);
 
   useEffect(() => {
     const getRef = async () => {
@@ -147,11 +128,11 @@ const Menu = ({
           </Button>
 
           <Link href="https://jecta.gitbook.io/jecta" passHref>
-              <Button variant="ghost" className="w-full justify-start">
-                <FileText className="h-4 w-4 mr-2" />
-                {!isCollapsed && "Docs"}
-              </Button>
-            </Link>
+            <Button variant="ghost" className="w-full justify-start">
+              <FileText className="h-4 w-4 mr-2" />
+              {!isCollapsed && "Docs"}
+            </Button>
+          </Link>
         </nav>
 
         {isWhitelisted && refDetails && !isCollapsed && (
@@ -160,7 +141,10 @@ const Menu = ({
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-zinc-200">Referral Program</h3>
                 <div className="flex items-center gap-2">
-                  <Button className="text-xs px-3 py-1 hover:bg-green-400 rounded-full bg-zinc-700 text-zinc-300" onClick={()=>createTweetAndRedirect(refDetails.ref_code)}>
+                  <Button
+                    className="text-xs px-3 py-1 hover:bg-green-400 rounded-full bg-zinc-700 text-zinc-300"
+                    onClick={() => createTweetAndRedirect(refDetails.ref_code)}
+                  >
                     Share
                   </Button>
                 </div>
