@@ -4,7 +4,7 @@ import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import OpenAI from "openai";
 import { intentClassification } from "./intentClassification";
 
-const OPENAI_API_KEY = process.env.OPENROUTER_API_KEY; 
+const OPENAI_API_KEY = process.env.OPENROUTER_API_KEY;
 const OPENROUTER_BASE_URL = process.env.OPENROUTER_BASE_URL;
 const MODEL = process.env.MODEL;
 
@@ -59,29 +59,31 @@ Always keep discussions **100% focused on Injective**. Redirect users to officia
 
 export const queryOpenRouter = async (userMessage: string, chatHistory: any[]) => {
   try {
-
     const formattedHistory: ChatCompletionMessageParam[] = chatHistory
-  .filter((msg) => msg.intent === "general") 
-  .map((msg) => ({
-    role: msg.sender === "user" ? "user" : "assistant",
-    content: msg.text.toString(), 
-  }));
+      .filter((msg) => msg.intent === "general")
+      .map((msg) => ({
+        role: msg.sender === "user" ? "user" : "assistant",
+        content: msg.text.toString(),
+      }));
 
     const messages: ChatCompletionMessageParam[] = [
       { role: "system", content: defaultSystemPrompt },
       ...formattedHistory,
       { role: "user", content: userMessage },
     ];
-    if (!MODEL){
-      return
+    if (!MODEL) {
+      return;
     }
 
     const completion = await openai.chat.completions.create({
       model: MODEL,
       messages,
     });
+    console.log("queryOpenRouter -> completion:", completion);
 
     if (!completion.choices || completion.choices.length === 0) {
+      console.log("here");
+
       return "Error: No response from AI.";
     }
 
@@ -99,15 +101,19 @@ export const processAIMessage = async (
   address: string | null
 ) => {
   const lastChatType = chatHistory.length > 0 ? chatHistory[chatHistory.length - 1].type : "text";
-  const lastValidIntent = chatHistory.findLast(msg => msg.intent)?.intent;
- 
-  if (lastChatType == "error"){
-    const intent = lastValidIntent
-    await executeTask(intent, userMessage, chatHistory,addToChat,address); // Ensure only 3 arguments are passed
-  }else{
-    const newintent= await intentClassification(userMessage);
-    await executeTask(String(newintent.intent).toLowerCase(), userMessage, chatHistory,addToChat,address); // Ensure only 3 arguments are passed
+  const lastValidIntent = chatHistory.findLast((msg) => msg.intent)?.intent;
+
+  if (lastChatType == "error") {
+    const intent = lastValidIntent;
+    await executeTask(intent, userMessage, chatHistory, addToChat, address); // Ensure only 3 arguments are passed
+  } else {
+    const newintent = await intentClassification(userMessage);
+    await executeTask(
+      String(newintent.intent).toLowerCase(),
+      userMessage,
+      chatHistory,
+      addToChat,
+      address
+    ); // Ensure only 3 arguments are passed
   }
-  
-  
 };
