@@ -23,6 +23,7 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
     const formData = new FormData(e.currentTarget);
     await onSubmit(formData);
     (e.target as HTMLFormElement).reset();
+    setMessage("");
   };
 
   const handleSuggestionClick = (prompt: string) => {
@@ -33,6 +34,24 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
     onSubmit(formData);
   };
 
+  const handleEnterKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      if (!disableSend()) {
+        const form = e.currentTarget.form;
+        if (form) {
+          const syntheticEvent = {
+            preventDefault: () => {},
+            currentTarget: form,
+            target: form
+          } as unknown as FormEvent<HTMLFormElement>;
+          
+          handleSubmit(syntheticEvent);
+        }
+      }
+    }
+  };
+
   if (isEmptyState) {
     return (
       <motion.div
@@ -40,27 +59,27 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "absolute inset-0 flex flex-col items-center justify-start pt-32 md:pl-72 pointer-events-none transition-all duration-300",
+          "absolute inset-0 flex flex-col items-center justify-start pt-8 sm:pt-16 md:pt-32 md:pl-72 pointer-events-none transition-all duration-300",
           isCollapsed && "md:pl-0"
         )}
       >
-        <div className="w-full  px-6 pointer-events-auto">
+        <div className="w-full px-4 sm:px-6 pointer-events-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-center mb-8"
+            className="text-center mb-4 sm:mb-8"
           >
-            <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-white via-white to-zinc-500 bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-2 sm:mb-4 bg-gradient-to-r from-white via-white to-zinc-500 bg-clip-text text-transparent">
               Welcome to JECTA
             </h1>
-            <p className="text-lg text-zinc-400">Your AI assistant for the Injective ecosystem</p>
+            <p className="text-base sm:text-lg text-zinc-400">Your AI assistant for the Injective ecosystem</p>
           </motion.div>
           <motion.form
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-col mb-8 max-w-2xl mx-auto"
+            className="flex flex-col mb-4 sm:mb-8 max-w-2xl mx-auto"
             onSubmit={handleSubmit}
           >
             <div className="relative group">
@@ -81,16 +100,7 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
                   target.style.height = "auto";
                   target.style.height = `${Math.min(target.scrollHeight, 200)}px`;
                 }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    const form = (e.target as HTMLTextAreaElement).form;
-                    if (form) {
-                      const event = new Event("submit", { cancelable: true });
-                      form.dispatchEvent(event);
-                    }
-                  }
-                }}
+                onKeyDown={handleEnterKeyPress}
               />
               <Button
                 className={cn(
@@ -133,21 +143,14 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
                 maxHeight: "200px",
                 overflow: "auto",
               }}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
                 target.style.height = "auto";
                 target.style.height = `${Math.min(target.scrollHeight, 200)}px`;
               }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  const form = (e.target as HTMLTextAreaElement).form;
-                  if (form) {
-                    const event = new Event("submit", { cancelable: true });
-                    form.dispatchEvent(event);
-                  }
-                }
-              }}
+              onKeyDown={handleEnterKeyPress}
             />
             <Button
               className={cn(
