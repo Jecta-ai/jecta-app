@@ -39,7 +39,7 @@ const EarlyAccessPage = ({
   const [referralCode, setReferralCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [strategy, setStrategy] = useState<WalletType>();
-  const earlyAccessContract = "inj1maxwh7tuerrrzgzkzk0qes095y4enj8warp4xa";
+  const earlyAccessContract = "inj1kdvdz8et52xwsvz392799r6em3qzq5ggn2nkve";
 
   const checkIsWhitelisted = useCallback(async () => {
     try {

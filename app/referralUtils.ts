@@ -10,13 +10,13 @@ interface RefDetails {
 const endpoints = getNetworkEndpoints(Network.Mainnet);
 const chainGrpcWasmApi = new ChainGrpcWasmApi(endpoints.grpc);
 
-const earlyAccessContract = "inj1maxwh7tuerrrzgzkzk0qes095y4enj8warp4xa";
+const earlyAccessContract = "inj1kdvdz8et52xwsvz392799r6em3qzq5ggn2nkve";
 
 export const getRefCodeDetails = async (injectiveAddress: string | null) => {
   try {
     if (injectiveAddress) {
       const ref_code = injectiveAddress.replace(/^inj/, "jecta");
-      const queryFromObject = toBase64({ get_refferal: { ref_code: ref_code } });
+      const queryFromObject = toBase64({ get_referral: { ref_code: ref_code } });
       const contractState = await chainGrpcWasmApi.fetchSmartContractState(
         earlyAccessContract,
         queryFromObject
