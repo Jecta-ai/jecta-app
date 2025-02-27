@@ -10,12 +10,14 @@ const ValidatorsMessageType = ({
   isLastError,
   handleExit,
   setLoadingState,
+  token
 }: {
   injectiveAddress: string | null;
   validators: Validator[];
   isLastError: boolean;
   handleExit: () => void;
   setLoadingState: (loadingState: LoadingState) => void;
+  token:string
 }) => {
   const { setValidatorAddress, validatorSelected, setValidatorSelected } = useValidator();
   const { addMessage, addMessages, messageHistory } = useChat();
@@ -28,7 +30,7 @@ const ValidatorsMessageType = ({
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" ,Authorization: token ? `Bearer ${token}` : "",},
         body: JSON.stringify({
           message: `${validatorIndex}`,
           chatHistory: messageHistory,
@@ -38,11 +40,11 @@ const ValidatorsMessageType = ({
       });
 
       if (!res.ok) throw new Error(`Server Error: ${res.status}`);
-      console.log("Chatbot -> res:", res);
 
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       await addMessage(
+        token,
         createChatMessage({
           sender: "ai",
           text: `Validator #${name} selected`,
@@ -51,10 +53,11 @@ const ValidatorsMessageType = ({
       );
       setValidatorAddress(validator);
       setValidatorSelected(true);
-      addMessages(data.messages); // Update chat history
+      addMessages(token,data.messages); // Update chat history
     } catch (error) {
       console.error("Chat error:", error);
-      addMessage(
+      addMessage(token,
+
         createChatMessage({
           sender: "ai",
           text: "Error processing request",

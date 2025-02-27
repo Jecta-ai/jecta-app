@@ -6,11 +6,7 @@ import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import ChatSuggestions from "./ChatSuggestions";
 import { useMenu } from "../providers/menuProvider";
-import dynamic from "next/dynamic";
-
-const SendHorizontal = dynamic(() => import("lucide-react").then((mod) => mod.SendHorizontal), {
-  ssr: false,
-});
+import { SendHorizontal } from "lucide-react";
 
 interface ChatInputProps {
   loading: boolean;
@@ -125,13 +121,7 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
       )}
     >
       <div className="max-w-2xl mx-auto px-6">
-        <motion.form
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="flex flex-col"
-          onSubmit={handleSubmit}
-        >
+        <form className="flex flex-col" onSubmit={handleSubmit}>
           <div className="relative group">
             <textarea
               name="userMessage"
@@ -170,7 +160,7 @@ const ChatInput = ({ loading, onSubmit, disableSend, isEmptyState }: ChatInputPr
               <SendHorizontal className="w-4 h-4 text-zinc-300" />
             </Button>
           </div>
-        </motion.form>
+        </form>
       </div>
     </motion.div>
   );

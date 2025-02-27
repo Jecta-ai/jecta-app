@@ -12,7 +12,7 @@ import SendTokenMessageType from "./components/sendTokenMessageType";
 import ErrorMessageType from "./components/errorMessageType";
 import DefaultMessageType from "./components/defaultMessageType";
 import EarlyAccessPage from "./components/earlyAccessPage";
-import { fetchResponse } from "./services/userMessage";
+import { fetchResponse } from "./services/apiChat";
 import { createChatMessage } from "./utils";
 import { useChat } from "./providers/chatProvider";
 import { useValidator } from "./providers/validatorProvider";
@@ -22,6 +22,7 @@ import ChatInput from "./components/ChatInput";
 import { motion, AnimatePresence } from "framer-motion";
 import LoadingIndicator from "./components/LoadingIndicator";
 
+
 export type LoadingState = "thinking" | "executing" | "general" | null;
 
 const Chatbot = () => {
@@ -29,8 +30,16 @@ const Chatbot = () => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const [injectiveAddress, setInjectiveAddress] = useState<string | null>(null);
   const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
-
+  const [token,setToken] = useState<string>("");
+  const [newChatCreated,setNewChatCreated] = useState<boolean>(false);
   const { validatorSelected, setValidatorSelected } = useValidator();
+  
+  useEffect(()=>{
+    const token = localStorage.getItem("token")
+    if(token){
+      setToken(token)
+    }
+  },[injectiveAddress])
   const {
     messageHistory,
     setMessageHistory,
@@ -57,7 +66,7 @@ const Chatbot = () => {
       text: "Tool closed successfully.",
       type: "text",
     });
-    addMessage(exitToolMessage);
+    addMessage(token,exitToolMessage);
   };
 
   const loadChatHistory = async (chatId: string) => {
@@ -112,10 +121,13 @@ const Chatbot = () => {
     else if (messageHistory.length > 0) setLoadingState("thinking");
 
     const userMessage = formData.get("userMessage");
+    
 
     if (typeof userMessage !== "string" || !userMessage.trim()) {
+      setLoadingState(null)
       return;
     }
+    
     if (!injectiveAddress || !isWhitelisted) {
       return;
     }
@@ -125,12 +137,17 @@ const Chatbot = () => {
         text: userMessage,
         type: "text",
       });
-      const newChat = await createChat(injectiveAddress, newUserMessage);
+      const newChat = await createChat(injectiveAddress, newUserMessage,token);
 
-      console.log("newChat -> newChat:", newChat);
+  
       if (newChat?.id) {
-        addMessage(newUserMessage, newChat);
+        addMessage(token,newUserMessage, newChat);
         await getAIResponse(userMessage, newChat);
+        if(newChatCreated == false){
+          setNewChatCreated(true);
+        }else{
+          setNewChatCreated(false);
+        }
       } else {
         console.error("Chat creation failed, no ID returned.");
       }
@@ -144,17 +161,18 @@ const Chatbot = () => {
       type: "text",
     });
 
-    addMessage(newUserMessage);
+    addMessage(token,newUserMessage);
     await getAIResponse(userMessage);
   };
 
   const getAIResponse = async (userMessage: string, updatedChat?: Chat) => {
-    fetchResponse(userMessage, messageHistory, injectiveAddress)
+    fetchResponse(userMessage, messageHistory, injectiveAddress,token)
       .then((data) => {
-        addMessages(data.messages, updatedChat); // Update chat history
+        addMessages(token,data.messages, updatedChat); // Update chat history
       })
-      .catch(() => {
-        addMessage(
+      .catch((err) => {
+        console.error("Error fetching response:", err);
+        addMessage(token,
           createChatMessage({
             sender: "ai",
             text: "Error processing request",
@@ -189,6 +207,7 @@ const Chatbot = () => {
         setInjectiveAddress={(address) => setInjectiveAddress(address)}
         loadChatHistory={loadChatHistory}
         isWhitelisted={isWhitelisted}
+        newChatCreated={newChatCreated}
       />
 
       {/* Chat Section */}
@@ -266,6 +285,7 @@ const Chatbot = () => {
                         (isLastError ? (
                           msg.validators && (
                             <ValidatorsMessageType
+                              token={token}
                               injectiveAddress={injectiveAddress}
                               validators={msg.validators}
                               setLoadingState={setLoadingState}
@@ -283,6 +303,7 @@ const Chatbot = () => {
                       {msg.type === "stake_amount" &&
                         (isLastError ? (
                           <StakeAmountMessageType
+                          token={token}
                             handleExit={handleExit}
                             injectiveAddress={injectiveAddress}
                           />

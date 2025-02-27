@@ -10,6 +10,7 @@ const SendTokenMessageType = ({
   handleExit,
   send,
   injectiveAddress,
+  token,
 }: {
   injectiveAddress: string | null;
   text?: string;
@@ -17,6 +18,7 @@ const SendTokenMessageType = ({
   setExecuting: (executing: boolean) => void;
   handleExit: () => void;
   send: SendDetails;
+  token:string;
 }) => {
   const { addMessage } = useChat();
 
@@ -44,7 +46,7 @@ const SendTokenMessageType = ({
           msgs: msg,
         });
         setExecuting(false);
-        addMessage(
+        addMessage(token,
           createChatMessage({
             sender: "ai",
             text: `Transfer success ! Here is your tx Hash : ${res.txHash}`,
@@ -67,7 +69,7 @@ const SendTokenMessageType = ({
           msgs: msg,
         });
         setExecuting(false);
-        addMessage(
+        addMessage(token,
           createChatMessage({
             sender: "ai",
             text: `Transfer success ! Here is your tx Hash : ${res.txHash}`,
@@ -77,14 +79,14 @@ const SendTokenMessageType = ({
       }
     } catch (error) {
       setExecuting(false);
-      addMessage(
+      addMessage(token,
         createChatMessage({
           sender: "ai",
           text: `Transfer failed, Error : ${error}`,
           type: "text",
         })
       );
-      console.log(error);
+
       return;
     }
   };

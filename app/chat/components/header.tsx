@@ -3,19 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import dynamic from "next/dynamic";
-
-const LogOutIcon = dynamic(() => import("lucide-react").then((mod) => mod.LogOut), {
-  ssr: false,
-});
-
-const MessageSquareIcon = dynamic(() => import("lucide-react").then((mod) => mod.MessageSquare), {
-  ssr: false,
-});
-
-const WalletIcon = dynamic(() => import("lucide-react").then((mod) => mod.Wallet), {
-  ssr: false,
-});
+import { LogOut, MessageSquare, Wallet } from "lucide-react";
 
 interface HeaderProps {
   injectiveAddress: string | null;
@@ -35,18 +23,20 @@ const Header = ({
   const handleDisconnect = () => {
     setInjectiveAddress(null);
     setShowPopup(false);
+    localStorage.removeItem("token");
+
     window.location.reload();
   };
 
   return (
     <>
       {/* Header spacer to prevent content overlap */}
-      <div className="h-14" />
+      <div className="h-14 w-fit " />
 
       {/* Fixed header */}
       <header
         className={cn(
-          "fixed top-0  border-b border-zinc-800 bg-zinc-900/95 backdrop-blur-sm transition-all duration-300",
+          "fixed top-0  border-b border-zinc-800 bg-zinc-900/95 backdrop-blur-sm transition-all duration-300 z-20",
           "hidden md:block", // Hide on mobile since we're using Sheet
           isCollapsed ? "left-20" : "left-72", // Adjust left position based on sidebar state
           "right-0" // Extend to the right edge
@@ -74,7 +64,7 @@ const Header = ({
                   )}
                   onClick={() => setShowPopup(!showPopup)}
                 >
-                  <WalletIcon className="h-4 w-4" />
+                  <Wallet className="h-4 w-4" />
                   <span>
                     {injectiveAddress.slice(0, 6)}...{injectiveAddress.slice(-4)}
                   </span>
@@ -84,7 +74,7 @@ const Header = ({
                   <>
                     {/* Backdrop to close popup when clicking outside */}
                     <div
-                      className="fixed inset-0 z-40"
+                      className="fixed inset-0"
                       onClick={() => setShowPopup(false)}
                       onKeyDown={(e) => e.key === "Escape" && setShowPopup(false)}
                       role="button"
@@ -104,7 +94,7 @@ const Header = ({
                         className="w-full justify-start gap-2 rounded-none px-3 py-2 text-sm font-normal text-red-400 hover:bg-zinc-800 hover:text-red-400 z-50"
                         onClick={handleDisconnect}
                       >
-                        <LogOutIcon className="h-4 w-4" />
+                        <LogOut className="h-4 w-4" />
                         Disconnect
                       </Button>
                     </div>
@@ -137,7 +127,7 @@ const Header = ({
                 className="h-8 px-2 text-sm text-zinc-400"
                 onClick={() => setShowPopup(!showPopup)}
               >
-                <MessageSquareIcon className="h-4 w-4" />
+                <MessageSquare className="h-4 w-4" />
               </Button>
             )}
           </div>

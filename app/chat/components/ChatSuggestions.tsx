@@ -3,43 +3,17 @@ import { Button } from "@/components/ui/button";
 
 import { useMenu } from "../providers/menuProvider";
 import { cn } from "@/lib/utils";
-import dynamic from "next/dynamic";
-
-const Rocket = dynamic(() => import("lucide-react").then((mod) => mod.Rocket), {
-  ssr: false,
-});
-
-const LineChart = dynamic(() => import("lucide-react").then((mod) => mod.LineChart), {
-  ssr: false,
-});
-
-const ArrowRight = dynamic(() => import("lucide-react").then((mod) => mod.ArrowRight), {
-  ssr: false,
-});
-
-const Code = dynamic(() => import("lucide-react").then((mod) => mod.Code), {
-  ssr: false,
-});
-
-const Coins = dynamic(() => import("lucide-react").then((mod) => mod.Coins), {
-  ssr: false,
-});
-
-const Wallet = dynamic(() => import("lucide-react").then((mod) => mod.Wallet), {
-  ssr: false,
-});
-
-const Server = dynamic(() => import("lucide-react").then((mod) => mod.Server), {
-  ssr: false,
-});
-
-const MessageSquare = dynamic(() => import("lucide-react").then((mod) => mod.MessageSquare), {
-  ssr: false,
-});
-
-const Zap = dynamic(() => import("lucide-react").then((mod) => mod.Zap), {
-  ssr: false,
-});
+import {
+  Rocket,
+  LineChart,
+  ArrowRight,
+  Code,
+  Coins,
+  Wallet,
+  Server,
+  MessageSquare,
+  Zap,
+} from "lucide-react";
 
 const suggestions = [
   {
@@ -48,7 +22,7 @@ const suggestions = [
     description: "Learn the fundamentals",
     prompts: [
       {
-        text: "What is Injective Protocol?",
+        text: "What is Injective ?",
         icon: <Zap className="w-4 h-4" />,
       },
       {
@@ -67,15 +41,15 @@ const suggestions = [
     description: "Explore opportunities",
     prompts: [
       {
-        text: "How do I start trading on Injective?",
+        text: "I want to swap 1 INJ to USDT",
         icon: <Coins className="w-4 h-4" />,
       },
       {
-        text: "What are the trading fees?",
+        text: "What is the current price of QUNT ?",
         icon: <Wallet className="w-4 h-4" />,
       },
       {
-        text: "How to provide liquidity on Injective?",
+        text: "I want to stake INJ.",
         icon: <Server className="w-4 h-4" />,
       },
     ],
@@ -86,15 +60,15 @@ const suggestions = [
     description: "Deep dive into tech",
     prompts: [
       {
-        text: "How to integrate Injective into my dApp?",
+        text: "Give me the latest Injective news.",
         icon: <Code className="w-4 h-4" />,
       },
       {
-        text: "Explain Injective's smart contract capabilities",
+        text: "Explain me a tx by it's own hash.",
         icon: <Server className="w-4 h-4" />,
       },
       {
-        text: "What are Injective's supported chains?",
+        text: "I want to see my own portfolio.",
         icon: <Zap className="w-4 h-4" />,
       },
     ],

@@ -15,36 +15,42 @@ export async function getMessages(chatId: number) {
   return data;
 }
 
-export async function createInjectiveIfNotExists(injectiveAddress: string) {
-  const { data: existingInjective, error: existingInjectiveError } = await supabase
-    .from("injectives")
+export async function getInjectiveAddress(injectiveAddress: string): Promise<any> {
+  const { data, error } = await supabase
+    .from("users")
     .select("wallet_address")
     .eq("wallet_address", injectiveAddress)
     .single();
 
-  if (existingInjectiveError && existingInjectiveError.code !== "PGRST116") {
-    console.error("Error checking injective existence:", existingInjectiveError);
-    return existingInjectiveError;
+  if (error) {
+    console.error("Error fetching injective address:", error);
+    return { data: null, error };
   }
 
-  if (existingInjectiveError) {
-    return existingInjectiveError;
-  }
+  return { data, error };
+}
+
+export async function createInjectiveIfNotExists(injectiveAddress: string): Promise<any> {
+  const { data: existingInjective, error: existingInjectiveError } = await supabase
+    .from("users")
+    .select("wallet_address")
+    .eq("wallet_address", injectiveAddress)
+    .single();
 
   if (existingInjective) {
     return existingInjective;
   }
 
   const { data, error } = await supabase
-    .from("injectives")
+    .from("users")
     .insert([{ wallet_address: injectiveAddress }]);
 
   if (error) {
     console.error("Error creating injective:", error);
-    return error;
+    return { data: null, error };
   }
 
-  return data;
+  return { data, error };
 }
 
 export async function sendMessageToDB(chatId: number, senderId: number, message: object) {

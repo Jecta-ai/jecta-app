@@ -31,6 +31,7 @@ let walletStrategy: WalletStrategy | null = null;
 export const configureWalletStrategy = (wallet: Wallet) => {
   walletStrategy = new WalletStrategy({
     chainId: ChainId.Mainnet,
+    wallet: wallet,
   });
   walletStrategy.setWallet(wallet);
   return walletStrategy;
