@@ -20,7 +20,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 
-const endpoints = getNetworkEndpoints(Network.Testnet);
+const endpoints = getNetworkEndpoints(Network.Mainnet);
 const chainGrpcWasmApi = new ChainGrpcWasmApi(endpoints.grpc);
 
 interface EarlyAccessPageProps {
@@ -39,7 +39,7 @@ const EarlyAccessPage = ({
   const [referralCode, setReferralCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [strategy, setStrategy] = useState<WalletType>();
-  const earlyAccessContract = "inj1dhzwl09judskmt56qynsxfv44rq4c4xq583rw8";
+  const earlyAccessContract = "inj1maxwh7tuerrrzgzkzk0qes095y4enj8warp4xa";
 
   const checkIsWhitelisted = useCallback(async () => {
     try {
@@ -131,13 +131,13 @@ const EarlyAccessPage = ({
           },
         });
         const walletStrategy = new WalletStrategy({
-          chainId: ChainId.Testnet,
+          chainId: ChainId.Mainnet,
           wallet: strategy,
         });
 
         const msgBroadcastClient = new MsgBroadcaster({
           walletStrategy,
-          network: Network.Testnet,
+          network: Network.Mainnet,
         });
 
         await msgBroadcastClient.broadcast({

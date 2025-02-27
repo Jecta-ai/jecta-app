@@ -7,10 +7,10 @@ interface RefDetails {
   refferer: string;
 }
 
-const endpoints = getNetworkEndpoints(Network.Testnet);
+const endpoints = getNetworkEndpoints(Network.Mainnet);
 const chainGrpcWasmApi = new ChainGrpcWasmApi(endpoints.grpc);
 
-const earlyAccessContract = "inj1dhzwl09judskmt56qynsxfv44rq4c4xq583rw8";
+const earlyAccessContract = "inj1maxwh7tuerrrzgzkzk0qes095y4enj8warp4xa";
 
 export const getRefCodeDetails = async (injectiveAddress: string | null) => {
   try {
