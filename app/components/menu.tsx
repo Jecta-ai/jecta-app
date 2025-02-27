@@ -16,6 +16,7 @@ import {
   FileText,
   MessageSquare,
   Menu as MenuIcon,
+  ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -128,10 +129,20 @@ const Menu = ({
             {!isCollapsed && "New Chat"}
           </Button>
 
-          <Link href="https://jecta.gitbook.io/jecta" passHref>
+          <Link href="https://jecta.gitbook.io/jecta" passHref target="_blank">
             <Button variant="ghost" className="w-full justify-start">
               <FileText className="h-4 w-4 mr-2" />
               {!isCollapsed && "Docs"}
+            </Button>
+          </Link>
+
+          <Link href="https://forms.gle/eHv8bPGRAoBhn9rE6" passHref target="_blank">
+            <Button
+              variant="outline"
+              className="w-full justify-start bg-green-400/10 hover:bg-green-400/20 border-green-400/30 text-green-400 hover:text-white"
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              {!isCollapsed && "EAP Feedback Form"}
             </Button>
           </Link>
         </nav>
