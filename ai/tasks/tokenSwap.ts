@@ -1,4 +1,4 @@
-import { createChatMessage } from "@/app/chat/utils";
+import { createChatMessage } from "@/app/utils";
 import { extractSwapDetails, fetchSwapDetails } from "../tools/executeSwap";
 
 export async function tokenSwap(

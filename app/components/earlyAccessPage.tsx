@@ -12,20 +12,13 @@ import {
 import { connectToWallet } from "@/wallet/walletConnection";
 import { BigNumberInBase } from "@injectivelabs/utils";
 import { ChainId } from "@injectivelabs/ts-types";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ToastContainer, toast } from "react-toastify";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Loader2, Wallet as WalletIcon } from "lucide-react";
 import { crateInjectiveIfNotExists } from "../services/userMessage";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
 const endpoints = getNetworkEndpoints(Network.Testnet);
 const chainGrpcWasmApi = new ChainGrpcWasmApi(endpoints.grpc);

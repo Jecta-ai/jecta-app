@@ -1,4 +1,4 @@
-import { createChatMessage } from "@/app/chat/utils";
+import { createChatMessage } from "@/app/utils";
 import { fetchTokenPrice } from "../tools/fetchTokenPrice";
 
 export async function fetchPrice(

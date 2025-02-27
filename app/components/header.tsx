@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { LogOut, MessageSquare, Wallet } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface HeaderProps {
   injectiveAddress: string | null;

@@ -1,5 +1,5 @@
 import { fetchValidators } from "../tools/stakeTool";
-import { createChatMessage } from "@/app/chat/utils";
+import { createChatMessage } from "@/app/utils";
 
 export async function stakeInjective(
   intent: string,

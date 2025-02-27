@@ -1,12 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import ChatSuggestions from "./ChatSuggestions";
 import { useMenu } from "../providers/menuProvider";
 import { SendHorizontal } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface ChatInputProps {
   loading: boolean;

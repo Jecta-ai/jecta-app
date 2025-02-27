@@ -1,9 +1,9 @@
 // app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
-import { ChatProvider } from "./chat/providers/chatProvider";
-import { ValidatorProvider } from "./chat/providers/validatorProvider";
-import MenuProvider from "./chat/providers/menuProvider";
+import { ChatProvider } from "./providers/chatProvider";
+import { ValidatorProvider } from "./providers/validatorProvider";
+import MenuProvider from "./providers/menuProvider";
 export const metadata: Metadata = {
   title: "Jecta",
   description: "First open-source AI copilot built on Injective Blockchain",

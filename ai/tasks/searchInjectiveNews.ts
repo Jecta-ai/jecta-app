@@ -1,6 +1,6 @@
 import { fetchInjectiveTweets } from "../tools/twitterSearch";
-import { createChatMessage } from "@/app/chat/utils";
-import type { ChatMessage } from "@/app/chat/types";
+import { createChatMessage } from "@/app/utils";
+import type { ChatMessage } from "@/app/types";
 
 export async function searchInjectiveNews(
   intent: string,

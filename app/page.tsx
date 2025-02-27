@@ -1,50 +1,389 @@
-export default function Home() {
+"use client";
+import { useEffect, useRef, useState } from "react";
+import logo from "@/public/logo.png";
+import type { ChatMessage } from "./types";
+import Menu from "./components/menu";
+import BalanceMessageType from "./components/balanceMessageType";
+import ValidatorsMessageType from "./components/validatorsMessageType";
+import Image from "next/image";
+import StakeAmountMessageType from "./components/stakeAmountMessageType";
+import SwapMessageType from "./components/swapMessageType";
+import SendTokenMessageType from "./components/sendTokenMessageType";
+import ErrorMessageType from "./components/errorMessageType";
+import DefaultMessageType from "./components/defaultMessageType";
+import EarlyAccessPage from "./components/earlyAccessPage";
+import { fetchResponse } from "./services/apiChat";
+import { createChatMessage } from "./utils";
+import { useChat } from "./providers/chatProvider";
+import { useValidator } from "./providers/validatorProvider";
+import { getChatHistory } from "./services/chatServices";
+import type { Chat } from "./services/types";
+import ChatInput from "./components/ChatInput";
+import { motion, AnimatePresence } from "framer-motion";
+import LoadingIndicator from "./components/LoadingIndicator";
+
+export type LoadingState = "thinking" | "executing" | "general" | null;
+
+const Chatbot = () => {
+  const [loadingState, setLoadingState] = useState<LoadingState>(null);
+  const chatContainerRef = useRef<HTMLDivElement | null>(null);
+  const [injectiveAddress, setInjectiveAddress] = useState<string | null>(null);
+  const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
+  const [token, setToken] = useState<string>("");
+  const [newChatCreated, setNewChatCreated] = useState<boolean>(false);
+  const { validatorSelected, setValidatorSelected } = useValidator();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setToken(token);
+    }
+  }, [injectiveAddress]);
+  const {
+    messageHistory,
+    setMessageHistory,
+    addMessage,
+    addMessages,
+    createChat,
+    currentChat,
+    allChats,
+    setCurrentChat,
+  } = useChat();
+
+  const handleExit = async () => {
+    setValidatorSelected(false);
+    setMessageHistory((prevChat) => {
+      if (prevChat.length === 0) return prevChat;
+
+      // ✅ Change the last message type to "text"
+      const updatedChat = [...prevChat];
+      updatedChat[updatedChat.length - 1].type = "text";
+      return updatedChat;
+    });
+    const exitToolMessage = createChatMessage({
+      sender: "ai",
+      text: "Tool closed successfully.",
+      type: "text",
+    });
+    addMessage(token, exitToolMessage);
+  };
+
+  const loadChatHistory = async (chatId: string) => {
+    if (!loadingState) {
+      setLoadingState("general");
+      const response = await getChatHistory(chatId);
+      const messages = response.map((chat: { message: ChatMessage }) => chat.message);
+      setMessageHistory(messages);
+      const chatInfos = allChats.filter((chat) => chat.id === chatId);
+      setCurrentChat({
+        id: chatInfos[0].id,
+        title: chatInfos[0].title,
+        ai_id: chatInfos[0].ai_id,
+        user_id: chatInfos[0].user_id,
+      });
+      setLoadingState(null);
+    }
+  };
+
+  const updateExecuting = (executing: boolean) => {
+    setLoadingState(executing ? "executing" : null);
+  };
+
+  const updateChat = (cb: (prevChat: ChatMessage[]) => ChatMessage[]) => {
+    setMessageHistory(cb);
+  };
+
+  useEffect(() => {
+    const scrollToBottom = () => {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      }
+    };
+    scrollToBottom();
+  }, [messageHistory]);
+
+  const disableSend = () => {
+    const lastMessageType =
+      messageHistory.length > 0 ? messageHistory[messageHistory.length - 1].type : null;
+
+    return (
+      validatorSelected ||
+      lastMessageType === "swap" ||
+      lastMessageType === "send_token" ||
+      !!loadingState ||
+      lastMessageType === "validators"
+    );
+  };
+
+  const sendMessage = async (formData: FormData) => {
+    if (messageHistory.length === 0) setLoadingState("general");
+    else if (messageHistory.length > 0) setLoadingState("thinking");
+
+    const userMessage = formData.get("userMessage");
+
+    if (typeof userMessage !== "string" || !userMessage.trim()) {
+      setLoadingState(null);
+      return;
+    }
+
+    if (!injectiveAddress || !isWhitelisted) {
+      return;
+    }
+    if (!currentChat?.id) {
+      const newUserMessage = createChatMessage({
+        sender: "user",
+        text: userMessage,
+        type: "text",
+      });
+      const newChat = await createChat(injectiveAddress, newUserMessage, token);
+
+      if (newChat?.id) {
+        addMessage(token, newUserMessage, newChat);
+        await getAIResponse(userMessage, newChat);
+        if (newChatCreated == false) {
+          setNewChatCreated(true);
+        } else {
+          setNewChatCreated(false);
+        }
+      } else {
+        console.error("Chat creation failed, no ID returned.");
+      }
+
+      return;
+    }
+
+    const newUserMessage = createChatMessage({
+      sender: "user",
+      text: userMessage,
+      type: "text",
+    });
+
+    addMessage(token, newUserMessage);
+    await getAIResponse(userMessage);
+  };
+
+  const getAIResponse = async (userMessage: string, updatedChat?: Chat) => {
+    fetchResponse(userMessage, messageHistory, injectiveAddress, token)
+      .then((data) => {
+        addMessages(token, data.messages, updatedChat); // Update chat history
+      })
+      .catch((err) => {
+        console.error("Error fetching response:", err);
+        addMessage(
+          token,
+          createChatMessage({
+            sender: "ai",
+            text: "Error processing request",
+            type: "error",
+          })
+        );
+      })
+      .finally(() => {
+        setLoadingState(null);
+      });
+  };
+  const createNewChatButton = () => {
+    if (!loadingState) {
+      setCurrentChat(null);
+      setMessageHistory([]);
+    }
+  };
+
   return (
-    <main className="min-h-screen bg-zinc-900 flex flex-col items-center justify-center p-4 text-white">
-      <div className="max-w-2xl w-full text-center space-y-8">
-        {/* Logo */}
-        <div className="flex items-center justify-center mb-8">
-          <img src="/logo.png" alt="Jecta" className="h-16 w-16" />
-          <div className="ml-4">
-            <h1 className="text-4xl font-bold">JECTA</h1>
-            <span className="text-sm text-emerald-400">v0.0.2</span>
-          </div>
-        </div>
+    <div className="flex h-screen w-screen bg-black text-white">
+      {!isWhitelisted && (
+        <EarlyAccessPage
+          injectiveAddress={injectiveAddress}
+          setInjectiveAddress={(address) => setInjectiveAddress(address)}
+          isWhitelisted={isWhitelisted}
+          setIsWhitelisted={(WL) => setIsWhitelisted(WL)}
+        />
+      )}
+      <Menu
+        createNewChatButton={createNewChatButton}
+        injectiveAddress={injectiveAddress}
+        setInjectiveAddress={(address) => setInjectiveAddress(address)}
+        loadChatHistory={loadChatHistory}
+        isWhitelisted={isWhitelisted}
+        newChatCreated={newChatCreated}
+      />
 
-        {/* Main Content */}
-        <div className="space-y-6">
-          <h2 className="text-5xl leading-loose font-bold bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent">
-            Coming Soon
-          </h2>
-          <p className="text-xl text-zinc-400">
-            We're working hard to bring you something amazing. Stay tuned!
-          </p>
-        </div>
+      {/* Chat Section */}
+      <main className="flex flex-col w-full mt-16">
+        <AnimatePresence>
+          {
+            <motion.div
+              ref={chatContainerRef}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className={`flex-1 bg-zinc-900 p-6 mx-2 rounded-xl overflow-y-auto flex flex-col pb-20 relative ${
+                messageHistory.length === 0 ? "mb-2" : "mb-16"
+              } ${
+                loadingState
+                  ? "border-[3px] border-transparent animate-neonBlink"
+                  : "border border-zinc-800"
+              }`}
+            >
+              <AnimatePresence initial={false} mode="popLayout">
+                {messageHistory.map((msg, i) => {
+                  if (msg.sender === "system") {
+                    return null;
+                  }
+                  const isLastError =
+                    (msg.type === "error" ||
+                      msg.type === "validators" ||
+                      msg.type === "stake_amount" ||
+                      msg.type === "swap" ||
+                      msg.type === "send_token") &&
+                    i === messageHistory.length - 1;
 
-        {/* Features Preview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12">
-          <div className="p-6 rounded-lg bg-zinc-800/50 backdrop-blur-sm border border-zinc-700">
-            <div className="text-emerald-400 text-2xl mb-3">🤖</div>
-            <h3 className="font-semibold mb-2">AI-Powered</h3>
-            <p className="text-sm text-zinc-400">Advanced AI technology for smarter interactions</p>
-          </div>
-          <div className="p-6 rounded-lg bg-zinc-800/50 backdrop-blur-sm border border-zinc-700">
-            <div className="text-emerald-400 text-2xl mb-3">🔒</div>
-            <h3 className="font-semibold mb-2">Secure</h3>
-            <p className="text-sm text-zinc-400">Built with security and privacy in mind</p>
-          </div>
-          <div className="p-6 rounded-lg bg-zinc-800/50 backdrop-blur-sm border border-zinc-700">
-            <div className="text-emerald-400 text-2xl mb-3">⚡</div>
-            <h3 className="font-semibold mb-2">Lightning Fast</h3>
-            <p className="text-sm text-zinc-400">Optimized for speed and performance</p>
-          </div>
-        </div>
+                  // Only animate new messages (last 3)
+                  const isRecent = i >= messageHistory.length - 3;
+                  const animationProps = isRecent
+                    ? {
+                        initial: { opacity: 0, y: 10 },
+                        animate: { opacity: 1, y: 0 },
+                        exit: { opacity: 0, y: -10 },
+                        transition: {
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 30,
+                          mass: 1,
+                          delay: isRecent ? 0.1 : 0,
+                        },
+                      }
+                    : {
+                        initial: { opacity: 1 },
+                        animate: { opacity: 1 },
+                      };
 
-        {/* Footer */}
-        <div className="mt-12 text-zinc-500 text-sm">
-          <p>© 2024 Jecta. All rights reserved.</p>
-        </div>
-      </div>
-    </main>
+                  return (
+                    <motion.div
+                      key={`chat-message-${i}-${msg.sender}`}
+                      {...animationProps}
+                      className={`flex my-2 ${
+                        msg.sender === "user" ? "justify-end" : "justify-start"
+                      }`}
+                    >
+                      {msg.sender === "ai" && (
+                        <Image
+                          src={logo}
+                          alt="Logo"
+                          className="w-8 h-8 rounded-md mr-2 border-white border-1"
+                          width={32}
+                          height={32}
+                        />
+                      )}
+                      {msg.type === "balance" && msg.balances && (
+                        <BalanceMessageType balances={msg.balances} />
+                      )}
+                      {msg.type === "validators" &&
+                        (isLastError ? (
+                          msg.validators && (
+                            <ValidatorsMessageType
+                              token={token}
+                              injectiveAddress={injectiveAddress}
+                              validators={msg.validators}
+                              setLoadingState={setLoadingState}
+                              isLastError={isLastError}
+                              handleExit={handleExit}
+                            />
+                          )
+                        ) : (
+                          <>
+                            <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                              Selecting Validator...
+                            </div>
+                          </>
+                        ))}
+                      {msg.type === "stake_amount" &&
+                        (isLastError ? (
+                          <StakeAmountMessageType
+                            token={token}
+                            handleExit={handleExit}
+                            injectiveAddress={injectiveAddress}
+                          />
+                        ) : (
+                          <>
+                            <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                              <h3 className="text-lg font-semibold mb-2">
+                                Amount successfull given !
+                              </h3>
+                            </div>
+                          </>
+                        ))}
+                      {msg.type === "swap" &&
+                        (isLastError ? (
+                          msg.contractInput && (
+                            <SwapMessageType
+                              executing={loadingState === "executing"}
+                              text={msg.text}
+                              handleExit={handleExit}
+                              updateExecuting={updateExecuting}
+                              updateChat={updateChat}
+                              contractInput={msg.contractInput}
+                              injectiveAddress={injectiveAddress}
+                              token={token}
+                            />
+                          )
+                        ) : (
+                          <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                            <h3 className="text-lg font-semibold mb-2">Your Swap Details</h3>
+                            <div>{msg.text}</div>
+                          </div>
+                        ))}
+                      {msg.type === "send_token" &&
+                        (isLastError ? (
+                          msg.send && (
+                            <SendTokenMessageType
+                              text={msg.text}
+                              injectiveAddress={injectiveAddress}
+                              setExecuting={updateExecuting}
+                              executing={loadingState === "executing"}
+                              handleExit={handleExit}
+                              send={msg.send}
+                              token={token}
+                            />
+                          )
+                        ) : (
+                          <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                            <h3 className="text-lg font-semibold mb-2">Your Transfer Details</h3>
+                            <div>{msg.text}</div>
+                          </div>
+                        ))}
+                      {msg.type === "error" && (
+                        <ErrorMessageType
+                          text={msg.text}
+                          handleExit={handleExit}
+                          isLastError={isLastError}
+                        />
+                      )}
+                      {(msg.type === "text" ||
+                        msg.type === "success" ||
+                        msg.type === "loading") && (
+                        <DefaultMessageType text={msg.text} sender={msg.sender} />
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+              {loadingState === "thinking" && <LoadingIndicator type="thinking" />}
+              {loadingState === "executing" && <LoadingIndicator type="executing" />}
+            </motion.div>
+          }
+        </AnimatePresence>
+
+        <ChatInput
+          loading={!!loadingState}
+          onSubmit={sendMessage}
+          disableSend={disableSend}
+          isEmptyState={messageHistory.length === 0}
+        />
+      </main>
+    </div>
   );
-}
+};
+
+export default Chatbot;

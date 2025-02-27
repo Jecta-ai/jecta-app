@@ -1,4 +1,4 @@
-import { createChatMessage } from "@/app/chat/utils";
+import { createChatMessage } from "@/app/utils";
 import { queryOpenRouter } from "../ai";
 import { fetchInjectiveBalance } from "../tools/fetchBalances";
 

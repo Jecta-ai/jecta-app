@@ -3,19 +3,10 @@ import { useEffect, useState } from "react";
 import { getLastChatNames } from "../services/chatServices";
 import { getRefCodeDetails } from "../referralUtils";
 import { useChat } from "../providers/chatProvider";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { cn } from "@/lib/utils";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+
 import Header from "./header";
 import { useMenu } from "../providers/menuProvider";
 import {
@@ -27,6 +18,16 @@ import {
   Menu as MenuIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { Button } from "./ui/button";
+import { ScrollArea } from "./ui/scroll-area";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
 
 interface ChatItem {
   id: string;

@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 
 import { useMenu } from "../providers/menuProvider";
 import { cn } from "@/lib/utils";
@@ -14,6 +13,7 @@ import {
   MessageSquare,
   Zap,
 } from "lucide-react";
+import { Button } from "./ui/button";
 
 const suggestions = [
   {

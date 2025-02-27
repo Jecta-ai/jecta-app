@@ -1,5 +1,5 @@
 import { txSearch } from "../tools/txSearch";
-import { createChatMessage } from "@/app/chat/utils";
+import { createChatMessage } from "@/app/utils";
 
 export async function searchTxHash(
   intent: string,

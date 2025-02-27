@@ -1,5 +1,5 @@
 import { extractTransactionData } from "../tools/transferTool";
-import { createChatMessage } from "@/app/chat/utils";
+import { createChatMessage } from "@/app/utils";
 
 export async function transferFunds(
   intent: string,

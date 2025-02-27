@@ -6,7 +6,7 @@ import { fetchPrice } from "./tasks/fetchPrice";
 import { searchTxHash } from "./tasks/searchTxHash";
 import { stakeInjective } from "./tasks/stakeInjective";
 import { transferFunds } from "./tasks/transferFunds";
-import { createChatMessage } from "@/app/chat/utils";
+import { createChatMessage } from "@/app/utils";
 
 export const executeTask = async (
   intent: string,

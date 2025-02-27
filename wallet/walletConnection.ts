@@ -1,12 +1,11 @@
 import type { Wallet } from "@injectivelabs/wallet-ts";
-import { configureWalletStrategy, getWalletStrategy } from "@/app/chat/utils";
+import { configureWalletStrategy, getWalletStrategy } from "@/app/utils";
 
 export const connectToWallet = async (
   wallet: Wallet
 ): Promise<{ address: string | null; wallet: Wallet; token: string | null }> => {
   try {
     configureWalletStrategy(wallet);
-    
 
     const walletStrategy = getWalletStrategy();
     const addresses = await walletStrategy.getAddresses();
@@ -23,7 +22,7 @@ export const connectToWallet = async (
     });
 
     const userData = await res.json();
-  
+
     if (userData.data == null) {
       return { address: addresses[0], wallet: wallet, token: null };
     }
