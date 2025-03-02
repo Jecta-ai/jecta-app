@@ -2,14 +2,6 @@
 
 Jecta is a Next.js-based AI Copilot application that integrates with Injective Blockchain and uses Supabase for data storage. This application allows users to interact with an AI Copilot that can perform various blockchain-related tasks like checking balances, staking, swapping tokens, and more.
 
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/your-repo.svg)](https://github.com/Jecta-ai/jecta-app/stargazers)
-[![License](https://img.shields.io/github/license/yourusername/your-repo.svg)](https://github.com/Jecta-ai/jecta-app/blob/main/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/yourusername/your-repo.svg)](https://github.com/Jecta-ai/jecta-app/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/yourusername/your-repo.svg)](https://github.com/Jecta-ai/jecta-app/pulls)
-[![Last commit](https://img.shields.io/github/last-commit/yourusername/your-repo.svg)](https://github.com/Jecta-ai/jecta-app/commits/main)
-[![Contributors](https://img.shields.io/github/contributors/yourusername/your-repo.svg)](https://github.com/Jecta-ai/jecta-app/graphs/contributors)
-
-
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
