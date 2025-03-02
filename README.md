@@ -34,7 +34,7 @@ Jecta is a Next.js-based AI chatbot application that integrates with blockchain 
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Jecta-ai/jecta-app
 cd jecta-app
 ```
 
