@@ -1,6 +1,5 @@
 import { supabase } from "@/lib/supabaseClient";
 
-// TODO: Add auth check
 export async function GET(req: Request) {
   const injectiveAddress = req.headers.get("injectiveAddress");
   if (!injectiveAddress) {
@@ -28,7 +27,6 @@ export async function GET(req: Request) {
   return new Response(JSON.stringify({ data }), { status: 200 });
 }
 
-// Create chat
 export async function POST(req: Request) {
   try {
     const { title, injectiveAddress, senderId } = await req.json();
@@ -37,7 +35,6 @@ export async function POST(req: Request) {
       return new Response(JSON.stringify({ error: "Missing parameters" }), { status: 400 });
     }
 
-    // Get user2Id from injectives table
     const { data: userData, error: userError } = await supabase
       .from("users")
       .select("id")
@@ -63,7 +60,6 @@ export async function POST(req: Request) {
       return new Response(JSON.stringify({ error: "Recipient not found" }), { status: 400 });
     }
 
-    // Create chat
     const { data: chatData, error: chatError } = await supabase
       .from("chats")
       .insert([{ ai_id: systemData?.id, user_id: userData?.id, title: title }])

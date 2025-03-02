@@ -8,11 +8,9 @@ const ErrorMessageType = ({
   isLastError: boolean;
 }) => {
   return (
-    // ✅ Handle Error Messages with Exit Button
     <div className="p-3 rounded-xl bg-red-700 text-white max-w-[75%]">
       <p>{text}</p>
 
-      {/* Show Exit Button ONLY for the latest error message */}
       {isLastError && (
         <button
           type="button"

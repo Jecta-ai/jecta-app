@@ -74,7 +74,6 @@ const ValidatorsMessageType = ({
       <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
         <h3 className="text-lg font-semibold mb-2">Choose a Validator:</h3>
 
-        {/* ✅ Grid Layout for Validators */}
         <div className="grid grid-cols-4 gap-3">
           {validators?.map(
             (

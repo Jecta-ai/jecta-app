@@ -208,7 +208,6 @@ const Chatbot = () => {
         newChatCreated={newChatCreated}
       />
 
-      {/* Chat Section */}
       <main className="flex flex-col w-full mt-16">
         <AnimatePresence>
           {

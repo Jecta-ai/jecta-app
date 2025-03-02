@@ -30,16 +30,14 @@ const Header = ({
 
   return (
     <>
-      {/* Header spacer to prevent content overlap */}
       <div className="h-14 w-fit " />
 
-      {/* Fixed header */}
       <header
         className={cn(
           "fixed top-0  border-b border-zinc-800 bg-zinc-900/95 backdrop-blur-sm transition-all duration-300 z-20",
-          "hidden md:block", // Hide on mobile since we're using Sheet
-          isCollapsed ? "left-20" : "left-72", // Adjust left position based on sidebar state
-          "right-0" // Extend to the right edge
+          "hidden md:block",
+          isCollapsed ? "left-20" : "left-72",
+          "right-0"
         )}
       >
         <div className="flex h-14 items-center justify-between px-6">
@@ -72,7 +70,6 @@ const Header = ({
 
                 {showPopup && (
                   <>
-                    {/* Backdrop to close popup when clicking outside */}
                     <div
                       className="fixed inset-0"
                       onClick={() => setShowPopup(false)}
@@ -81,7 +78,6 @@ const Header = ({
                       tabIndex={0}
                     />
 
-                    {/* Popup menu */}
                     <div className="absolute right-0 top-full z-50 mt-2 min-w-[200px] rounded-lg border border-zinc-800 bg-zinc-900 py-1 shadow-xl">
                       <div className="px-3 py-2">
                         <p className="text-xs font-medium text-zinc-400">Connected Address</p>
@@ -114,10 +110,9 @@ const Header = ({
         </div>
       </header>
 
-      {/* Mobile Header */}
       <header className="md:hidden fixed top-0 left-0 right-0 z-50 border-b border-zinc-800 bg-zinc-900/95 backdrop-blur-sm">
         <div className="flex h-14 items-center justify-between px-4">
-          <div className="w-8" /> {/* Spacer for menu button */}
+          <div className="w-8" /> 
           <h2 className="text-lg font-semibold text-zinc-200">JECTA Chat</h2>
           <div className="flex items-center">
             {injectiveAddress && (

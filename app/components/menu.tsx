@@ -199,7 +199,6 @@ const Menu = ({
         )}
       </div>
 
-      {/* Chat List Section */}
       <div className="flex-1 flex flex-col min-h-0 p-4 pt-0">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-zinc-400">
@@ -258,7 +257,6 @@ const Menu = ({
         isCollapsed={isCollapsed}
       />
 
-      {/* Mobile Menu Trigger */}
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="md:hidden fixed top-4 left-4 z-50">
@@ -271,18 +269,13 @@ const Menu = ({
           className="w-80 p-0 bg-zinc-900 border-zinc-800"
         >
           <SheetHeader>
-            <VisuallyHidden>
-              <SheetTitle>Menu</SheetTitle>
-            </VisuallyHidden>
-            <VisuallyHidden>
-              <SheetDescription>Navigation menu for accessing chat options.</SheetDescription>
-            </VisuallyHidden>
+            <SheetTitle>Menu</SheetTitle>
+            <SheetDescription>Navigation menu for accessing chat options.</SheetDescription>
           </SheetHeader>
           <MenuContent />
         </SheetContent>
       </Sheet>
 
-      {/* Desktop Menu */}
       <aside
         className={cn(
           "relative hidden md:flex min-h-screen bg-zinc-900 text-white flex-col shadow-lg border-r border-zinc-800 transition-all duration-300 z-30",

@@ -7,12 +7,10 @@ export const connectWallet = async (addToChat: (msg: any) => void) => {
   }
 
   try {
-    // ✅ Reset Keplr permissions to force approval every time
     await window.keplr.disable(ChainId.Mainnet);
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Wait before re-enabling
-    await window.keplr.enable(ChainId.Mainnet); // Require user approval
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    await window.keplr.enable(ChainId.Mainnet);
 
-    // ✅ Get Injective Address
     const keplrOfflineSigner = window.keplr.getOfflineSigner(ChainId.Mainnet);
     const accounts = await keplrOfflineSigner.getAccounts();
 
@@ -26,23 +24,8 @@ export const connectWallet = async (addToChat: (msg: any) => void) => {
       method: "POST",
       body: JSON.stringify({ type: "createInjective", injectiveAddress }),
     });
-    // ✅ Sign a Message to Accept Terms
-    // const msg = "By signing this message, you agree to the terms of use.";
-    // const signResult: DirectSignResponse = await window.keplr.signArbitrary(
-    //   ChainId.Mainnet,
-    //   injectiveAddress,
-    //   msg
-    // );
 
-
-    // if (!signResult) {
-    //   alert("Signature failed. You must accept the terms to connect.");
-    //   return;
-    // }
-
-    // ✅ Store the signed address in localStorage
     localStorage.setItem("injectiveAddress", injectiveAddress);
-    // localStorage.setItem("signature", JSON.stringify(signResult));
 
     alert(`Connected! Your Injective address is: ${injectiveAddress}`);
 

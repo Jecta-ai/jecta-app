@@ -1,11 +1,7 @@
-// Use for secure token storage
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000"; // Default to localhost if not set
-
-// Get token from cookies (preferred) or localStorage
 const getAuthToken = () =>  localStorage.getItem("token");
 
-// ✅ Get last chat names with JWT Authentication
 const getLastChatNames = async (injectiveAddress: string) => {
   const token = getAuthToken();
 
@@ -13,8 +9,8 @@ const getLastChatNames = async (injectiveAddress: string) => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "", // Attach JWT
-      InjectiveAddress: injectiveAddress, // Keep injective address if needed
+      Authorization: token ? `Bearer ${token}` : "",
+      InjectiveAddress: injectiveAddress,
     },
   });
 
@@ -23,7 +19,6 @@ const getLastChatNames = async (injectiveAddress: string) => {
   return data.data;
 };
 
-// ✅ Get chat history with JWT Authentication
 const getChatHistory = async (chatId: string) => {
   const token = getAuthToken();
 
@@ -31,7 +26,7 @@ const getChatHistory = async (chatId: string) => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "", // Attach JWT
+      Authorization: token ? `Bearer ${token}` : "",
     },
   });
 

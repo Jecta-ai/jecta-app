@@ -2,7 +2,7 @@ import axios from "axios";
 import { queryOpenRouter } from "../ai";
 
 const INJECTIVE_TWITTER_URL = process.env.INJECTIVE_TWITTER_URL;
-const BEARER_TOKEN = process.env.BEARER_TOKEN; // Replace with your actual Twitter API token
+const BEARER_TOKEN = process.env.BEARER_TOKEN;
 const MAX_POSTS = process.env.MAX_POSTS;
 
 export const fetchInjectiveTweets = async (): Promise<string> => {

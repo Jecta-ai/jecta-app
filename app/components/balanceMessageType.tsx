@@ -9,10 +9,8 @@ const BalanceMessageType = ({ balances }: { balances: Token[] }) => {
             key={token.address}
             className="flex items-center bg-gray-800 p-4 rounded-lg shadow-md border border-gray-700"
           >
-            {/* Token Logo */}
             <img src={token.logo} alt={token.symbol} className="w-10 h-10 rounded-full mr-4" />
 
-            {/* Symbol & Balance */}
             <div className="flex flex-col flex-1">
               <span className="text-white font-semibold text-lg">{token.symbol}</span>
               <span className="text-gray-400 text-sm">
@@ -23,7 +21,6 @@ const BalanceMessageType = ({ balances }: { balances: Token[] }) => {
               </span>
             </div>
 
-            {/* Contract Link */}
             <a
               href={`https://injscan.com/asset/${encodeURIComponent(token.address)}`}
               target="_blank"
