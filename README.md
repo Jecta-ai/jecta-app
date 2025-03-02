@@ -1,11 +1,26 @@
 # Jecta App
 
-Jecta is a Next.js-based AI chatbot application that integrates with blockchain wallets (primarily Injective) and uses Supabase for data storage. This application allows users to interact with an AI assistant that can perform various blockchain-related tasks like checking balances, staking, swapping tokens, and more.
+Jecta is a Next.js-based AI Copilot application that integrates with Injective Blockchain and uses Supabase for data storage. This application allows users to interact with an AI Copilot that can perform various blockchain-related tasks like checking balances, staking, swapping tokens, and more.
+
+[![GitHub stars](https://img.shields.io/github/stars/yourusername/your-repo.svg)](https://github.com/Jecta-ai/jecta-app/stargazers)
+[![License](https://img.shields.io/github/license/yourusername/your-repo.svg)](https://github.com/Jecta-ai/jecta-app/blob/main/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/yourusername/your-repo.svg)](https://github.com/Jecta-ai/jecta-app/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/yourusername/your-repo.svg)](https://github.com/Jecta-ai/jecta-app/pulls)
+[![Last commit](https://img.shields.io/github/last-commit/yourusername/your-repo.svg)](https://github.com/Jecta-ai/jecta-app/commits/main)
+[![Contributors](https://img.shields.io/github/contributors/yourusername/your-repo.svg)](https://github.com/Jecta-ai/jecta-app/graphs/contributors)
+
+
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Injective](https://img.shields.io/badge/Injective-0052FF?style=for-the-badge&logo=injectiveprotocol&logoColor=white)
+
+<img src="https://pbs.twimg.com/profile_images/1887520476555046912/wxXggXte_400x400.jpg" alt="Jecta" width="100" height="100">
 
 ## Features
 
-- AI-powered chatbot interface
-- Blockchain wallet integration (Injective, Keplr, etc.)
+- AI-powered Copilot interface
+- Blockchain wallet integration (Leap, Keplr)
 - User authentication via wallet signatures
 - Chat history storage and retrieval
 - Token balance checking
@@ -19,7 +34,7 @@ Jecta is a Next.js-based AI chatbot application that integrates with blockchain 
 - **Backend**: Next.js API Routes
 - **Database**: PostgreSQL via Supabase
 - **Authentication**: JWT with wallet signature verification
-- **Blockchain Integration**: Injective Labs SDK, Cosmos SDK
+- **Blockchain Integration**: Injective Typescript SDK, Cosmos SDK
 - **AI Integration**: OpenRouter API
 
 ## Prerequisites
@@ -34,7 +49,7 @@ Jecta is a Next.js-based AI chatbot application that integrates with blockchain 
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Jecta-ai/jecta-app
 cd jecta-app
 ```
 
