@@ -7,6 +7,7 @@ import { searchTxHash } from "./tasks/searchTxHash";
 import { stakeInjective } from "./tasks/stakeInjective";
 import { transferFunds } from "./tasks/transferFunds";
 import { createChatMessage } from "@/app/utils";
+import { getAuction, getLatestAuction } from "./tasks/fetchAuction";
 
 export const executeTask = async (
   intent: string,
@@ -37,6 +38,22 @@ export const executeTask = async (
     case "send_token":
       await transferFunds(intent, message, chatHistory, addToChat, address);
       return;
+      case "get_latest_auction":
+      await getLatestAuction(intent,message,chatHistory,addToChat,address);
+      return
+    case "get_auction":
+      await getAuction(intent,message,chatHistory,addToChat,address);
+      return
+    case "place_bid":
+      await getLatestAuction(intent,message,chatHistory,addToChat,address);
+      addToChat(
+        createChatMessage({
+          sender: "ai",
+          text: "🔍 Please Enter your amount of INJ to bid",
+          type: "place_bid_amount",
+        })
+      );
+      return
     case "stake_inj_amount":
       addToChat(
         createChatMessage({
