@@ -71,7 +71,6 @@ const PlaceBidAmountMessageType = ({
         placeholder="Amount in INJ"
         className="p-2 rounded-lg bg-gray-700 text-white w-full"
         onChange={(e) => setAmount(e.target.value)}
-        //onKeyDown={(e) => e.key === "Enter" && handleStakeAmount(e.target.value)}
       />
       <div className=" space-x-4">
         <button
