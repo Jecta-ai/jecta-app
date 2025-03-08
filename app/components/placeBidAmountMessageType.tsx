@@ -1,17 +1,14 @@
-import { useValidator } from "../providers/validatorProvider";
 import { useChat } from "../providers/chatProvider";
 import { useState } from "react";
 import { createChatMessage,msgBroadcastClient } from "../utils";
 import {
     MsgBid,
     ChainGrpcAuctionApi,
-    MsgBroadcasterWithPk,
   } from '@injectivelabs/sdk-ts'
-  import { ChainId } from '@injectivelabs/ts-types'
-  import { INJ_DENOM, BigNumberInBase } from '@injectivelabs/utils'
-  import { getNetworkEndpoints, Network } from '@injectivelabs/networks'
+import { INJ_DENOM, BigNumberInBase } from '@injectivelabs/utils'
+import { getNetworkEndpoints, Network } from '@injectivelabs/networks'
 
-  const endpointsForNetwork = getNetworkEndpoints(Network.Mainnet)
+const endpointsForNetwork = getNetworkEndpoints(Network.Mainnet)
 const auctionApi = new ChainGrpcAuctionApi(endpointsForNetwork.grpc)
 
 const PlaceBidAmountMessageType = ({
@@ -24,10 +21,10 @@ const PlaceBidAmountMessageType = ({
   token:string;
 }) => {
   const [amount, setAmount] = useState<string>();
-  const { validatorAddress, setValidatorSelected } = useValidator();
   const { addMessage } = useChat();
 
   const confirmBid = async () => {
+    
     try {
       if (amount === undefined || injectiveAddress === null) {
         return;
@@ -39,7 +36,7 @@ const PlaceBidAmountMessageType = ({
       }
       const latestAuctionModuleState = await auctionApi.fetchModuleState()
       const latestRound = latestAuctionModuleState.auctionRound
-
+      
       const msg = MsgBid.fromJSON({
         amount:amountBid,
         injectiveAddress,
@@ -57,9 +54,9 @@ const PlaceBidAmountMessageType = ({
           type: "text",
         })
       );
-      setValidatorSelected(false);
+      
     } catch (error) {
-
+      console.log(error)
     }
   };
 
