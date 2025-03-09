@@ -21,6 +21,7 @@ import type { Chat } from "./services/types";
 import ChatInput from "./components/ChatInput";
 import { motion, AnimatePresence } from "framer-motion";
 import LoadingIndicator from "./components/LoadingIndicator";
+import PlaceBidAmountMessageType from "./components/placeBidAmountMessageType";
 
 export type LoadingState = "thinking" | "executing" | "general" | null;
 
@@ -234,6 +235,7 @@ const Chatbot = () => {
                     (msg.type === "error" ||
                       msg.type === "validators" ||
                       msg.type === "stake_amount" ||
+                      msg.type === "place_bid_amount" ||
                       msg.type === "swap" ||
                       msg.type === "send_token") &&
                     i === messageHistory.length - 1;
@@ -307,9 +309,25 @@ const Chatbot = () => {
                         ) : (
                           <>
                             <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
-                              <h3 className="text-lg font-semibold mb-2">
-                                Amount successfull given !
-                              </h3>
+                            
+                              Done !
+                             
+                            </div>
+                          </>
+                        ))}
+                        {msg.type === "place_bid_amount" &&
+                        (isLastError ? (
+                          <PlaceBidAmountMessageType
+                            token={token}
+                            handleExit={handleExit}
+                            injectiveAddress={injectiveAddress}
+                          />
+                        ) : (
+                          <>
+                            <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                              
+                              Done !
+                              
                             </div>
                           </>
                         ))}

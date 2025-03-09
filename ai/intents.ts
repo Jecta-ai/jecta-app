@@ -14,16 +14,6 @@ export const intents = {
             "exchange my", "where can I swap", "how to swap"
         ]
     },
-    /*liquidity_swap: {
-        description: "Handles liquidity swaps within a pool.",
-        examples: [
-            "I want to swap liquidity from a pool.",
-            "Exchange my liquidity holdings for a different pair."
-        ],
-        keywords: [
-            "liquidity swap", "LP tokens", "swap liquidity", "liquidity exchange"
-        ]
-    },*/
     stake_inj: {
         description: "Provides staking information for Injective (INJ).",
         examples: [
@@ -36,18 +26,21 @@ export const intents = {
             "stake INJ", "staking rewards", "staking pool"
         ]
     },
-    /*unstake_inj: {
-        description: "Handles unstaking and withdrawal of staked INJ.",
+    place_bid: {
+        description: "Allows users to place a bid in the latest Injective burn auction.",
         examples: [
-            "How do I unstake my INJ?",
-            "Withdraw staked funds from Injective.",
-            "I want to remove my tokens from staking."
+            "I want to place a bid for the latest burn auction.",
+            "Bid 100 INJ in the current burn auction.",
+            "How do I participate in the Injective burn auction?",
+            "Place a bid for me in the latest auction.",
+            "I want to join the Injective auction and bid."
         ],
         keywords: [
-            "unstake", "withdraw staking", "remove from staking", "exit staking"
+            "bid", "place bid", "burn auction", "latest auction bid",
+            "join auction", "participate auction", "Injective auction bid",
+            "current auction bid", "bidding in auction", "auction entry"
         ]
     },
-    */
     send_token: {
         description: "Handles token transfers to another Injective address.",
         examples: [
@@ -68,6 +61,35 @@ export const intents = {
         ],
         keywords: [
             "price", "current value", "worth", "token price", "how much is"
+        ]
+    },
+    get_latest_auction: {
+        description: "Fetches and displays the latest auction on Injective.",
+        examples: [
+            "I want to see the latest auction on Injective.",
+            "Get me the most recent auction on Injective.",
+            "Show me the newest Injective auction.",
+            "What is the current auction happening on Injective?",
+            "Fetch the latest Injective auction details."
+        ],
+        keywords: [
+            "auction", "Injective auction", "latest auction", "current auction",
+            "new auction", "Injective bidding", "auction event", "bidding round",
+            "active auction", "auction update"
+        ]
+    },
+    get_auction: {
+        description: "Fetches and displays auction details for a specific auction round.",
+        examples: [
+            "I want to see the auction with number 2.",
+            "Show me the auction info from round 5.",
+            "Get auction details for round 10.",
+            "Retrieve auction data from round 3.",
+            "What happened in auction round 7?"
+        ],
+        keywords: [
+            "auction round", "specific auction", "auction number", "auction details",
+            "auction info", "bidding round", "round of auction", "auction at round"
         ]
     },
     tx_search: {

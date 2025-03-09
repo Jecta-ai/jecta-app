@@ -12,7 +12,7 @@ export const fetchTokenPrice = async (ticker: string) => {
         return `💵 1 ${ticker.toUpperCase()} = ${injPrice} USDT on Injective.`;
       }
       const res = await fetch(
-        `https://swap.coinhall.org/v1/swap?chainId=${injectiveMainnetChainId}&from=${tokenMetadata.address}&to=inj&amount=${10**tokenMetadata.decimals}&slippageBps=100`
+        `https://swap.coinhall.org/v1/swap?chainId=${injectiveMainnetChainId}&from=${tokenMetadata.address}&to=inj&amount=${10**tokenMetadata.decimals}&slippageBps=500`
       );
       const { 
         expectedReturn,
@@ -53,13 +53,52 @@ const fetchINJPrice = async (injectiveMainnetChainId:string)=>{
   }
 }
 
+
+export const fetchTokenPriceDirectly = async (ticker: string) => {
+  try{
+  const injectiveMainnetChainId = "injective-1";
+      const tokenMetadata = await fetchTokenMetadata(ticker.toUpperCase());
+      if (!tokenMetadata){
+        return null;
+      }
+      if(ticker.toUpperCase() == "INJ"){
+        const injPrice = await fetchINJPrice(injectiveMainnetChainId);
+        return injPrice;
+      }
+      const res = await fetch(
+        `https://swap.coinhall.org/v1/swap?chainId=${injectiveMainnetChainId}&from=${tokenMetadata.address}&to=inj&amount=${10**tokenMetadata.decimals}&slippageBps=500`
+      );
+      const { 
+        expectedReturn,
+        minimumReceive,
+        contractInput,
+        route,
+      } = await res.json();
+
+      const injPrice = await fetchINJPrice(injectiveMainnetChainId);
+      if(injPrice == null){
+        return null;
+      }
+
+      if(minimumReceive === undefined){
+        return null;
+      }
+
+      return Number(Number(minimumReceive)/10**18)*Number(injPrice);
+    } catch (error) {
+      return null;
+    }
+};
+
+
+
 const TOKEN_LIST_URL =
   'https://raw.githubusercontent.com/InjectiveLabs/injective-lists/refs/heads/master/json/tokens/mainnet.json'
 
 const fetchTokenMetadata = async (ticker: string) => {
   try {
     const response = await axios.get(TOKEN_LIST_URL)
-    const tokenMetadata = response.data.find((token: any) => token.symbol === ticker);
+    const tokenMetadata = response.data.find((token: any) => token.symbol === ticker && (token.tokenType === "cw20" || token.tokenType === "tokenFactory"));
     
     if (tokenMetadata) {
       

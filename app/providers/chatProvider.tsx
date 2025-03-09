@@ -73,6 +73,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (Array.isArray(messages)) {
       for (const message of messages) {
+        await new Promise((resolve) => setTimeout(resolve, 1000)); 
         if (message.sender === "ai" && chatToUse.ai_id) {
           addMessage(token, message, newChat); // Pass updated chat state
         } else if (message.sender === "user" && chatToUse.user_id) {
