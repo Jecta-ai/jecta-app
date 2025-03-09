@@ -4,12 +4,17 @@ import { createChatMessage,msgBroadcastClient } from "../utils";
 import {
     MsgBid,
     ChainGrpcAuctionApi,
+    IndexerGrpcAuctionApi,
   } from '@injectivelabs/sdk-ts'
 import { INJ_DENOM, BigNumberInBase } from '@injectivelabs/utils'
 import { getNetworkEndpoints, Network } from '@injectivelabs/networks'
 
 const endpointsForNetwork = getNetworkEndpoints(Network.Mainnet)
 const auctionApi = new ChainGrpcAuctionApi(endpointsForNetwork.grpc)
+
+const network = Network.Mainnet;
+const endpoints = getNetworkEndpoints(network);
+const indexerGrpcAuctionApi = new IndexerGrpcAuctionApi(endpoints.indexer);
 
 const PlaceBidAmountMessageType = ({
   handleExit,
@@ -22,6 +27,7 @@ const PlaceBidAmountMessageType = ({
 }) => {
   const [amount, setAmount] = useState<string>();
   const { addMessage } = useChat();
+  const [errorMessage,setErrorMessage] = useState<string>("");
 
   const confirmBid = async () => {
     
@@ -36,7 +42,20 @@ const PlaceBidAmountMessageType = ({
       }
       const latestAuctionModuleState = await auctionApi.fetchModuleState()
       const latestRound = latestAuctionModuleState.auctionRound
-      
+      const auction = await indexerGrpcAuctionApi.fetchAuction(latestRound);
+      let minBid;
+      if(auction.bids.length >0){
+        const sortedBids = auction.bids.sort((a, b) => Number(b.bidAmount) - Number(a.bidAmount));
+        minBid = Number(sortedBids[0].bidAmount);
+      }else{
+        minBid = 0;
+      }
+      if(Number(amount) < (minBid/(10**18))){
+        setErrorMessage(`Min Bid must be more than ${minBid/(10**18)} INJ`);
+        return
+      }else{
+        setErrorMessage("")
+      }
       const msg = MsgBid.fromJSON({
         amount:amountBid,
         injectiveAddress,
@@ -56,6 +75,7 @@ const PlaceBidAmountMessageType = ({
       );
       
     } catch (error) {
+      setErrorMessage(String(error))
       console.log(error)
     }
   };
@@ -63,6 +83,9 @@ const PlaceBidAmountMessageType = ({
   return (
     <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
       <h3 className="text-lg font-semibold mb-2">Enter Bid Amount:</h3>
+      <div className="text-red-400">
+        {errorMessage}
+      </div>
       <input
         type="number"
         placeholder="Amount in INJ"
