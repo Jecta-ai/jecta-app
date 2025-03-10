@@ -90,7 +90,7 @@ async function formatAuctionAsHTML(auctionData: {
         <h1>Latest Auction Details</h1><br>
         <strong>Auction Round:</strong> <span>${auction.round}</span><br>
         <strong>Winner:</strong> <span>${auction.winner || 'No winner yet'}</span><br>
-        <strong>Winning Bid Amount:</strong> <span>${auction.winningBidAmount || 'Ongoing'} INJ </span><br>
+        <strong>Winning Bid Amount:</strong> <span>${(Number(auction.winningBidAmount)/(10**18)).toLocaleString() || 'Ongoing'} INJ </span><br>
         <strong>End Time:</strong> <span>${formatTimestamp(auction.endTimestamp)}</span><br>
         <strong>Last Updated:</strong> <span>${formatTimestamp(auction.updatedAt)}</span><br><br>
         <h1>Basket Items</h1><br>

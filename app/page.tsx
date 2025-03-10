@@ -111,6 +111,7 @@ const Chatbot = () => {
       validatorSelected ||
       lastMessageType === "swap" ||
       lastMessageType === "send_token" ||
+      lastMessageType === "place_bid_amount" ||
       !!loadingState ||
       lastMessageType === "validators"
     );
