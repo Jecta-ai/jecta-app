@@ -5,10 +5,11 @@ export async function POST(req: Request) {
     const { addresses, balanceMin } = await req.json();
 
     if (!addresses || balanceMin === undefined) {
-      return NextResponse.json({ error: "Missing required parameters: addresses or balanceMin" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing required parameters: addresses or balanceMin" },
+        { status: 400 }
+      );
     }
-
-    console.log("Received request:", { addresses, balanceMin });
 
     const query = `
       query getTokenHolders($addresses: [String!], $balanceMin: float8) {
@@ -31,7 +32,6 @@ export async function POST(req: Request) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        
       },
       body: JSON.stringify({ query, variables: { addresses, balanceMin } }),
     });
@@ -40,7 +40,10 @@ export async function POST(req: Request) {
 
     if (!response.ok) {
       console.error("GraphQL API Error:", data);
-      return NextResponse.json({ error: "GraphQL Error", details: data }, { status: response.status });
+      return NextResponse.json(
+        { error: "GraphQL Error", details: data },
+        { status: response.status }
+      );
     }
 
     return NextResponse.json(data);

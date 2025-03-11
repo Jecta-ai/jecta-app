@@ -56,11 +56,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const addMessage = async (token: string, message: ChatMessage, newChat?: Chat) => {
-    console.log("addMessage -> newChat:", newChat);
-    console.log("addMessage -> message:", message);
-    console.log("addMessage -> token:", token);
     const chatToUse = newChat ? newChat : currentChat;
-    console.log("addMessage -> chatToUse:", chatToUse);
     setMessageHistory((prev) => [...prev, message]);
 
     if (!chatToUse || (!chatToUse?.ai_id && !chatToUse?.user_id)) {

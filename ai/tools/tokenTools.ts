@@ -25,7 +25,6 @@ const FACTORIES = [
 ];
 
 const baseUrl = "https://app.jectadotai.com";
-console.log("baseUrl:", baseUrl);
 
 export async function findLiquidityPools(contract: string) {
   const dojopool = await fetchPools("DojoSwap", contract);
@@ -296,7 +295,6 @@ export async function getPieChartData(data: Holder[], total_supply: number): Pro
 export async function getServerSideProps(address1: string, address2: string) {
   const apiUrl = `${baseUrl}/api/tokenHolders`;
 
-  console.log("getServerSideProps -> apiUrl:", apiUrl);
   try {
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -306,7 +304,6 @@ export async function getServerSideProps(address1: string, address2: string) {
         balanceMin: 1,
       }),
     });
-    console.log("getServerSideProps -> response:", response);
 
     if (!response.ok) {
       console.error("API Request Failed:", response.status);
@@ -314,7 +311,6 @@ export async function getServerSideProps(address1: string, address2: string) {
     }
 
     const data = await response.json();
-    console.log("getServerSideProps -> data:", data);
     return { props: { tokenHolders: data } };
   } catch (error) {
     console.error("Unexpected Error:", error);

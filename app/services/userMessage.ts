@@ -17,7 +17,6 @@ export const createChatIfNotExists = async ({
   token: string;
 }) => {
   const title = await createTitleFromMessage(userMessage);
-  console.log(" title:", title);
   const res = await fetch(`${baseUrl}/api/chats`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
@@ -40,7 +39,6 @@ export const crateInjectiveIfNotExists = async (injectiveAddress: string) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ type: "createInjective", injectiveAddress }),
   });
-  console.log(" crateInjectiveIfNotExists -> res:", res);
   const data = await res.json();
   return data;
 };
@@ -61,7 +59,6 @@ export const createMessage = async ({
     headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
     body: JSON.stringify({ chatId, senderId, message }),
   });
-  console.log(" res:", res);
   const data = await res.json();
   return data;
 };
