@@ -296,6 +296,7 @@ export async function getPieChartData(data: Holder[], total_supply: number): Pro
 export async function getServerSideProps(address1: string, address2: string) {
   const apiUrl = `${baseUrl}/api/tokenHolders`;
 
+  console.log("getServerSideProps -> apiUrl:", apiUrl);
   try {
     const response = await fetch(apiUrl, {
       method: "POST",
