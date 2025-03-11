@@ -24,7 +24,7 @@ const FACTORIES = [
   { name: "Astroport", address: "inj19aenkaj6qhymmt746av8ck4r8euthq3zmxr2r6" },
 ];
 
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+const baseUrl = "https://app.jectadotai.com";
 console.log("baseUrl:", baseUrl);
 
 export async function findLiquidityPools(contract: string) {
@@ -306,6 +306,7 @@ export async function getServerSideProps(address1: string, address2: string) {
         balanceMin: 1,
       }),
     });
+    console.log("getServerSideProps -> response:", response);
 
     if (!response.ok) {
       console.error("API Request Failed:", response.status);
@@ -313,6 +314,7 @@ export async function getServerSideProps(address1: string, address2: string) {
     }
 
     const data = await response.json();
+    console.log("getServerSideProps -> data:", data);
     return { props: { tokenHolders: data } };
   } catch (error) {
     console.error("Unexpected Error:", error);

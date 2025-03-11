@@ -8,7 +8,12 @@ type ChatContextType = {
   allChats: Chat[];
   setAllChats: (chats: Chat[]) => void;
   currentChat: Chat | null;
-  createChat: (injectiveAddress: string, userMessage: ChatMessage, token: string,senderId:string) => Promise<Chat>;
+  createChat: (
+    injectiveAddress: string,
+    userMessage: ChatMessage,
+    token: string,
+    senderId: string
+  ) => Promise<Chat>;
   messageHistory: ChatMessage[];
   setMessageHistory: (messages: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => void;
   addMessage: (token: string, message: ChatMessage, updatedChat?: Chat) => void;
@@ -23,7 +28,12 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [allChats, setAllChats] = useState<Chat[]>([]);
   const [messageHistory, setMessageHistory] = useState<ChatMessage[]>([]);
 
-  const createChat = async (injectiveAddress: string, userMessage: ChatMessage, token: string,senderId:string) => {
+  const createChat = async (
+    injectiveAddress: string,
+    userMessage: ChatMessage,
+    token: string,
+    senderId: string
+  ) => {
     try {
       const { id, title, ai_id, user_id } = await createChatIfNotExists({
         injectiveAddress,
@@ -46,7 +56,11 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const addMessage = async (token: string, message: ChatMessage, newChat?: Chat) => {
+    console.log("addMessage -> newChat:", newChat);
+    console.log("addMessage -> message:", message);
+    console.log("addMessage -> token:", token);
     const chatToUse = newChat ? newChat : currentChat;
+    console.log("addMessage -> chatToUse:", chatToUse);
     setMessageHistory((prev) => [...prev, message]);
 
     if (!chatToUse || (!chatToUse?.ai_id && !chatToUse?.user_id)) {
@@ -57,7 +71,7 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       if (message.sender === "ai" && chatToUse.ai_id) {
         createMessage({ chatId: chatToUse.id, senderId: chatToUse.ai_id, message, token });
-      }else if (message.sender === "sonia" && chatToUse.ai_id) {
+      } else if (message.sender === "sonia" && chatToUse.ai_id) {
         createMessage({ chatId: chatToUse.id, senderId: chatToUse.ai_id, message, token });
       } else if (message.sender === "user" && chatToUse.user_id) {
         createMessage({ chatId: chatToUse.id, senderId: chatToUse.user_id, message, token });
@@ -75,9 +89,9 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (Array.isArray(messages)) {
       for (const message of messages) {
-        await new Promise((resolve) => setTimeout(resolve, 1000)); 
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         if (message.sender === "ai" && chatToUse.ai_id) {
-          addMessage(token, message, newChat); 
+          addMessage(token, message, newChat);
         } else if (message.sender === "sonia" && chatToUse.ai_id) {
           addMessage(token, message, newChat);
         } else if (message.sender === "user" && chatToUse.user_id) {
