@@ -268,10 +268,12 @@ const Menu = ({
           side="left"
           className="w-80 p-0 bg-zinc-900 border-zinc-800"
         >
-          <SheetHeader>
-            <SheetTitle>Menu</SheetTitle>
-            <SheetDescription>Navigation menu for accessing chat options.</SheetDescription>
-          </SheetHeader>
+          <VisuallyHidden>
+            <SheetHeader>
+              <SheetTitle>Menu</SheetTitle>
+              <SheetDescription>Navigation menu for accessing chat options.</SheetDescription>
+            </SheetHeader>
+          </VisuallyHidden>
           <MenuContent />
         </SheetContent>
       </Sheet>
