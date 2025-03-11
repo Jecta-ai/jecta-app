@@ -3,7 +3,7 @@ import { Buffer } from "node:buffer";
 import { PubKeySecp256k1, Hash } from "@keplr-wallet/crypto";
 import { serializeSignDoc } from "@keplr-wallet/cosmos";
 import { supabase } from "@/lib/supabaseClient";
-//IMPORTANT !
+
 
 export async function POST(req: Request) {
   try {

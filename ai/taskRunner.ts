@@ -8,6 +8,8 @@ import { stakeInjective } from "./tasks/stakeInjective";
 import { transferFunds } from "./tasks/transferFunds";
 import { createChatMessage } from "@/app/utils";
 import { getAuction, getLatestAuction } from "./tasks/fetchAuction";
+import { tokenAnalysis } from "./tasks/tokenAnalysis";
+import { jokeTool } from "./tasks/jokeTool";
 
 export const executeTask = async (
   intent: string,
@@ -43,6 +45,12 @@ export const executeTask = async (
       return
     case "get_auction":
       await getAuction(intent,message,chatHistory,addToChat,address);
+      return
+    case "analyze_token":
+      await tokenAnalysis(intent,message,chatHistory,addToChat,address);
+      return
+    case "talk_between_agents":
+      await jokeTool(intent,message,chatHistory,addToChat,address)
       return
     case "place_bid":
       await getLatestAuction(intent,message,chatHistory,addToChat,address);

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import logo from "@/public/logo.png";
+import sonia from "../images/sonia.png"
 import type { ChatMessage } from "./types";
 import Menu from "./components/menu";
 import BalanceMessageType from "./components/balanceMessageType";
@@ -22,6 +23,8 @@ import ChatInput from "./components/ChatInput";
 import { motion, AnimatePresence } from "framer-motion";
 import LoadingIndicator from "./components/LoadingIndicator";
 import PlaceBidAmountMessageType from "./components/placeBidAmountMessageType";
+import TokenMetadataCard from "./components/TokenMetadataCard";
+import TokenPieChart from "./components/TokenPieChart";
 
 export type LoadingState = "thinking" | "executing" | "general" | null;
 
@@ -56,7 +59,7 @@ const Chatbot = () => {
     setMessageHistory((prevChat) => {
       if (prevChat.length === 0) return prevChat;
 
-      // ✅ Change the last message type to "text"
+     
       const updatedChat = [...prevChat];
       updatedChat[updatedChat.length - 1].type = "text";
       return updatedChat;
@@ -137,7 +140,7 @@ const Chatbot = () => {
         text: userMessage,
         type: "text",
       });
-      const newChat = await createChat(injectiveAddress, newUserMessage, token);
+      const newChat = await createChat(injectiveAddress, newUserMessage, token,"system");
 
       if (newChat?.id) {
         addMessage(token, newUserMessage, newChat);
@@ -167,7 +170,7 @@ const Chatbot = () => {
   const getAIResponse = async (userMessage: string, updatedChat?: Chat) => {
     fetchResponse(userMessage, messageHistory, injectiveAddress, token)
       .then((data) => {
-        addMessages(token, data.messages, updatedChat); // Update chat history
+        addMessages(token, data.messages, updatedChat); 
       })
       .catch((err) => {
         console.error("Error fetching response:", err);
@@ -241,7 +244,7 @@ const Chatbot = () => {
                       msg.type === "send_token") &&
                     i === messageHistory.length - 1;
 
-                  // Only animate new messages (last 3)
+                 
                   const isRecent = i >= messageHistory.length - 3;
                   const animationProps = isRecent
                     ? {
@@ -269,6 +272,7 @@ const Chatbot = () => {
                         msg.sender === "user" ? "justify-end" : "justify-start"
                       }`}
                     >
+
                       {msg.sender === "ai" && (
                         <Image
                           src={logo}
@@ -278,8 +282,27 @@ const Chatbot = () => {
                           height={32}
                         />
                       )}
+                                              {msg.sender === "sonia" && (
+                        <img
+                          src={sonia.src}
+                          alt="Sonia"
+                          className="w-8 h-8 rounded-md mr-2 border-white border-1"
+                        />
+                      )}
                       {msg.type === "balance" && msg.balances && (
                         <BalanceMessageType balances={msg.balances} />
+                      )}
+                      {msg.type === "tokenmetadata" && (
+                    <div className="p-3 rounded-xl bg-zinc-800 text-white ">
+                      
+                      <TokenMetadataCard msg={msg} />
+                    </div>
+                      )}
+                      {msg.type === "pie" && (
+                    <div className="p-3 rounded-xl bg-zinc-800 text-white w-96">
+                      
+                      <TokenPieChart data={msg.pie} />
+                    </div>
                       )}
                       {msg.type === "validators" &&
                         (isLastError ? (

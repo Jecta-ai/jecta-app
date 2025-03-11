@@ -40,4 +40,6 @@ export interface ChatMessage {
   validators?: Validator[] | null;
   contractInput?: ContractInput | null;
   send?: SendDetails | null;
+  token_metadata?:any;
+  pie?:any;
 }

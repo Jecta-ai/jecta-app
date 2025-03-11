@@ -8,7 +8,7 @@ type ChatContextType = {
   allChats: Chat[];
   setAllChats: (chats: Chat[]) => void;
   currentChat: Chat | null;
-  createChat: (injectiveAddress: string, userMessage: ChatMessage, token: string) => Promise<Chat>;
+  createChat: (injectiveAddress: string, userMessage: ChatMessage, token: string,senderId:string) => Promise<Chat>;
   messageHistory: ChatMessage[];
   setMessageHistory: (messages: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => void;
   addMessage: (token: string, message: ChatMessage, updatedChat?: Chat) => void;
@@ -23,11 +23,11 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [allChats, setAllChats] = useState<Chat[]>([]);
   const [messageHistory, setMessageHistory] = useState<ChatMessage[]>([]);
 
-  const createChat = async (injectiveAddress: string, userMessage: ChatMessage, token: string) => {
+  const createChat = async (injectiveAddress: string, userMessage: ChatMessage, token: string,senderId:string) => {
     try {
       const { id, title, ai_id, user_id } = await createChatIfNotExists({
         injectiveAddress,
-        senderId: "system",
+        senderId: senderId,
         userMessage: userMessage.text || "",
         token,
       });
@@ -57,6 +57,8 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       if (message.sender === "ai" && chatToUse.ai_id) {
         createMessage({ chatId: chatToUse.id, senderId: chatToUse.ai_id, message, token });
+      }else if (message.sender === "sonia" && chatToUse.ai_id) {
+        createMessage({ chatId: chatToUse.id, senderId: chatToUse.ai_id, message, token });
       } else if (message.sender === "user" && chatToUse.user_id) {
         createMessage({ chatId: chatToUse.id, senderId: chatToUse.user_id, message, token });
       }
@@ -75,7 +77,9 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       for (const message of messages) {
         await new Promise((resolve) => setTimeout(resolve, 1000)); 
         if (message.sender === "ai" && chatToUse.ai_id) {
-          addMessage(token, message, newChat); // Pass updated chat state
+          addMessage(token, message, newChat); 
+        } else if (message.sender === "sonia" && chatToUse.ai_id) {
+          addMessage(token, message, newChat);
         } else if (message.sender === "user" && chatToUse.user_id) {
           addMessage(token, message, newChat);
         }

@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-const publicPaths = ["/api/auth/nonce", "/api/auth/verifyArbitrary", "/api/users"];
+const publicPaths = ["/api/auth/nonce", "/api/auth/verifyArbitrary", "/api/users","/api/tokenHolders"];
 export async function middleware(req: NextRequest) {
   if (publicPaths.includes(req.nextUrl.pathname)) {
     return NextResponse.next();
