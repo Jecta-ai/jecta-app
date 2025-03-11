@@ -36,7 +36,7 @@ export async function searchTxHash(
   addToChat(createChatMessage({ sender: "ai", text: txDetails, type: "success", intent: intent }));
 }
 export const extractTxHashFromMessage = (message: string) => {
-  const txHashRegex = /\b[A-Fa-f0-9]{64}\b/; // Matches a 64-character hexadecimal string
+  const txHashRegex = /\b[A-Fa-f0-9]{64}\b/; 
   const match = message.match(txHashRegex);
   return match ? match[0] : null;
 };

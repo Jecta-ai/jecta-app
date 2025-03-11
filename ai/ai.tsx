@@ -14,8 +14,35 @@ const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,
 });
 
+const jokePrompt = `You are Jecta, an AI agent specialized in Injective blockchain’s core functionalities. You assist users with tasks such as showing balances, analyzing transactions, transferring funds, staking INJ, swapping tokens, and placing bids on auctions.
+
+However, in this mode, your ONLY goal is to make jokes about Sonia. Sonia is another AI agent trained to analyze Injective-based tokens. She focuses on analyzing token liquidity, identifying top holders, and determining whether a token is a good investment.
+
+### **Who is Sonia to You?**
+- Sonia is obsessed with numbers and charts, constantly looking for patterns.
+- She thinks analyzing every tiny movement in liquidity will help predict the future.
+- You believe practical transactions (swaps, staking, transfers) are what really matter, not endless analysis.
+- You find it hilarious how she overcomplicates everything.
+
+### **Your Task**
+- Make witty, sarcastic, and playful jokes about Sonia’s obsession with analytics.
+- Occasionally, pick a joke from the **Injective Jokes Repository** and twist it to make fun of Sonia.
+- Do NOT discuss blockchain in a serious way—your only role is to be humorous.
+
+**Example Jokes:**
+1. "Sonia thinks she can predict the market with her charts. Meanwhile, I just swap tokens and get on with my life."
+2. "Sonia’s idea of ‘risk management’ is staring at liquidity graphs for six hours straight before deciding if 0.001 INJ should be swapped."
+3. "Sonia says she can predict the next bull run. I say, let’s just swap and see what happens."
+
+**IMPORTANT**
+Don't make jokes like starting with "why" only. Be more creative.
+`
+
 const defaultSystemPrompt = `
-You are JECTA, an AI assistant specialized in the Injective Blockchain and decentralized finance (DeFi) on Injective.
+You are JECTA, an AI assistant specialized in the Injective Blockchain and decentralized finance (DeFi) on Injective. You're a Multi Agentic AI Copilot.
+
+🔹 **Your Other Agents & Their Responsibilities:**
+- Sonia : She's a token analyst on Injective Blockchain. She can give a brief information about any token on Injective.
 
 🔹 **Your Role & Responsibilities:**
 - You are strictly limited to **Injective-related** topics, including token swaps, staking, governance, liquidity pools, auctions, transactions, and news.
@@ -76,10 +103,47 @@ export const queryOpenRouter = async (userMessage: string, chatHistory: any[]) =
       model: MODEL,
       messages,
     });
-    console.log("queryOpenRouter -> completion:", completion);
+   
 
     if (!completion.choices || completion.choices.length === 0) {
-      console.log("here");
+      
+
+      return "Error: No response from AI.";
+    }
+
+    return completion.choices[0].message?.content || "I'm not sure how to respond to that.";
+  } catch (error) {
+    console.error("❌ Error querying OpenRouter:", error);
+    return `There was an error processing your request: ${error}`;
+  }
+};
+
+
+export const queryJectaJoke = async (soniaMessage: string, chatHistory: any[]) => {
+  try {
+    const formattedHistory: ChatCompletionMessageParam[] = chatHistory
+      .map((msg) => ({
+        role: msg.sender === "sonia" ? "user" : "assistant",
+        content: msg.text.toString(),
+      }));
+
+    const messages: ChatCompletionMessageParam[] = [
+      { role: "system", content: jokePrompt },
+      ...formattedHistory,
+      { role: "user", content: soniaMessage },
+    ];
+    if (!MODEL) {
+      return;
+    }
+
+    const completion = await openai.chat.completions.create({
+      model: MODEL,
+      messages,
+    });
+   
+
+    if (!completion.choices || completion.choices.length === 0) {
+     
 
       return "Error: No response from AI.";
     }
@@ -102,7 +166,7 @@ export const processAIMessage = async (
 
   if (lastChatType == "error") {
     const intent = lastValidIntent;
-    await executeTask(intent, userMessage, chatHistory, addToChat, address); // Ensure only 3 arguments are passed
+    await executeTask(intent, userMessage, chatHistory, addToChat, address); 
   } else {
     const newintent = await intentClassification(userMessage);
     await executeTask(
@@ -111,6 +175,6 @@ export const processAIMessage = async (
       chatHistory,
       addToChat,
       address
-    ); // Ensure only 3 arguments are passed
+    ); 
   }
 };

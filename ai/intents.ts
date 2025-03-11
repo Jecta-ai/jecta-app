@@ -112,6 +112,20 @@ export const intents = {
             "balance", "balances", "portfolio", "wallet balance", "my funds"
         ]
     },
+    analyze_token: {
+        description: "Provides an in-depth analysis of a given token, including price trends, market data, and liquidity information.",
+        examples: [
+            "Analyze INJ for me.",
+            "Give me a detailed report on QUNT.",
+            "What are the market trends for NONJA?",
+            "Show me the liquidity and volume of NINJA."
+        ],
+        keywords: [
+            "analyze", "analysis", "market trends", "token insights", "price analysis",
+            "liquidity", "volume", "market cap", "supply", "token metrics",
+            "INJ analysis", "BTC insights", "detailed report on", "what is happening with"
+        ]
+    },
     search_injective_news: {
         description: "Finds the latest Injective news on X (Twitter).",
         examples: [
@@ -139,12 +153,47 @@ export const intents = {
             "ML", "chatbot development", "OpenAI", "Llama", "GPT"
         ]
     },
-    default: {
-        description: "Handles general blockchain-related questions.",
+    talk_between_agents: {
+        description: "Triggers a multi-turn conversation between Jecta and Sonia based on the user's request.",
         examples: [
-            "Tell me about Injective.",
-            "How does Injective staking work?"
+            "Tell me a joke about Sonia.",
+            "What does Jecta think about Sonia?",
+            "Let Jecta and Sonia have a debate about Injective.",
+            "I want Jecta and Sonia to talk to each other."
         ],
-        keywords: []
+        keywords: [
+            "talk", "discuss", "debate", "chat", "conversation",
+            "between Jecta and Sonia", "Jecta and Sonia talk", "make Jecta talk to Sonia",
+            "make Sonia reply","tell a joke about Sonia", "what does Jecta think of",
+            "what does Sonia think of"
+        ]
     }
+,    
+    default: {
+        description: "Handles general questions about Injective, greetings, and polite interactions.",
+        examples: [
+            "Who is Sonia ?",
+            "Hey there!",
+            "Hello!",
+            "How’s it going?",
+            "Tell me about Injective.",
+            "Can you explain how Injective works?",
+            "What makes Injective special?",
+            "I’m new to Injective—where should I start?",
+            "How does staking work on Injective?",
+            "Is Injective good for trading?",
+            "Thank you!",
+            "Thanks for your help!",
+            "I appreciate it!"
+        ],
+        keywords: [
+            "Injective", "blockchain", "crypto basics", "how does Injective work",
+            "explain Injective", "what is Injective", "learn about Injective",
+            "getting started with Injective", "understanding Injective",
+            "tell me about Injective", "why use Injective", "benefits of Injective",
+            "hello", "hi", "hey", "good morning", "good evening", "what’s up",
+            "thank you", "thanks", "appreciate it", "grateful", "cheers"
+        ]
+    }
+    
 };

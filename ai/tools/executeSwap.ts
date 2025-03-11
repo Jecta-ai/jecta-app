@@ -29,11 +29,11 @@ export async function extractSwapDetails(message: string) {
       to_metadata: toMetaData,
       amount: amount,
       status: status,
-    }; // ✅ Correct object structure
+    }; 
   } else {
     const status = "failed";
 
-    return { from: "", from_metadata: "", to: "", to_metadata: "", amount: 0, status: status }; // ✅ Fix: Use named keys
+    return { from: "", from_metadata: "", to: "", to_metadata: "", amount: 0, status: status }; 
   }
 }
 

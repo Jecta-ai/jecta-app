@@ -12,6 +12,8 @@ export const createChatMessage = ({
   contractInput = null,
   send = null,
   intent = null,
+  pie = null,
+  token_metadata = null,
 }: ChatMessage): ChatMessage => {
   return {
     sender,
@@ -21,6 +23,8 @@ export const createChatMessage = ({
     balances,
     validators,
     contractInput,
+    token_metadata,
+    pie,
     send,
   };
 };

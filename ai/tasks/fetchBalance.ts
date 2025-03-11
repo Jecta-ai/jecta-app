@@ -49,7 +49,7 @@ export async function fetchBalance(
       sender: "ai",
       type: "balance",
       balances: balances.bank
-        .filter((token) => token !== undefined) // ✅ Ensure all tokens are defined
+        .filter((token) => token !== undefined) 
         .map((token) => ({
           symbol: token.symbol,
           balance: token.balance.toString(),
@@ -81,19 +81,19 @@ export async function fetchBalance(
     return;
   }
 
-  // Send formatted balance data instead of plain text
+ 
 
   addToChat(
     createChatMessage({
       sender: "ai",
-      type: "balance", // Set a new type to detect it in the UI
+      type: "balance", 
       balances: balances.cw20
         .filter((token) => token !== undefined)
         .map((token) => ({
           symbol: token.symbol,
           balance: token.balance.toString(),
           logo: token.logo,
-          address: token.address, // Ensure fetchInjectiveBalance includes a logo field
+          address: token.address, 
         })),
       intent: intent,
     })
