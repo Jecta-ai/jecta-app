@@ -19,6 +19,9 @@ Jecta is a Next.js-based AI Copilot application that integrates with Injective B
 - Validator staking functionality
 - Token swapping capabilities
 - Token sending functionality
+- Portfolio management
+- Transaction search & AI-powered analysis
+- Search latest Injective news on X (formelly twitter)
 - Token analysis using Sonia
 - Injective burn auction tools (get & place bid auction)
 
