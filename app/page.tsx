@@ -25,6 +25,7 @@ import LoadingIndicator from "./components/LoadingIndicator";
 import PlaceBidAmountMessageType from "./components/placeBidAmountMessageType";
 import TokenMetadataCard from "./components/TokenMetadataCard";
 import TokenPieChart from "./components/TokenPieChart";
+import MetricsType from "./components/metricsMessageType";
 
 export type LoadingState = "thinking" | "executing" | "general" | null;
 
@@ -296,6 +297,12 @@ const Chatbot = () => {
                     <div className="p-3 rounded-xl bg-zinc-800 text-white ">
                       
                       <TokenMetadataCard msg={msg} />
+                    </div>
+                      )}
+                      {msg.type === "llama" && (
+                    <div className="p-3 rounded-xl bg-zinc-800 text-white w-full">
+                      
+                      <MetricsType data={msg.llama} />
                     </div>
                       )}
                       {msg.type === "pie" && (

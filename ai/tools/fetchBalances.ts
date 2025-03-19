@@ -2,6 +2,7 @@ import { IndexerGrpcAccountPortfolioApi } from "@injectivelabs/sdk-ts";
 import { IndexerRestExplorerApi } from "@injectivelabs/sdk-ts";
 import { getNetworkEndpoints, Network } from "@injectivelabs/networks";
 import axios from "axios";
+import { fetchTokenPriceDirectly } from "./fetchTokenPrice";
 
 const endpoints = getNetworkEndpoints(Network.Mainnet);
 const indexerRestExplorerApi = new IndexerRestExplorerApi(`${endpoints.explorer}/api/explorer/v1`);
@@ -26,38 +27,72 @@ export const fetchInjectiveBalance = async (injectiveAddress: string) => {
     const cw20Balances = await indexerRestExplorerApi.fetchCW20BalancesNoThrow(injectiveAddress);
 
     const cw20BalancesNonZero = cw20Balances.filter((coin, index) => coin.balance !== "0");
-    const formattedBank = await portfolioNonZero.map(async (item) => {
+    const formattedBank = [];
+    for (const item of portfolioNonZero) {
       const metadata = await fetchTokenMetadata(item.denom);
-
       if (!metadata) {
-        return;
+        continue; 
       }
+
       const decimals = metadata.decimals;
       const logo = metadata.logo;
       const symbol = metadata.symbol;
-      return {
+
+      await new Promise(resolve => setTimeout(resolve, 250));
+
+      const price = await fetchTokenPriceDirectly(metadata.symbol);
+
+      let balance = 0;
+      if (price == null) {
+        balance = 0;
+      } else {
+        balance = (parseFloat(item.amount) / 10 ** decimals) * Number(price);
+      }
+
+      if (symbol === "USDT") {
+        balance = parseFloat(item.amount) / 10 ** decimals;
+      }
+
+      formattedBank.push({
         symbol: symbol,
-        balance: parseFloat(item.amount) / 10 ** decimals,
+        amount: parseFloat(item.amount) / 10 ** decimals,
+        balance: balance,
         logo: logo,
         address: item.denom,
-      };
-    });
+      });
+    }
 
-    const formattedCW20 = await cw20BalancesNonZero.map(async (item) => {
+    const formattedCW20 = [];
+    for (const item of cw20BalancesNonZero) {
       const metadata = await fetchTokenMetadata(item.contract_address);
       if (!metadata) {
-        return;
+        continue; 
       }
+
       const decimals = metadata.decimals;
       const logo = metadata.logo;
       const symbol = metadata.symbol;
-      return {
+
+      await new Promise(resolve => setTimeout(resolve, 250));
+
+      const price = await fetchTokenPriceDirectly(metadata.symbol);
+
+      let balance = 0;
+      if (price == null) {
+        balance = 0;
+      } else {
+        balance = (parseFloat(item.balance) / 10 ** decimals) * Number(price);
+      }
+
+      formattedCW20.push({
         symbol: symbol,
-        balance: parseFloat(item.balance) / 10 ** decimals,
+        amount: parseFloat(item.balance) / 10 ** decimals,
+        balance: balance,
         logo: logo,
         address: item.contract_address,
-      };
-    });
+      });
+    }
+
     return {
       bank: await Promise.all(formattedBank),
       cw20: await Promise.all(formattedCW20),

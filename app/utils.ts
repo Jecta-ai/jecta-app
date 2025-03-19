@@ -14,6 +14,7 @@ export const createChatMessage = ({
   intent = null,
   pie = null,
   token_metadata = null,
+  llama = null,
 }: ChatMessage): ChatMessage => {
   return {
     sender,
@@ -26,6 +27,7 @@ export const createChatMessage = ({
     token_metadata,
     pie,
     send,
+    llama,
   };
 };
 

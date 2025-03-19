@@ -14,10 +14,16 @@ const BalanceMessageType = ({ balances }: { balances: Token[] }) => {
             <div className="flex flex-col flex-1">
               <span className="text-white font-semibold text-lg">{token.symbol}</span>
               <span className="text-gray-400 text-sm">
-                {Number(token.balance).toLocaleString("en-US", {
+                {Number(token.amount).toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
+              </span>
+              <span className="text-green-400 text-sm">
+                {Number(token.balance).toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })} $
               </span>
             </div>
 
