@@ -15,6 +15,7 @@ export const createChatMessage = ({
   pie = null,
   token_metadata = null,
   llama = null,
+  stake_info = null,
 }: ChatMessage): ChatMessage => {
   return {
     sender,
@@ -28,6 +29,7 @@ export const createChatMessage = ({
     pie,
     send,
     llama,
+    stake_info,
   };
 };
 

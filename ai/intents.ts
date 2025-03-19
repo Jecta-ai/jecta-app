@@ -102,6 +102,22 @@ export const intents = {
             "tx", "transaction", "hash", "explorer", "txid", "transaction ID"
         ]
     },
+    unstake_inj: {
+        description: "Handles the process of unstaking Injective (INJ) tokens from a validator.",
+        examples: [
+            "I want to unstake my INJ tokens.",
+            "How do I undelegate my staked INJ?",
+            "Unstake 50 INJ from my validator.",
+            "Withdraw my INJ from staking.",
+            "Stop staking my INJ."
+        ],
+        keywords: [
+            "unstake", "unstaking", "undelegate", "withdraw stake",
+            "unstake INJ", "remove stake", "stop staking", "withdraw staked INJ",
+            "unstake my tokens", "how to unstake", "unstake from validator",
+            "unstake rewards", "withdraw from staking", "exit staking"
+        ]
+    },
     fetch_my_portfolio: {
         description: "Retrieves the user's own wallet balances using their Injective address.",
         examples: [

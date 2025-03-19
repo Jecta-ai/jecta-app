@@ -44,4 +44,5 @@ export interface ChatMessage {
   token_metadata?:any;
   pie?:any;
   llama?:any;
+  stake_info?:any;
 }
