@@ -1,7 +1,8 @@
 export interface Token {
   logo: string;
   symbol: string;
-  balance: string;
+  amount: string;
+  balance:number;
   address: string;
 }
 
@@ -42,4 +43,6 @@ export interface ChatMessage {
   send?: SendDetails | null;
   token_metadata?:any;
   pie?:any;
+  llama?:any;
+  stake_info?:any;
 }

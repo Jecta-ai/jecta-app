@@ -10,6 +10,10 @@ import { createChatMessage } from "@/app/utils";
 import { getAuction, getLatestAuction } from "./tasks/fetchAuction";
 import { tokenAnalysis } from "./tasks/tokenAnalysis";
 import { jokeTool } from "./tasks/jokeTool";
+import { fetchMetrics } from "./tasks/fetchMetrics";
+import { fetchPortfolio } from "./tasks/fetchUserPortfolio";
+import { fetchInjectiveStakingInfo } from "./tools/stakingInformation";
+import { unstakeInjective } from "./tasks/unstakeInjective";
 
 export const executeTask = async (
   intent: string,
@@ -25,7 +29,7 @@ export const executeTask = async (
     case "search_injective_news":
       await searchInjectiveNews(intent, message, chatHistory, addToChat, address);
       return;
-    case "fetch_balance":
+    case "fetch_my_portfolio":
       await fetchBalance(intent, message, chatHistory, addToChat, address);
       return;
     case "get_price":
@@ -37,17 +41,26 @@ export const executeTask = async (
     case "stake_inj":
       await stakeInjective(intent, message, chatHistory, addToChat, address);
       return;
+    case "unstake_inj":
+      await unstakeInjective(intent, message, chatHistory, addToChat, address);
+      return
     case "send_token":
       await transferFunds(intent, message, chatHistory, addToChat, address);
       return;
-      case "get_latest_auction":
+    case "get_latest_auction":
       await getLatestAuction(intent,message,chatHistory,addToChat,address);
+      return
+    case "fetch_user_portfolio":
+      await fetchPortfolio(intent,message,chatHistory,addToChat,address);
       return
     case "get_auction":
       await getAuction(intent,message,chatHistory,addToChat,address);
       return
     case "analyze_token":
       await tokenAnalysis(intent,message,chatHistory,addToChat,address);
+      return
+    case "get_metrics":
+      await fetchMetrics(intent,message,chatHistory,addToChat,address);
       return
     case "talk_between_agents":
       await jokeTool(intent,message,chatHistory,addToChat,address)

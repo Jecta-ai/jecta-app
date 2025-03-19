@@ -2,18 +2,19 @@ import { createChatMessage } from "@/app/utils";
 import { queryOpenRouter } from "../ai";
 import { fetchInjectiveBalance } from "../tools/fetchBalances";
 
-export async function fetchBalance(
+export async function fetchPortfolio(
   intent: string,
   message: string,
   chatHistory: any[],
   addToChat: (msg: any) => void,
   address: string | null
 ) {
-  if (!address) {
+    const injectiveAddress = extractInjectiveAddress(message)
+  if (!injectiveAddress) {
     addToChat(
       createChatMessage({
         sender: "ai",
-        text: "Please connect your wallet first.",
+        text: "Please provide the injective address better",
         type: "text",
         intent: intent,
       })
@@ -21,12 +22,12 @@ export async function fetchBalance(
     return;
   }
 
-  const balances = await fetchInjectiveBalance(address);
+  const balances = await fetchInjectiveBalance(injectiveAddress);
 
   addToChat(
     createChatMessage({
       sender: "ai",
-      text: "🔍 Searching for your Bank Balances...",
+      text: "🔍 Searching for users Bank Balances...",
       type: "text",
       intent: intent,
     })
@@ -36,7 +37,7 @@ export async function fetchBalance(
     addToChat(
       createChatMessage({
         sender: "ai",
-        text: "❌ No balances found in your Bank Balance.",
+        text: "❌ No balances found in user Bank Balance.",
         type: "text",
         intent: intent,
       })
@@ -64,7 +65,7 @@ export async function fetchBalance(
   addToChat(
     createChatMessage({
       sender: "ai",
-      text: "🔍 Searching for your CW20 Balances...",
+      text: "🔍 Searching for users CW20 Balances...",
       type: "text",
       intent: intent,
     })
@@ -74,7 +75,7 @@ export async function fetchBalance(
     addToChat(
       createChatMessage({
         sender: "ai",
-        text: "❌ No balances found in your CW20 Balance.",
+        text: "❌ No balances found in user CW20 Balance.",
         type: "text",
         intent: intent,
       })
@@ -107,3 +108,9 @@ export async function fetchBalance(
   );
   addToChat(createChatMessage({ sender: "ai", text: finalResponse, type: "text", intent: intent }));
 }
+
+const extractInjectiveAddress = (input: string): string | null => {
+    const regex = /inj1[a-z0-9]{38}/i; // Matches 'inj1' followed by 38 alphanumeric chars
+    const match = input.match(regex);
+    return match ? match[0] : null; // Return the matched address or null if not found
+};

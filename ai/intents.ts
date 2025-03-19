@@ -102,14 +102,60 @@ export const intents = {
             "tx", "transaction", "hash", "explorer", "txid", "transaction ID"
         ]
     },
-    fetch_balance: {
-        description: "Retrieves wallet balances using an Injective address.",
+    unstake_inj: {
+        description: "Handles the process of unstaking Injective (INJ) tokens from a validator.",
         examples: [
-            "Check my wallet balance.",
-            "What is my current INJ balance?"
+            "I want to unstake my INJ tokens.",
+            "How do I undelegate my staked INJ?",
+            "Unstake 50 INJ from my validator.",
+            "Withdraw my INJ from staking.",
+            "Stop staking my INJ."
         ],
         keywords: [
-            "balance", "balances", "portfolio", "wallet balance", "my funds"
+            "unstake", "unstaking", "undelegate", "withdraw stake",
+            "unstake INJ", "remove stake", "stop staking", "withdraw staked INJ",
+            "unstake my tokens", "how to unstake", "unstake from validator",
+            "unstake rewards", "withdraw from staking", "exit staking"
+        ]
+    },
+    fetch_my_portfolio: {
+        description: "Retrieves the user's own wallet balances using their Injective address.",
+        examples: [
+            "Check my wallet balance.",
+            "What is my current INJ balance?",
+            "How much USDT do I have in my Injective wallet?",
+            "Show me my token holdings.",
+            "Fetch my Injective portfolio.",
+            "What assets do I currently hold?",
+            "List all tokens in my wallet."
+        ],
+        keywords: [
+            "my balance", "my wallet balance", "my portfolio", "my funds",
+            "check my balance", "how much INJ do I have", "show my holdings",
+            "fetch my assets", "retrieve my portfolio", "my Injective tokens",
+            "list my tokens", "my Injective wallet", "check my funds"
+        ]
+    },
+
+    fetch_user_portfolio: {
+        description: "Retrieves the full portfolio details of another user's Injective address, including token balances and asset distribution.",
+        examples: [
+            "Show me the portfolio of this user: inj1zgym77e6mzjqceqldk4purvjnuz5jwe5ckmymg",
+            "Fetch the portfolio of inj1xyz...",
+            "What assets does this Injective wallet hold?",
+            "Retrieve the holdings of this Injective address.",
+            "Show me the token distribution for this address.",
+            "Can you analyze the portfolio of this Injective address?",
+            "Tell me what tokens this user holds.",
+            "Get the wallet assets of inj1abc..."
+        ],
+        keywords: [
+            "portfolio", "holdings", "wallet assets", "token balances",
+            "show portfolio", "fetch holdings", "Injective wallet details",
+            "wallet portfolio", "asset overview", "retrieve portfolio",
+            "this user", "this address", "full wallet details", "token distribution",
+            "analyze holdings", "portfolio analysis", "fetch address portfolio",
+            "another wallet", "Injective address assets", "wallet scan"
         ]
     },
     analyze_token: {
@@ -168,7 +214,23 @@ export const intents = {
             "what does Sonia think of"
         ]
     }
-,    
+    ,
+    get_metrics: {
+        description: "Fetches the Total Value Locked (TVL) details of the Injective Ecosystem, including top protocols and aggregated TVL.",
+        examples: [
+            "Give me the details of the TVLs of Injective Ecosystem.",
+            "Show me the total TVL of Injective.",
+            "List the top protocols on Injective by TVL.",
+            "Fetch Injective's DeFi TVL rankings.",
+            "What are the biggest protocols by TVL on Injective?"
+        ],
+        keywords: [
+            "TVL", "Injective TVL", "total value locked", "protocol TVL",
+            "top TVL protocols", "Injective ecosystem TVL", "defi TVL",
+            "biggest protocols by TVL", "tvl details", "injective defi rankings"
+        ]
+    }
+    ,    
     default: {
         description: "Handles general questions about Injective, greetings, and polite interactions.",
         examples: [

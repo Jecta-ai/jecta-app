@@ -25,6 +25,8 @@ import LoadingIndicator from "./components/LoadingIndicator";
 import PlaceBidAmountMessageType from "./components/placeBidAmountMessageType";
 import TokenMetadataCard from "./components/TokenMetadataCard";
 import TokenPieChart from "./components/TokenPieChart";
+import MetricsType from "./components/metricsMessageType";
+import ValidatorTable from "./components/stakingInformationType";
 
 export type LoadingState = "thinking" | "executing" | "general" | null;
 
@@ -241,6 +243,7 @@ const Chatbot = () => {
                       msg.type === "stake_amount" ||
                       msg.type === "place_bid_amount" ||
                       msg.type === "swap" ||
+                      msg.type === "unstake" ||
                       msg.type === "send_token") &&
                     i === messageHistory.length - 1;
 
@@ -296,6 +299,23 @@ const Chatbot = () => {
                     <div className="p-3 rounded-xl bg-zinc-800 text-white ">
                       
                       <TokenMetadataCard msg={msg} />
+                    </div>
+                      )}
+                      {msg.type === "unstake" && (
+                        isLastError?(<>
+                          <ValidatorTable handleExit={handleExit} validators={msg.stake_info} injectiveAddress={injectiveAddress} token={token} />
+
+                        </>):(<>
+                          <div className="p-3 rounded-xl bg-zinc-800 text-white max-w-[75%]">
+                              Done !
+                            </div>
+                        </>)
+                    
+                      )}
+                      {msg.type === "llama" && (
+                    <div className="p-3 rounded-xl bg-zinc-800 text-white w-full">
+                      
+                      <MetricsType data={msg.llama} />
                     </div>
                       )}
                       {msg.type === "pie" && (

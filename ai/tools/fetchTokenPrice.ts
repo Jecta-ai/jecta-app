@@ -66,8 +66,9 @@ export const fetchTokenPriceDirectly = async (ticker: string) => {
         return injPrice;
       }
       const res = await fetch(
-        `https://swap.coinhall.org/v1/swap?chainId=${injectiveMainnetChainId}&from=${tokenMetadata.address}&to=inj&amount=${10**tokenMetadata.decimals}&slippageBps=500`
+        `https://swap.coinhall.org/v1/swap?chainId=${injectiveMainnetChainId}&from=${tokenMetadata.address}&to=inj&amount=${10**tokenMetadata.decimals}&slippageBps=100`
       );
+      
       const { 
         expectedReturn,
         minimumReceive,
