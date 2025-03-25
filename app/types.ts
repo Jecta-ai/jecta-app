@@ -45,4 +45,5 @@ export interface ChatMessage {
   pie?:any;
   llama?:any;
   stake_info?:any;
+  proposals?:any;
 }

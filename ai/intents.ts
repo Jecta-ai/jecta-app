@@ -230,7 +230,28 @@ export const intents = {
             "biggest protocols by TVL", "tvl details", "injective defi rankings"
         ]
     }
-    ,    
+    , 
+    get_governance_proposals: {
+        description: "Fetches and displays recent governance proposals on the Injective blockchain.",
+        examples: [
+            "I want to see the proposals of Injective.",
+            "Show me the Injective governance proposals.",
+            "List current proposals.",
+            "What are the latest governance proposals?",
+            "Display active proposals on Injective.",
+            "Get me the most recent Injective proposals.",
+            "What’s happening in Injective governance?"
+        ],
+        keywords: [
+            "proposal", "proposals", "governance", "injective governance",
+            "latest proposals", "recent proposals", "active proposals",
+            "governance update", "governance list", "injective proposals",
+            "governance activity", "see proposals", "get proposals",
+            "show proposals", "fetch proposals", "display proposals",
+            "proposals of Injective", "current proposals", "governance overview"
+        ]
+    }
+    ,       
     default: {
         description: "Handles general questions about Injective, greetings, and polite interactions.",
         examples: [

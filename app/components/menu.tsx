@@ -118,7 +118,7 @@ const Menu = ({
           {!isCollapsed && (
             <div>
               <h1 className="text-xl font-bold">JECTA</h1>
-              <span className="text-xs text-gray-400">v0.0.2</span>
+              <span className="text-xs text-gray-400">v0.0.3</span>
             </div>
           )}
         </div>
@@ -137,9 +137,9 @@ const Menu = ({
           </Link>
 
           <Link href="https://forms.gle/eHv8bPGRAoBhn9rE6" passHref target="_blank">
-            <Button
+                      <Button
               variant="outline"
-              className="w-full justify-start bg-green-400/10 hover:bg-green-400/20 border-green-400/30 text-green-400 hover:text-white"
+              className="w-full justify-start bg-blue-400/10 hover:bg-blue-400/20 border-blue-400/30 text-blue-400 hover:text-white"
             >
               <ExternalLink className="h-4 w-4 mr-2" />
               {!isCollapsed && "EAP Feedback Form"}
@@ -190,7 +190,7 @@ const Menu = ({
                   </div>
                   <div className="p-2 rounded-md bg-zinc-900/50 border border-zinc-800">
                     <p className="text-xs text-zinc-400">Status</p>
-                    <p className="text-sm font-medium text-emerald-400">Active</p>
+                    <p className="text-sm font-medium text-blue-400">Active</p>
                   </div>
                 </div>
               </div>

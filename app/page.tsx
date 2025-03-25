@@ -27,6 +27,7 @@ import TokenMetadataCard from "./components/TokenMetadataCard";
 import TokenPieChart from "./components/TokenPieChart";
 import MetricsType from "./components/metricsMessageType";
 import ValidatorTable from "./components/stakingInformationType";
+import ProposalCard from "./components/proposalCardType";
 
 export type LoadingState = "thinking" | "executing" | "general" | null;
 
@@ -313,9 +314,15 @@ const Chatbot = () => {
                     
                       )}
                       {msg.type === "llama" && (
-                    <div className="p-3 rounded-xl bg-zinc-800 text-white w-full">
+                    <div className="p-3 rounded-xl bg-zinc-800 text-white sm:w-fit w-full">
                       
                       <MetricsType data={msg.llama} />
+                    </div>
+                      )}
+                      {msg.type === "proposals" && (
+                    <div className="p-3 rounded-xl bg-zinc-800 text-white w-full">
+                      
+                      <ProposalCard proposals={msg.proposals}  />
                     </div>
                       )}
                       {msg.type === "pie" && (

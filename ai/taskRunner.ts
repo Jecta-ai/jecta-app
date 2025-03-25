@@ -12,8 +12,9 @@ import { tokenAnalysis } from "./tasks/tokenAnalysis";
 import { jokeTool } from "./tasks/jokeTool";
 import { fetchMetrics } from "./tasks/fetchMetrics";
 import { fetchPortfolio } from "./tasks/fetchUserPortfolio";
-import { fetchInjectiveStakingInfo } from "./tools/stakingInformation";
 import { unstakeInjective } from "./tasks/unstakeInjective";
+import { fetchLastProposals } from "./tasks/fetchLastProposals";
+
 
 export const executeTask = async (
   intent: string,
@@ -35,6 +36,9 @@ export const executeTask = async (
     case "get_price":
       await fetchPrice(intent, message, chatHistory, addToChat, address);
       return;
+    case "get_governance_proposals":
+      await fetchLastProposals(intent, message, chatHistory, addToChat, address);
+      return
     case "tx_search":
       await searchTxHash(intent, message, chatHistory, addToChat, address);
       return;

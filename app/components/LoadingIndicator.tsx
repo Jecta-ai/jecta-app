@@ -7,24 +7,24 @@ interface LoadingIndicatorProps {
 const LoadingIndicator = ({ type }: LoadingIndicatorProps) => {
   if (type === "thinking") {
     return (
-      <motion.div
+            <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
-        className="flex items-center mt-8 justify-center gap-4 bg-zinc-900/80 backdrop-blur-lg px-6 py-3 rounded-2xl border border-emerald-500/20 shadow-lg shadow-emerald-500/10"
+        className="flex items-center mt-8 justify-center gap-4 bg-zinc-900/80 backdrop-blur-lg px-6 py-3 rounded-2xl border border-blue-500/20 shadow-lg shadow-blue-500/10"
       >
         <div className="relative">
           <div className="flex gap-2">
             {[0, 0.2, 0.4].map((delay, index) => (
               <motion.div
                 key={index}
-                className="w-2 h-2 bg-emerald-500 rounded-full"
+                className="w-2 h-2 bg-blue-500 rounded-full"
                 animate={{
                   y: [-4, 0, -4],
                   boxShadow: [
-                    "0 0 0 0 rgba(16, 185, 129, 0)",
-                    "0 0 20px 2px rgba(16, 185, 129, 0.3)",
-                    "0 0 0 0 rgba(16, 185, 129, 0)",
+                    "0 0 0 0 rgba(59, 130, 246, 0)",       // blue-500 transparent
+                    "0 0 20px 2px rgba(59, 130, 246, 0.3)", // blue-500 glow
+                    "0 0 0 0 rgba(59, 130, 246, 0)",       // blue-500 transparent
                   ],
                 }}
                 transition={{
@@ -37,7 +37,7 @@ const LoadingIndicator = ({ type }: LoadingIndicatorProps) => {
             ))}
           </div>
           <motion.div
-            className="absolute inset-0 bg-emerald-500/20 blur-xl rounded-full"
+            className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full"
             animate={{
               scale: [1, 1.2, 1],
               opacity: [0.2, 0.4, 0.2],
@@ -50,11 +50,12 @@ const LoadingIndicator = ({ type }: LoadingIndicatorProps) => {
           />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium bg-gradient-to-r from-emerald-200 to-emerald-400 bg-clip-text text-transparent">
+          <span className="text-sm font-medium bg-gradient-to-r from-blue-200 to-blue-400 bg-clip-text text-transparent">
             JECTA is thinking
           </span>
         </div>
       </motion.div>
+
     );
   }
 

@@ -55,31 +55,31 @@ export default {
         neonBlink: {
           "0%": {
             borderImage:
-              "linear-gradient(to right, transparent 0%, rgba(16, 185, 129, 0.8) 50%, transparent 100%) 1",
+              "linear-gradient(to right, transparent 0%, rgba(59, 130, 246, 0.8) 50%, transparent 100%) 1",
             borderImageSlice: "1",
           },
           "25%": {
             borderImage:
-              "linear-gradient(to bottom, transparent 0%, rgba(16, 185, 129, 0.8) 50%, transparent 100%) 1",
+              "linear-gradient(to bottom, transparent 0%, rgba(59, 130, 246, 0.8) 50%, transparent 100%) 1",
             borderImageSlice: "1",
           },
           "50%": {
             borderImage:
-              "linear-gradient(to left, transparent 0%, rgba(16, 185, 129, 0.8) 50%, transparent 100%) 1",
+              "linear-gradient(to left, transparent 0%, rgba(59, 130, 246, 0.8) 50%, transparent 100%) 1",
             borderImageSlice: "1",
           },
           "75%": {
             borderImage:
-              "linear-gradient(to top, transparent 0%, rgba(16, 185, 129, 0.8) 50%, transparent 100%) 1",
+              "linear-gradient(to top, transparent 0%, rgba(59, 130, 246, 0.8) 50%, transparent 100%) 1",
             borderImageSlice: "1",
           },
           "100%": {
             borderImage:
-              "linear-gradient(to right, transparent 0%, rgba(16, 185, 129, 0.8) 50%, transparent 100%) 1",
+              "linear-gradient(to right, transparent 0%, rgba(59, 130, 246, 0.8) 50%, transparent 100%) 1",
             borderImageSlice: "1",
           },
         },
-      },
+      },        
       animation: {
         neonBlink: "neonBlink 5s linear infinite",
       },
