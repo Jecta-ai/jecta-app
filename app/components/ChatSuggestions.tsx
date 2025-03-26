@@ -12,6 +12,9 @@ import {
   Server,
   MessageSquare,
   Zap,
+  BookOpenCheck,
+  ShieldCheck,
+  TrendingUp,
 } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -21,56 +24,59 @@ const suggestions = [
     icon: <Rocket className="w-5 h-5" />,
     description: "Learn the fundamentals",
     prompts: [
-      {
-        text: "What is Injective ?",
-        icon: <Zap className="w-4 h-4" />,
-      },
-      {
-        text: "How do I get started with Injective?",
-        icon: <ArrowRight className="w-4 h-4" />,
-      },
-      {
-        text: "What are the key features of Injective?",
-        icon: <Code className="w-4 h-4" />,
-      },
+      { text: "What is Injective?", icon: <Zap className="w-4 h-4" /> },
+      { text: "How do I get started with Injective?", icon: <ArrowRight className="w-4 h-4" /> },
+      { text: "What are the key features of Injective?", icon: <Code className="w-4 h-4" /> },
     ],
   },
   {
     title: "Trading & DeFi",
     icon: <LineChart className="w-5 h-5" />,
-    description: "Explore opportunities",
+    description: "Explore DeFi opportunities",
     prompts: [
-      {
-        text: "I want to swap 1 INJ to USDT",
-        icon: <Coins className="w-4 h-4" />,
-      },
-      {
-        text: "What is the current price of QUNT ?",
-        icon: <Wallet className="w-4 h-4" />,
-      },
-      {
-        text: "I want to stake INJ.",
-        icon: <Server className="w-4 h-4" />,
-      },
+      { text: "Swap 1 INJ to QUNT", icon: <Coins className="w-4 h-4" /> },
+      { text: "What is the current price of HDRO ?", icon: <Wallet className="w-4 h-4" /> },
+      { text: "I want to stake INJ.", icon: <Server className="w-4 h-4" /> },
     ],
   },
   {
-    title: "Technical",
+    title: "Technical Insights",
     icon: <MessageSquare className="w-5 h-5" />,
-    description: "Deep dive into tech",
+    description: "Deep dive into Injective",
     prompts: [
-      {
-        text: "Give me the latest Injective news.",
-        icon: <Code className="w-4 h-4" />,
-      },
-      {
-        text: "Explain me a tx by it's own hash.",
-        icon: <Server className="w-4 h-4" />,
-      },
-      {
-        text: "I want to see my own portfolio.",
-        icon: <Zap className="w-4 h-4" />,
-      },
+      { text: "Explain me a tx by its own hash.", icon: <Server className="w-4 h-4" /> },
+      { text: "I want to see my own portfolio.", icon: <Zap className="w-4 h-4" /> },
+      { text: "Analyze SHROOM for me.", icon: <TrendingUp className="w-4 h-4" /> },
+    ],
+  },
+  {
+    title: "Governance & Auctions",
+    icon: <ShieldCheck className="w-5 h-5" />,
+    description: "Track proposals and bidding",
+    prompts: [
+      { text: "Show me the Injective governance proposals.", icon: <BookOpenCheck className="w-4 h-4" /> },
+      { text: "Get me the most recent Injective auction.", icon: <Zap className="w-4 h-4" /> },
+      { text: "Place a bid for me in the latest auction.", icon: <ArrowRight className="w-4 h-4" /> },
+    ],
+  },
+  {
+    title: "Advanced Wallet Tools",
+    icon: <Wallet className="w-5 h-5" />,
+    description: "Portfolio & token tracking",
+    prompts: [
+      { text: "Fetch my Injective portfolio.", icon: <Wallet className="w-4 h-4" /> },
+      { text: "Analyze the portfolio of this user.", icon: <Server className="w-4 h-4" /> },
+      { text: "Send 5 INJ to this wallet address.", icon: <ArrowRight className="w-4 h-4" /> },
+    ],
+  },
+  {
+    title: "Ecosystem Metrics",
+    icon: <LineChart className="w-5 h-5" />,
+    description: "Track auctions, TVL, and governance",
+    prompts: [
+      { text: "Show me the total TVL of Injective.", icon: <TrendingUp className="w-4 h-4" /> },
+      { text: "Get me the most recent Injective auction.", icon: <Zap className="w-4 h-4" /> },
+      { text: "Show me the Injective governance proposals.", icon: <BookOpenCheck className="w-4 h-4" /> },
     ],
   },
 ];
@@ -91,7 +97,8 @@ const ChatSuggestions = ({ onSuggestionClick }: ChatSuggestionsProps) => {
         isCollapsed ? "pl-28 mx-auto" : "px-4 sm:px-6"
       )}
     >
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:flex xl:flex-row gap-2 sm:gap-3 lg:gap-4 h-full max-h-[calc(100vh-250px)] overflow-y-auto pb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 max-h-[calc(100vh-250px)] overflow-y-auto pb-4">
+
         {suggestions.map((category, index) => (
           <motion.div
             key={category.title}

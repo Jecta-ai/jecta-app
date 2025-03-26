@@ -341,46 +341,47 @@ export const generateWalletTableHTML = (data: any[], mitoVaults: any, normalPool
   };
 
   return `
-            <div style="padding: 16px; border-radius: 10px; background: linear-gradient(to right, #064e3b, #065f46, #047857); color: white; font-family: Arial, sans-serif; box-shadow: 0px 4px 10px rgba(0,255,0,0.2);">
-        <h2 style="text-align: center; font-size: 18px; margin-bottom: 12px; color: #a7f3d0;">Wallet Holdings</h2>
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; min-width: 600px; border-collapse: collapse;">
-            <thead>
-                <tr style="background: #064e3b; color: #a7f3d0; text-align: left;">
-                <th style="padding: 8px; border-bottom: 2px solid #34d399;">Wallet ID</th>
-                <th style="padding: 8px; border-bottom: 2px solid #34d399;">Label</th>
-                <th style="padding: 8px; border-bottom: 2px solid #34d399;">Balance</th>
-                <th style="padding: 8px; border-bottom: 2px solid #34d399;">Percentage Held</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${data
-                  .map((item) => {
-                    const label = getLabel(item.wallet_id);
-                    return `
-                    <tr>
-                        <td style="padding: 8px; border-bottom: 1px solid #047857; color: #d1fae5;">
-                        ${item.wallet_id}
-                        </td>
-                        <td style="padding: 8px; border-bottom: 1px solid #047857; font-weight: bold; color: ${
-                          label ? "#34d399" : "#a7f3d0"
-                        };">
-                        ${label ? label : "—"}
-                        </td>
-                        <td style="padding: 8px; border-bottom: 1px solid #047857; font-weight: bold; color: #34d399;">
-                        ${item.balance.toLocaleString()}
-                        </td>
-                        <td style="padding: 8px; border-bottom: 1px solid #047857; color: #86efac;">
-                        ${item.percentage_held.toFixed(2)}%
-                        </td>
+           <div style="padding: 16px; border-radius: 10px; background: linear-gradient(to right, #1e3a8a, #2563eb, #3b82f6); color: white; font-family: Arial, sans-serif; box-shadow: 0px 4px 10px rgba(0, 123, 255, 0.2);">
+              <h2 style="text-align: center; font-size: 18px; margin-bottom: 12px; color: #bfdbfe;">Wallet Holdings</h2>
+              <div style="overflow-x: auto;">
+                <table style="width: 100%; min-width: 600px; border-collapse: collapse;">
+                  <thead>
+                    <tr style="background: #1e3a8a; color: #bfdbfe; text-align: left;">
+                      <th style="padding: 8px; border-bottom: 2px solid #60a5fa;">Wallet ID</th>
+                      <th style="padding: 8px; border-bottom: 2px solid #60a5fa;">Label</th>
+                      <th style="padding: 8px; border-bottom: 2px solid #60a5fa;">Balance</th>
+                      <th style="padding: 8px; border-bottom: 2px solid #60a5fa;">Percentage Held</th>
                     </tr>
-                    `;
-                  })
-                  .join("")}
-            </tbody>
-            </table>
-        </div>
-        </div>
+                  </thead>
+                  <tbody>
+                    ${data
+                      .map((item) => {
+                        const label = getLabel(item.wallet_id);
+                        return `
+                          <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #3b82f6; color: #dbeafe;">
+                              ${item.wallet_id}
+                            </td>
+                            <td style="padding: 8px; border-bottom: 1px solid #3b82f6; font-weight: bold; color: ${
+                              label ? "#60a5fa" : "#bfdbfe"
+                            };">
+                              ${label ? label : "—"}
+                            </td>
+                            <td style="padding: 8px; border-bottom: 1px solid #3b82f6; font-weight: bold; color: #60a5fa;">
+                              ${item.balance.toLocaleString()}
+                            </td>
+                            <td style="padding: 8px; border-bottom: 1px solid #3b82f6; color: #93c5fd;">
+                              ${item.percentage_held.toFixed(2)}%
+                            </td>
+                          </tr>
+                        `;
+                      })
+                      .join("")}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
 
     `;
 };

@@ -179,9 +179,9 @@ const EarlyAccessPage = ({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <ToastContainer />
-      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 text-zinc-100">
+      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 text-zinc-100 ">
         <CardHeader className="space-y-2 text-center">
-          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-600 bg-clip-text text-transparent">
             Welcome to JECTA
           </CardTitle>
           <CardDescription className="text-zinc-400">
@@ -194,7 +194,7 @@ const EarlyAccessPage = ({
         <CardContent className="space-y-4">
           {isLoading ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
+              <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
             </div>
           ) : (
             <>
@@ -206,28 +206,50 @@ const EarlyAccessPage = ({
                   </div>
 
                   {!isWhitelisted && (
-                    <div className="space-y-3">
-                      <Input
-                        type="text"
-                        placeholder="Enter referral code (Optional)"
-                        value={referralCode}
-                        onChange={(e) => setReferralCode(e.target.value)}
-                        className="bg-zinc-800 border-zinc-700 text-zinc-100"
-                      />
-                      <Button
-                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white"
-                        onClick={() => joinEAP(referralCode)}
-                      >
-                        Join Early Access (1 INJ)
-                      </Button>
-                    </div>
-                  )}
+                <div className="space-y-6">
+                
+                  <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4 space-y-2">
+                    <p className="text-sm font-semibold text-zinc-300">EAP Benefits</p>
+                    <ul className="text-sm space-y-1 text-zinc-400 pl-5 list-disc">
+                      <li>Support Jecta development growth</li>
+                      <li>Early access to features</li>
+                      <li>Unlimited AI interactions</li>
+                      <li>Earn rewards for future</li>
+                    </ul>
+                  </div>
+
+                 
+                  <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4 space-y-2">
+                    <p className="text-sm font-semibold text-zinc-300">Payment</p>
+                    <p className="text-sm text-zinc-400">
+                      This is a single-time payment. Funds cover LLM integration, services, infrastructure, and operational costs for platform stability.
+                    </p>
+                    <p className="text-lg font-bold bg-gradient-to-r from-blue-400 to-cyan-600 bg-clip-text text-transparent mt-2">1 INJ</p>
+                  </div>
+
+                 
+                  <Input
+                    type="text"
+                    placeholder="Enter referral code (Optional)"
+                    value={referralCode}
+                    onChange={(e) => setReferralCode(e.target.value)}
+                    className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                  />
+                  <Button
+                    className="w-full bg-gradient-to-r from-blue-400 to-cyan-600 hover:from-blue-500 hover:to-cyan-700 text-white"
+                    onClick={() => joinEAP(referralCode)}
+                  >
+                    Join Early Access (1 INJ)
+                  </Button>
+                </div>
+              )}
+
                 </div>
               ) : (
                 <div className="grid gap-3">
                   <Button
                     variant="outline"
-                    className="w-full border-zinc-800 hover:bg-zinc-800 hover:text-zinc-100 bg-slate-700"
+                    className="w-full border-zinc-800 hover:bg-zinc-800 hover:text-zinc-100 bg-transparent "
                     onClick={() => handleConnectWallet(Wallet.Keplr)}
                   >
                     <WalletIcon className="mr-2 h-4 w-4" />
@@ -235,7 +257,7 @@ const EarlyAccessPage = ({
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full border-zinc-800 hover:bg-zinc-800 hover:text-zinc-100 bg-slate-700"
+                    className="w-full border-zinc-800 hover:bg-zinc-800 hover:text-zinc-100 bg-transparent"
                     onClick={() => handleConnectWallet(Wallet.Leap)}
                   >
                     <WalletIcon className="mr-2 h-4 w-4" />

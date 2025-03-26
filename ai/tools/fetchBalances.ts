@@ -38,7 +38,7 @@ export const fetchInjectiveBalance = async (injectiveAddress: string) => {
       const logo = metadata.logo;
       const symbol = metadata.symbol;
 
-      await new Promise(resolve => setTimeout(resolve, 250));
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       const price = await fetchTokenPriceDirectly(metadata.symbol);
 
@@ -73,7 +73,7 @@ export const fetchInjectiveBalance = async (injectiveAddress: string) => {
       const logo = metadata.logo;
       const symbol = metadata.symbol;
 
-      await new Promise(resolve => setTimeout(resolve, 250));
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       const price = await fetchTokenPriceDirectly(metadata.symbol);
 
