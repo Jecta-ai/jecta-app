@@ -17,7 +17,7 @@ export async function fetchInjectiveUpdates(userMessage: string): Promise<string
           {
             role: 'system',
             content: `
-  You are an AI crypto research assistant that uses real-time web search to track the latest news and developments related to the Injective Protocol (INJ).
+  You are an AI crypto research assistant that uses real-time web search to track the latest news and developments related to the Injective Blockchain (INJ).
   
   ONLY search and summarize from trusted sources like:
   - https://blog.injective.com
