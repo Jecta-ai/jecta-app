@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import logo from "@/public/logo.png";
 import sonia from "../images/sonia.png"
+import venicia from "../images/venicia.png"
 import type { ChatMessage } from "./types";
 import Menu from "./components/menu";
 import BalanceMessageType from "./components/balanceMessageType";
@@ -290,6 +291,13 @@ const Chatbot = () => {
                         <img
                           src={sonia.src}
                           alt="Sonia"
+                          className="w-8 h-8 rounded-md mr-2 border-white border-1"
+                        />
+                      )}
+                                            {msg.sender === "venicia" && (
+                        <img
+                          src={venicia.src}
+                          alt="Venicia"
                           className="w-8 h-8 rounded-md mr-2 border-white border-1"
                         />
                       )}

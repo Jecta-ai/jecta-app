@@ -69,6 +69,8 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         createMessage({ chatId: chatToUse.id, senderId: chatToUse.ai_id, message, token });
       } else if (message.sender === "sonia" && chatToUse.ai_id) {
         createMessage({ chatId: chatToUse.id, senderId: chatToUse.ai_id, message, token });
+      } else if (message.sender === "venicia" && chatToUse.ai_id) {
+        createMessage({ chatId: chatToUse.id, senderId: chatToUse.ai_id, message, token });
       } else if (message.sender === "user" && chatToUse.user_id) {
         createMessage({ chatId: chatToUse.id, senderId: chatToUse.user_id, message, token });
       }
@@ -89,6 +91,8 @@ const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         if (message.sender === "ai" && chatToUse.ai_id) {
           addMessage(token, message, newChat);
         } else if (message.sender === "sonia" && chatToUse.ai_id) {
+          addMessage(token, message, newChat);
+        } else if (message.sender === "venicia" && chatToUse.ai_id) {
           addMessage(token, message, newChat);
         } else if (message.sender === "user" && chatToUse.user_id) {
           addMessage(token, message, newChat);

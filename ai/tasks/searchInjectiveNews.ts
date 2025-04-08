@@ -15,18 +15,26 @@ export async function searchInjectiveNews(
   addMessage(
     createChatMessage({
       sender: "ai",
-      text: `🔍 Fetching the latest news from Web using Venice API...`,
+      text: `Calling Venicia for making research on web...`,
       type: "loading",
       intent: intent,
     })
   );
 
   const summary = await fetchInjectiveUpdates(message);
-  console.log(summary)
 
   addMessage(
     createChatMessage({
-      sender: "ai",
+      sender: "venicia",
+      text: "Looking for the various blogs & socials for Injective news research with Venice API ...",
+      type: "loading",
+      intent: intent,
+    })
+  );
+
+  addMessage(
+    createChatMessage({
+      sender: "venicia",
       text: summary,
       type: "success",
       intent: intent,
