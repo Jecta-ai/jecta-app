@@ -1,6 +1,6 @@
-import { fetchInjectiveTweets } from "../tools/twitterSearch";
 import { createChatMessage } from "@/app/utils";
 import type { ChatMessage } from "@/app/types";
+import { fetchInjectiveUpdates } from "../venice";
 
 export async function searchInjectiveNews(
   intent: string,
@@ -15,13 +15,14 @@ export async function searchInjectiveNews(
   addMessage(
     createChatMessage({
       sender: "ai",
-      text: `🔍 Fetching the latest 5 tweets from Injective's official Twitter...`,
+      text: `🔍 Fetching the latest news from Web using Venice API...`,
       type: "loading",
       intent: intent,
     })
   );
 
-  const summary = await fetchInjectiveTweets();
+  const summary = await fetchInjectiveUpdates(message);
+  console.log(summary)
 
   addMessage(
     createChatMessage({
